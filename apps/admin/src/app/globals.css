@@ -1,0 +1,6 @@
+@import 'tailwindcss';
+@import '@nomnom/ui/styles/tokens.css';
+
+html {
+  scroll-behavior: smooth;
+}

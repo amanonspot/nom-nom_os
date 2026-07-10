@@ -143,8 +143,11 @@ SPECTACULAR_SETTINGS = {
 # --- CORS (dev: allow the Next.js apps) -----------------------------------
 CORS_ALLOWED_ORIGINS = os.getenv(
     "CORS_ALLOWED_ORIGINS",
-    "http://localhost:3000,http://localhost:3001,http://localhost:3002",
+    "http://localhost:3100,http://localhost:3101,http://localhost:3102",
 ).split(",")
+# In DEBUG, allow any localhost port so dev servers on arbitrary ports work.
+if DEBUG:
+    CORS_ALLOWED_ORIGIN_REGEXES = [r"^http://localhost:\d+$", r"^http://127\.0\.0\.1:\d+$"]
 
 # --- Channels / Redis -----------------------------------------------------
 REDIS_URL = os.getenv("REDIS_URL", "redis://127.0.0.1:6379/0")

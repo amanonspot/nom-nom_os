@@ -1,0 +1,19 @@
+{
+  "name": "@nomnom/types",
+  "version": "0.0.0",
+  "private": true,
+  "type": "module",
+  "exports": {
+    ".": "./src/index.ts",
+    "./schema": "./src/schema.d.ts"
+  },
+  "scripts": {
+    "gen:types": "openapi-typescript ./schema.yaml -o ./src/schema.d.ts",
+    "lint": "tsc --noEmit",
+    "typecheck": "tsc --noEmit"
+  },
+  "devDependencies": {
+    "openapi-typescript": "^7.5.0",
+    "typescript": "^5.7.2"
+  }
+}

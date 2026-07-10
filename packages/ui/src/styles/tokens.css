@@ -1,0 +1,82 @@
+/*
+ * Nom Nom OS design tokens — ported from the SPOTO design system.
+ *
+ * Architecture (Tailwind v4): CSS variables drive an `@theme inline` block so
+ * utilities like `bg-bg`, `text-accent`, `border-border` resolve to these vars.
+ * Surfaces re-theme by swapping variables under a scope class — no fork.
+ *
+ *   :root        → SPOTO dark identity (admin portal + marketing)
+ *   .theme-pos   → light theme for operational POS/KDS (counter/kitchen legibility)
+ */
+
+@theme inline {
+  --color-bg: var(--bg);
+  --color-surface: var(--surface);
+  --color-fg: var(--fg);
+  --color-muted: var(--muted);
+  --color-muted-dim: var(--muted-dim);
+  --color-accent: var(--accent);
+  --color-accent-2: var(--accent-2);
+  --color-border: var(--border);
+  --color-border-soft: var(--border-soft);
+
+  /* Food-service semantics (shared across themes) */
+  --color-veg: var(--veg);
+  --color-nonveg: var(--nonveg);
+  --color-success: var(--success);
+  --color-warning: var(--warning);
+  --color-danger: var(--danger);
+  --color-status-free: var(--status-free);
+  --color-status-occupied: var(--status-occupied);
+
+  --font-display: var(--font-bricolage);
+  --font-body: var(--font-instrument);
+}
+
+:root {
+  /* SPOTO dark identity — admin portal + marketing */
+  --bg: #050505;
+  --surface: #0f172a;
+  --fg: #ffffff;
+  --muted: #8b9bbf;
+  --muted-dim: #4a5578;
+  --accent: #6c63ff;
+  --accent-2: #00d9ff;
+  --border: rgba(108, 99, 255, 0.16);
+  --border-soft: rgba(108, 99, 255, 0.08);
+
+  /* Food-service semantics */
+  --veg: #16a34a;
+  --nonveg: #dc2626;
+  --success: #16a34a;
+  --warning: #f59e0b;
+  --danger: #dc2626;
+  --status-free: #16a34a;
+  --status-occupied: #f59e0b;
+}
+
+/*
+ * Light theme for operational surfaces (POS, KDS). Apply `class="theme-pos"`
+ * on <html>. Every component using bg-*/text-*/border-* recolors automatically.
+ */
+.theme-pos {
+  --bg: #f7f8fa;
+  --surface: #ffffff;
+  --fg: #0f172a;
+  --muted: #64748b;
+  --muted-dim: #94a3b8;
+  --accent: #6c63ff;
+  --accent-2: #4338ca;
+  --border: rgba(15, 23, 42, 0.12);
+  --border-soft: rgba(15, 23, 42, 0.06);
+}
+
+body {
+  background: var(--bg);
+  color: var(--fg);
+  font-family: var(--font-body), system-ui, sans-serif;
+}
+
+.font-display {
+  font-family: var(--font-display), system-ui, sans-serif;
+}
