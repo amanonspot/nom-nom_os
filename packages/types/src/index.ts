@@ -10,4 +10,20 @@ export type { paths, components, operations } from './schema';
 import type { components } from './schema';
 
 export type Schemas = components['schemas'];
+
 export type Me = Schemas['Me'];
+
+// Catalog
+export type Category = Schemas['Category'];
+export type CategoryWithItems = Schemas['CategoryWithItems'];
+export type MenuItem = Schemas['MenuItem'];
+export type VariationGroup = Schemas['VariationGroup'];
+export type VariationOption = Schemas['VariationOption'];
+export type AddOn = Schemas['AddOn'];
+
+// Operations
+export type Table = Schemas['Table'];
+export type Customer = Schemas['Customer'];
+export type Order = Schemas['Order'];
+export type OrderItemRead = Schemas['OrderItemRead'];
+export type Payment = Schemas['Payment'];

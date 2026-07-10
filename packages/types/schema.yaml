@@ -58,6 +58,779 @@ paths:
               schema:
                 $ref: '#/components/schemas/TokenRefresh'
           description: ''
+  /api/catalog/addons/:
+    get:
+      operationId: catalog_addons_list
+      description: 'Base viewset: hides soft-deleted rows and filters by ?branch=<id>.'
+      tags:
+      - catalog
+      security:
+      - jwtAuth: []
+      responses:
+        '200':
+          content:
+            application/json:
+              schema:
+                type: array
+                items:
+                  $ref: '#/components/schemas/AddOn'
+          description: ''
+    post:
+      operationId: catalog_addons_create
+      description: 'Base viewset: hides soft-deleted rows and filters by ?branch=<id>.'
+      tags:
+      - catalog
+      requestBody:
+        content:
+          application/json:
+            schema:
+              $ref: '#/components/schemas/AddOn'
+          application/x-www-form-urlencoded:
+            schema:
+              $ref: '#/components/schemas/AddOn'
+          multipart/form-data:
+            schema:
+              $ref: '#/components/schemas/AddOn'
+        required: true
+      security:
+      - jwtAuth: []
+      responses:
+        '201':
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/AddOn'
+          description: ''
+  /api/catalog/addons/{id}/:
+    get:
+      operationId: catalog_addons_retrieve
+      description: 'Base viewset: hides soft-deleted rows and filters by ?branch=<id>.'
+      parameters:
+      - in: path
+        name: id
+        schema:
+          type: string
+          format: uuid
+        description: A UUID string identifying this add on.
+        required: true
+      tags:
+      - catalog
+      security:
+      - jwtAuth: []
+      responses:
+        '200':
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/AddOn'
+          description: ''
+    put:
+      operationId: catalog_addons_update
+      description: 'Base viewset: hides soft-deleted rows and filters by ?branch=<id>.'
+      parameters:
+      - in: path
+        name: id
+        schema:
+          type: string
+          format: uuid
+        description: A UUID string identifying this add on.
+        required: true
+      tags:
+      - catalog
+      requestBody:
+        content:
+          application/json:
+            schema:
+              $ref: '#/components/schemas/AddOn'
+          application/x-www-form-urlencoded:
+            schema:
+              $ref: '#/components/schemas/AddOn'
+          multipart/form-data:
+            schema:
+              $ref: '#/components/schemas/AddOn'
+        required: true
+      security:
+      - jwtAuth: []
+      responses:
+        '200':
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/AddOn'
+          description: ''
+    patch:
+      operationId: catalog_addons_partial_update
+      description: 'Base viewset: hides soft-deleted rows and filters by ?branch=<id>.'
+      parameters:
+      - in: path
+        name: id
+        schema:
+          type: string
+          format: uuid
+        description: A UUID string identifying this add on.
+        required: true
+      tags:
+      - catalog
+      requestBody:
+        content:
+          application/json:
+            schema:
+              $ref: '#/components/schemas/PatchedAddOn'
+          application/x-www-form-urlencoded:
+            schema:
+              $ref: '#/components/schemas/PatchedAddOn'
+          multipart/form-data:
+            schema:
+              $ref: '#/components/schemas/PatchedAddOn'
+      security:
+      - jwtAuth: []
+      responses:
+        '200':
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/AddOn'
+          description: ''
+    delete:
+      operationId: catalog_addons_destroy
+      description: 'Base viewset: hides soft-deleted rows and filters by ?branch=<id>.'
+      parameters:
+      - in: path
+        name: id
+        schema:
+          type: string
+          format: uuid
+        description: A UUID string identifying this add on.
+        required: true
+      tags:
+      - catalog
+      security:
+      - jwtAuth: []
+      responses:
+        '204':
+          description: No response body
+  /api/catalog/categories/:
+    get:
+      operationId: catalog_categories_list
+      description: 'Base viewset: hides soft-deleted rows and filters by ?branch=<id>.'
+      tags:
+      - catalog
+      security:
+      - jwtAuth: []
+      responses:
+        '200':
+          content:
+            application/json:
+              schema:
+                type: array
+                items:
+                  $ref: '#/components/schemas/Category'
+          description: ''
+    post:
+      operationId: catalog_categories_create
+      description: 'Base viewset: hides soft-deleted rows and filters by ?branch=<id>.'
+      tags:
+      - catalog
+      requestBody:
+        content:
+          application/json:
+            schema:
+              $ref: '#/components/schemas/Category'
+          application/x-www-form-urlencoded:
+            schema:
+              $ref: '#/components/schemas/Category'
+          multipart/form-data:
+            schema:
+              $ref: '#/components/schemas/Category'
+        required: true
+      security:
+      - jwtAuth: []
+      responses:
+        '201':
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/Category'
+          description: ''
+  /api/catalog/categories/{id}/:
+    get:
+      operationId: catalog_categories_retrieve
+      description: 'Base viewset: hides soft-deleted rows and filters by ?branch=<id>.'
+      parameters:
+      - in: path
+        name: id
+        schema:
+          type: string
+          format: uuid
+        description: A UUID string identifying this category.
+        required: true
+      tags:
+      - catalog
+      security:
+      - jwtAuth: []
+      responses:
+        '200':
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/Category'
+          description: ''
+    put:
+      operationId: catalog_categories_update
+      description: 'Base viewset: hides soft-deleted rows and filters by ?branch=<id>.'
+      parameters:
+      - in: path
+        name: id
+        schema:
+          type: string
+          format: uuid
+        description: A UUID string identifying this category.
+        required: true
+      tags:
+      - catalog
+      requestBody:
+        content:
+          application/json:
+            schema:
+              $ref: '#/components/schemas/Category'
+          application/x-www-form-urlencoded:
+            schema:
+              $ref: '#/components/schemas/Category'
+          multipart/form-data:
+            schema:
+              $ref: '#/components/schemas/Category'
+        required: true
+      security:
+      - jwtAuth: []
+      responses:
+        '200':
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/Category'
+          description: ''
+    patch:
+      operationId: catalog_categories_partial_update
+      description: 'Base viewset: hides soft-deleted rows and filters by ?branch=<id>.'
+      parameters:
+      - in: path
+        name: id
+        schema:
+          type: string
+          format: uuid
+        description: A UUID string identifying this category.
+        required: true
+      tags:
+      - catalog
+      requestBody:
+        content:
+          application/json:
+            schema:
+              $ref: '#/components/schemas/PatchedCategory'
+          application/x-www-form-urlencoded:
+            schema:
+              $ref: '#/components/schemas/PatchedCategory'
+          multipart/form-data:
+            schema:
+              $ref: '#/components/schemas/PatchedCategory'
+      security:
+      - jwtAuth: []
+      responses:
+        '200':
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/Category'
+          description: ''
+    delete:
+      operationId: catalog_categories_destroy
+      description: 'Base viewset: hides soft-deleted rows and filters by ?branch=<id>.'
+      parameters:
+      - in: path
+        name: id
+        schema:
+          type: string
+          format: uuid
+        description: A UUID string identifying this category.
+        required: true
+      tags:
+      - catalog
+      security:
+      - jwtAuth: []
+      responses:
+        '204':
+          description: No response body
+  /api/catalog/items/:
+    get:
+      operationId: catalog_items_list
+      description: 'Base viewset: hides soft-deleted rows and filters by ?branch=<id>.'
+      tags:
+      - catalog
+      security:
+      - jwtAuth: []
+      responses:
+        '200':
+          content:
+            application/json:
+              schema:
+                type: array
+                items:
+                  $ref: '#/components/schemas/MenuItem'
+          description: ''
+    post:
+      operationId: catalog_items_create
+      description: 'Base viewset: hides soft-deleted rows and filters by ?branch=<id>.'
+      tags:
+      - catalog
+      requestBody:
+        content:
+          application/json:
+            schema:
+              $ref: '#/components/schemas/MenuItem'
+          application/x-www-form-urlencoded:
+            schema:
+              $ref: '#/components/schemas/MenuItem'
+          multipart/form-data:
+            schema:
+              $ref: '#/components/schemas/MenuItem'
+        required: true
+      security:
+      - jwtAuth: []
+      responses:
+        '201':
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/MenuItem'
+          description: ''
+  /api/catalog/items/{id}/:
+    get:
+      operationId: catalog_items_retrieve
+      description: 'Base viewset: hides soft-deleted rows and filters by ?branch=<id>.'
+      parameters:
+      - in: path
+        name: id
+        schema:
+          type: string
+          format: uuid
+        description: A UUID string identifying this menu item.
+        required: true
+      tags:
+      - catalog
+      security:
+      - jwtAuth: []
+      responses:
+        '200':
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/MenuItem'
+          description: ''
+    put:
+      operationId: catalog_items_update
+      description: 'Base viewset: hides soft-deleted rows and filters by ?branch=<id>.'
+      parameters:
+      - in: path
+        name: id
+        schema:
+          type: string
+          format: uuid
+        description: A UUID string identifying this menu item.
+        required: true
+      tags:
+      - catalog
+      requestBody:
+        content:
+          application/json:
+            schema:
+              $ref: '#/components/schemas/MenuItem'
+          application/x-www-form-urlencoded:
+            schema:
+              $ref: '#/components/schemas/MenuItem'
+          multipart/form-data:
+            schema:
+              $ref: '#/components/schemas/MenuItem'
+        required: true
+      security:
+      - jwtAuth: []
+      responses:
+        '200':
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/MenuItem'
+          description: ''
+    patch:
+      operationId: catalog_items_partial_update
+      description: 'Base viewset: hides soft-deleted rows and filters by ?branch=<id>.'
+      parameters:
+      - in: path
+        name: id
+        schema:
+          type: string
+          format: uuid
+        description: A UUID string identifying this menu item.
+        required: true
+      tags:
+      - catalog
+      requestBody:
+        content:
+          application/json:
+            schema:
+              $ref: '#/components/schemas/PatchedMenuItem'
+          application/x-www-form-urlencoded:
+            schema:
+              $ref: '#/components/schemas/PatchedMenuItem'
+          multipart/form-data:
+            schema:
+              $ref: '#/components/schemas/PatchedMenuItem'
+      security:
+      - jwtAuth: []
+      responses:
+        '200':
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/MenuItem'
+          description: ''
+    delete:
+      operationId: catalog_items_destroy
+      description: 'Base viewset: hides soft-deleted rows and filters by ?branch=<id>.'
+      parameters:
+      - in: path
+        name: id
+        schema:
+          type: string
+          format: uuid
+        description: A UUID string identifying this menu item.
+        required: true
+      tags:
+      - catalog
+      security:
+      - jwtAuth: []
+      responses:
+        '204':
+          description: No response body
+  /api/catalog/menu/:
+    get:
+      operationId: catalog_menu
+      description: Full menu tree (categories → items → variation groups → options)
+        for a branch.
+      tags:
+      - catalog
+      security:
+      - jwtAuth: []
+      responses:
+        '200':
+          content:
+            application/json:
+              schema:
+                type: array
+                items:
+                  $ref: '#/components/schemas/CategoryWithItems'
+          description: ''
+  /api/catalog/variation-groups/:
+    get:
+      operationId: catalog_variation_groups_list
+      description: Variation groups filter by ?item=<id> (branch is implied by the
+        item).
+      tags:
+      - catalog
+      security:
+      - jwtAuth: []
+      responses:
+        '200':
+          content:
+            application/json:
+              schema:
+                type: array
+                items:
+                  $ref: '#/components/schemas/VariationGroup'
+          description: ''
+    post:
+      operationId: catalog_variation_groups_create
+      description: Variation groups filter by ?item=<id> (branch is implied by the
+        item).
+      tags:
+      - catalog
+      requestBody:
+        content:
+          application/json:
+            schema:
+              $ref: '#/components/schemas/VariationGroup'
+          application/x-www-form-urlencoded:
+            schema:
+              $ref: '#/components/schemas/VariationGroup'
+          multipart/form-data:
+            schema:
+              $ref: '#/components/schemas/VariationGroup'
+        required: true
+      security:
+      - jwtAuth: []
+      responses:
+        '201':
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/VariationGroup'
+          description: ''
+  /api/catalog/variation-groups/{id}/:
+    get:
+      operationId: catalog_variation_groups_retrieve
+      description: Variation groups filter by ?item=<id> (branch is implied by the
+        item).
+      parameters:
+      - in: path
+        name: id
+        schema:
+          type: string
+          format: uuid
+        description: A UUID string identifying this variation group.
+        required: true
+      tags:
+      - catalog
+      security:
+      - jwtAuth: []
+      responses:
+        '200':
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/VariationGroup'
+          description: ''
+    put:
+      operationId: catalog_variation_groups_update
+      description: Variation groups filter by ?item=<id> (branch is implied by the
+        item).
+      parameters:
+      - in: path
+        name: id
+        schema:
+          type: string
+          format: uuid
+        description: A UUID string identifying this variation group.
+        required: true
+      tags:
+      - catalog
+      requestBody:
+        content:
+          application/json:
+            schema:
+              $ref: '#/components/schemas/VariationGroup'
+          application/x-www-form-urlencoded:
+            schema:
+              $ref: '#/components/schemas/VariationGroup'
+          multipart/form-data:
+            schema:
+              $ref: '#/components/schemas/VariationGroup'
+        required: true
+      security:
+      - jwtAuth: []
+      responses:
+        '200':
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/VariationGroup'
+          description: ''
+    patch:
+      operationId: catalog_variation_groups_partial_update
+      description: Variation groups filter by ?item=<id> (branch is implied by the
+        item).
+      parameters:
+      - in: path
+        name: id
+        schema:
+          type: string
+          format: uuid
+        description: A UUID string identifying this variation group.
+        required: true
+      tags:
+      - catalog
+      requestBody:
+        content:
+          application/json:
+            schema:
+              $ref: '#/components/schemas/PatchedVariationGroup'
+          application/x-www-form-urlencoded:
+            schema:
+              $ref: '#/components/schemas/PatchedVariationGroup'
+          multipart/form-data:
+            schema:
+              $ref: '#/components/schemas/PatchedVariationGroup'
+      security:
+      - jwtAuth: []
+      responses:
+        '200':
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/VariationGroup'
+          description: ''
+    delete:
+      operationId: catalog_variation_groups_destroy
+      description: Variation groups filter by ?item=<id> (branch is implied by the
+        item).
+      parameters:
+      - in: path
+        name: id
+        schema:
+          type: string
+          format: uuid
+        description: A UUID string identifying this variation group.
+        required: true
+      tags:
+      - catalog
+      security:
+      - jwtAuth: []
+      responses:
+        '204':
+          description: No response body
+  /api/catalog/variation-options/:
+    get:
+      operationId: catalog_variation_options_list
+      tags:
+      - catalog
+      security:
+      - jwtAuth: []
+      responses:
+        '200':
+          content:
+            application/json:
+              schema:
+                type: array
+                items:
+                  $ref: '#/components/schemas/VariationOption'
+          description: ''
+    post:
+      operationId: catalog_variation_options_create
+      tags:
+      - catalog
+      requestBody:
+        content:
+          application/json:
+            schema:
+              $ref: '#/components/schemas/VariationOption'
+          application/x-www-form-urlencoded:
+            schema:
+              $ref: '#/components/schemas/VariationOption'
+          multipart/form-data:
+            schema:
+              $ref: '#/components/schemas/VariationOption'
+        required: true
+      security:
+      - jwtAuth: []
+      responses:
+        '201':
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/VariationOption'
+          description: ''
+  /api/catalog/variation-options/{id}/:
+    get:
+      operationId: catalog_variation_options_retrieve
+      parameters:
+      - in: path
+        name: id
+        schema:
+          type: string
+          format: uuid
+        description: A UUID string identifying this variation option.
+        required: true
+      tags:
+      - catalog
+      security:
+      - jwtAuth: []
+      responses:
+        '200':
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/VariationOption'
+          description: ''
+    put:
+      operationId: catalog_variation_options_update
+      parameters:
+      - in: path
+        name: id
+        schema:
+          type: string
+          format: uuid
+        description: A UUID string identifying this variation option.
+        required: true
+      tags:
+      - catalog
+      requestBody:
+        content:
+          application/json:
+            schema:
+              $ref: '#/components/schemas/VariationOption'
+          application/x-www-form-urlencoded:
+            schema:
+              $ref: '#/components/schemas/VariationOption'
+          multipart/form-data:
+            schema:
+              $ref: '#/components/schemas/VariationOption'
+        required: true
+      security:
+      - jwtAuth: []
+      responses:
+        '200':
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/VariationOption'
+          description: ''
+    patch:
+      operationId: catalog_variation_options_partial_update
+      parameters:
+      - in: path
+        name: id
+        schema:
+          type: string
+          format: uuid
+        description: A UUID string identifying this variation option.
+        required: true
+      tags:
+      - catalog
+      requestBody:
+        content:
+          application/json:
+            schema:
+              $ref: '#/components/schemas/PatchedVariationOption'
+          application/x-www-form-urlencoded:
+            schema:
+              $ref: '#/components/schemas/PatchedVariationOption'
+          multipart/form-data:
+            schema:
+              $ref: '#/components/schemas/PatchedVariationOption'
+      security:
+      - jwtAuth: []
+      responses:
+        '200':
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/VariationOption'
+          description: ''
+    delete:
+      operationId: catalog_variation_options_destroy
+      parameters:
+      - in: path
+        name: id
+        schema:
+          type: string
+          format: uuid
+        description: A UUID string identifying this variation option.
+        required: true
+      tags:
+      - catalog
+      security:
+      - jwtAuth: []
+      responses:
+        '204':
+          description: No response body
   /api/me/:
     get:
       operationId: me
@@ -73,8 +846,725 @@ paths:
               schema:
                 $ref: '#/components/schemas/Me'
           description: ''
+  /api/ops/customers/:
+    get:
+      operationId: ops_customers_list
+      description: 'Base viewset: hides soft-deleted rows and filters by ?branch=<id>.'
+      tags:
+      - ops
+      security:
+      - jwtAuth: []
+      responses:
+        '200':
+          content:
+            application/json:
+              schema:
+                type: array
+                items:
+                  $ref: '#/components/schemas/Customer'
+          description: ''
+    post:
+      operationId: ops_customers_create
+      description: 'Base viewset: hides soft-deleted rows and filters by ?branch=<id>.'
+      tags:
+      - ops
+      requestBody:
+        content:
+          application/json:
+            schema:
+              $ref: '#/components/schemas/Customer'
+          application/x-www-form-urlencoded:
+            schema:
+              $ref: '#/components/schemas/Customer'
+          multipart/form-data:
+            schema:
+              $ref: '#/components/schemas/Customer'
+        required: true
+      security:
+      - jwtAuth: []
+      responses:
+        '201':
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/Customer'
+          description: ''
+  /api/ops/customers/{id}/:
+    get:
+      operationId: ops_customers_retrieve
+      description: 'Base viewset: hides soft-deleted rows and filters by ?branch=<id>.'
+      parameters:
+      - in: path
+        name: id
+        schema:
+          type: string
+          format: uuid
+        description: A UUID string identifying this customer.
+        required: true
+      tags:
+      - ops
+      security:
+      - jwtAuth: []
+      responses:
+        '200':
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/Customer'
+          description: ''
+    put:
+      operationId: ops_customers_update
+      description: 'Base viewset: hides soft-deleted rows and filters by ?branch=<id>.'
+      parameters:
+      - in: path
+        name: id
+        schema:
+          type: string
+          format: uuid
+        description: A UUID string identifying this customer.
+        required: true
+      tags:
+      - ops
+      requestBody:
+        content:
+          application/json:
+            schema:
+              $ref: '#/components/schemas/Customer'
+          application/x-www-form-urlencoded:
+            schema:
+              $ref: '#/components/schemas/Customer'
+          multipart/form-data:
+            schema:
+              $ref: '#/components/schemas/Customer'
+        required: true
+      security:
+      - jwtAuth: []
+      responses:
+        '200':
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/Customer'
+          description: ''
+    patch:
+      operationId: ops_customers_partial_update
+      description: 'Base viewset: hides soft-deleted rows and filters by ?branch=<id>.'
+      parameters:
+      - in: path
+        name: id
+        schema:
+          type: string
+          format: uuid
+        description: A UUID string identifying this customer.
+        required: true
+      tags:
+      - ops
+      requestBody:
+        content:
+          application/json:
+            schema:
+              $ref: '#/components/schemas/PatchedCustomer'
+          application/x-www-form-urlencoded:
+            schema:
+              $ref: '#/components/schemas/PatchedCustomer'
+          multipart/form-data:
+            schema:
+              $ref: '#/components/schemas/PatchedCustomer'
+      security:
+      - jwtAuth: []
+      responses:
+        '200':
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/Customer'
+          description: ''
+    delete:
+      operationId: ops_customers_destroy
+      description: 'Base viewset: hides soft-deleted rows and filters by ?branch=<id>.'
+      parameters:
+      - in: path
+        name: id
+        schema:
+          type: string
+          format: uuid
+        description: A UUID string identifying this customer.
+        required: true
+      tags:
+      - ops
+      security:
+      - jwtAuth: []
+      responses:
+        '204':
+          description: No response body
+  /api/ops/customers/by_phone/:
+    get:
+      operationId: ops_customers_by_phone_retrieve
+      description: 'Base viewset: hides soft-deleted rows and filters by ?branch=<id>.'
+      parameters:
+      - in: query
+        name: phone
+        schema:
+          type: string
+      tags:
+      - ops
+      security:
+      - jwtAuth: []
+      responses:
+        '200':
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/Customer'
+          description: ''
+  /api/ops/orders/:
+    get:
+      operationId: ops_orders_list
+      description: 'Base viewset: hides soft-deleted rows and filters by ?branch=<id>.'
+      tags:
+      - ops
+      security:
+      - jwtAuth: []
+      responses:
+        '200':
+          content:
+            application/json:
+              schema:
+                type: array
+                items:
+                  $ref: '#/components/schemas/Order'
+          description: ''
+    post:
+      operationId: ops_orders_create
+      description: 'Base viewset: hides soft-deleted rows and filters by ?branch=<id>.'
+      tags:
+      - ops
+      requestBody:
+        content:
+          application/json:
+            schema:
+              $ref: '#/components/schemas/Order'
+          application/x-www-form-urlencoded:
+            schema:
+              $ref: '#/components/schemas/Order'
+          multipart/form-data:
+            schema:
+              $ref: '#/components/schemas/Order'
+        required: true
+      security:
+      - jwtAuth: []
+      responses:
+        '201':
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/Order'
+          description: ''
+  /api/ops/orders/{id}/:
+    get:
+      operationId: ops_orders_retrieve
+      description: 'Base viewset: hides soft-deleted rows and filters by ?branch=<id>.'
+      parameters:
+      - in: path
+        name: id
+        schema:
+          type: string
+          format: uuid
+        description: A UUID string identifying this order.
+        required: true
+      tags:
+      - ops
+      security:
+      - jwtAuth: []
+      responses:
+        '200':
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/Order'
+          description: ''
+    put:
+      operationId: ops_orders_update
+      description: 'Base viewset: hides soft-deleted rows and filters by ?branch=<id>.'
+      parameters:
+      - in: path
+        name: id
+        schema:
+          type: string
+          format: uuid
+        description: A UUID string identifying this order.
+        required: true
+      tags:
+      - ops
+      requestBody:
+        content:
+          application/json:
+            schema:
+              $ref: '#/components/schemas/Order'
+          application/x-www-form-urlencoded:
+            schema:
+              $ref: '#/components/schemas/Order'
+          multipart/form-data:
+            schema:
+              $ref: '#/components/schemas/Order'
+        required: true
+      security:
+      - jwtAuth: []
+      responses:
+        '200':
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/Order'
+          description: ''
+    patch:
+      operationId: ops_orders_partial_update
+      description: 'Base viewset: hides soft-deleted rows and filters by ?branch=<id>.'
+      parameters:
+      - in: path
+        name: id
+        schema:
+          type: string
+          format: uuid
+        description: A UUID string identifying this order.
+        required: true
+      tags:
+      - ops
+      requestBody:
+        content:
+          application/json:
+            schema:
+              $ref: '#/components/schemas/PatchedOrder'
+          application/x-www-form-urlencoded:
+            schema:
+              $ref: '#/components/schemas/PatchedOrder'
+          multipart/form-data:
+            schema:
+              $ref: '#/components/schemas/PatchedOrder'
+      security:
+      - jwtAuth: []
+      responses:
+        '200':
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/Order'
+          description: ''
+    delete:
+      operationId: ops_orders_destroy
+      description: 'Base viewset: hides soft-deleted rows and filters by ?branch=<id>.'
+      parameters:
+      - in: path
+        name: id
+        schema:
+          type: string
+          format: uuid
+        description: A UUID string identifying this order.
+        required: true
+      tags:
+      - ops
+      security:
+      - jwtAuth: []
+      responses:
+        '204':
+          description: No response body
+  /api/ops/orders/{id}/settle/:
+    post:
+      operationId: ops_orders_settle_create
+      description: Attach one or more payments and mark the order paid when covered.
+      parameters:
+      - in: path
+        name: id
+        schema:
+          type: string
+          format: uuid
+        description: A UUID string identifying this order.
+        required: true
+      tags:
+      - ops
+      requestBody:
+        content:
+          application/json:
+            schema:
+              type: array
+              items:
+                $ref: '#/components/schemas/Payment'
+          application/x-www-form-urlencoded:
+            schema:
+              type: array
+              items:
+                $ref: '#/components/schemas/Payment'
+          multipart/form-data:
+            schema:
+              type: array
+              items:
+                $ref: '#/components/schemas/Payment'
+        required: true
+      security:
+      - jwtAuth: []
+      responses:
+        '200':
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/Order'
+          description: ''
+  /api/ops/orders/{id}/void/:
+    post:
+      operationId: ops_orders_void_create
+      description: Void an order; requires a valid manager PIN from a privileged user.
+      parameters:
+      - in: path
+        name: id
+        schema:
+          type: string
+          format: uuid
+        description: A UUID string identifying this order.
+        required: true
+      tags:
+      - ops
+      requestBody:
+        content:
+          type:
+            schema:
+              type: object
+              additionalProperties: {}
+              description: Unspecified request body
+          properties:
+            schema:
+              pin:
+                type: string
+      security:
+      - jwtAuth: []
+      responses:
+        '200':
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/Order'
+          description: ''
+  /api/ops/payments/:
+    get:
+      operationId: ops_payments_list
+      tags:
+      - ops
+      security:
+      - jwtAuth: []
+      responses:
+        '200':
+          content:
+            application/json:
+              schema:
+                type: array
+                items:
+                  $ref: '#/components/schemas/Payment'
+          description: ''
+    post:
+      operationId: ops_payments_create
+      tags:
+      - ops
+      requestBody:
+        content:
+          application/json:
+            schema:
+              $ref: '#/components/schemas/Payment'
+          application/x-www-form-urlencoded:
+            schema:
+              $ref: '#/components/schemas/Payment'
+          multipart/form-data:
+            schema:
+              $ref: '#/components/schemas/Payment'
+        required: true
+      security:
+      - jwtAuth: []
+      responses:
+        '201':
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/Payment'
+          description: ''
+  /api/ops/payments/{id}/:
+    get:
+      operationId: ops_payments_retrieve
+      parameters:
+      - in: path
+        name: id
+        schema:
+          type: string
+          format: uuid
+        description: A UUID string identifying this payment.
+        required: true
+      tags:
+      - ops
+      security:
+      - jwtAuth: []
+      responses:
+        '200':
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/Payment'
+          description: ''
+    put:
+      operationId: ops_payments_update
+      parameters:
+      - in: path
+        name: id
+        schema:
+          type: string
+          format: uuid
+        description: A UUID string identifying this payment.
+        required: true
+      tags:
+      - ops
+      requestBody:
+        content:
+          application/json:
+            schema:
+              $ref: '#/components/schemas/Payment'
+          application/x-www-form-urlencoded:
+            schema:
+              $ref: '#/components/schemas/Payment'
+          multipart/form-data:
+            schema:
+              $ref: '#/components/schemas/Payment'
+        required: true
+      security:
+      - jwtAuth: []
+      responses:
+        '200':
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/Payment'
+          description: ''
+    patch:
+      operationId: ops_payments_partial_update
+      parameters:
+      - in: path
+        name: id
+        schema:
+          type: string
+          format: uuid
+        description: A UUID string identifying this payment.
+        required: true
+      tags:
+      - ops
+      requestBody:
+        content:
+          application/json:
+            schema:
+              $ref: '#/components/schemas/PatchedPayment'
+          application/x-www-form-urlencoded:
+            schema:
+              $ref: '#/components/schemas/PatchedPayment'
+          multipart/form-data:
+            schema:
+              $ref: '#/components/schemas/PatchedPayment'
+      security:
+      - jwtAuth: []
+      responses:
+        '200':
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/Payment'
+          description: ''
+    delete:
+      operationId: ops_payments_destroy
+      parameters:
+      - in: path
+        name: id
+        schema:
+          type: string
+          format: uuid
+        description: A UUID string identifying this payment.
+        required: true
+      tags:
+      - ops
+      security:
+      - jwtAuth: []
+      responses:
+        '204':
+          description: No response body
+  /api/ops/tables/:
+    get:
+      operationId: ops_tables_list
+      description: 'Base viewset: hides soft-deleted rows and filters by ?branch=<id>.'
+      tags:
+      - ops
+      security:
+      - jwtAuth: []
+      responses:
+        '200':
+          content:
+            application/json:
+              schema:
+                type: array
+                items:
+                  $ref: '#/components/schemas/Table'
+          description: ''
+    post:
+      operationId: ops_tables_create
+      description: 'Base viewset: hides soft-deleted rows and filters by ?branch=<id>.'
+      tags:
+      - ops
+      requestBody:
+        content:
+          application/json:
+            schema:
+              $ref: '#/components/schemas/Table'
+          application/x-www-form-urlencoded:
+            schema:
+              $ref: '#/components/schemas/Table'
+          multipart/form-data:
+            schema:
+              $ref: '#/components/schemas/Table'
+        required: true
+      security:
+      - jwtAuth: []
+      responses:
+        '201':
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/Table'
+          description: ''
+  /api/ops/tables/{id}/:
+    get:
+      operationId: ops_tables_retrieve
+      description: 'Base viewset: hides soft-deleted rows and filters by ?branch=<id>.'
+      parameters:
+      - in: path
+        name: id
+        schema:
+          type: string
+          format: uuid
+        description: A UUID string identifying this table.
+        required: true
+      tags:
+      - ops
+      security:
+      - jwtAuth: []
+      responses:
+        '200':
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/Table'
+          description: ''
+    put:
+      operationId: ops_tables_update
+      description: 'Base viewset: hides soft-deleted rows and filters by ?branch=<id>.'
+      parameters:
+      - in: path
+        name: id
+        schema:
+          type: string
+          format: uuid
+        description: A UUID string identifying this table.
+        required: true
+      tags:
+      - ops
+      requestBody:
+        content:
+          application/json:
+            schema:
+              $ref: '#/components/schemas/Table'
+          application/x-www-form-urlencoded:
+            schema:
+              $ref: '#/components/schemas/Table'
+          multipart/form-data:
+            schema:
+              $ref: '#/components/schemas/Table'
+        required: true
+      security:
+      - jwtAuth: []
+      responses:
+        '200':
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/Table'
+          description: ''
+    patch:
+      operationId: ops_tables_partial_update
+      description: 'Base viewset: hides soft-deleted rows and filters by ?branch=<id>.'
+      parameters:
+      - in: path
+        name: id
+        schema:
+          type: string
+          format: uuid
+        description: A UUID string identifying this table.
+        required: true
+      tags:
+      - ops
+      requestBody:
+        content:
+          application/json:
+            schema:
+              $ref: '#/components/schemas/PatchedTable'
+          application/x-www-form-urlencoded:
+            schema:
+              $ref: '#/components/schemas/PatchedTable'
+          multipart/form-data:
+            schema:
+              $ref: '#/components/schemas/PatchedTable'
+      security:
+      - jwtAuth: []
+      responses:
+        '200':
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/Table'
+          description: ''
+    delete:
+      operationId: ops_tables_destroy
+      description: 'Base viewset: hides soft-deleted rows and filters by ?branch=<id>.'
+      parameters:
+      - in: path
+        name: id
+        schema:
+          type: string
+          format: uuid
+        description: A UUID string identifying this table.
+        required: true
+      tags:
+      - ops
+      security:
+      - jwtAuth: []
+      responses:
+        '204':
+          description: No response body
 components:
   schemas:
+    AddOn:
+      type: object
+      properties:
+        id:
+          type: string
+          format: uuid
+          readOnly: true
+        branch:
+          type: string
+          format: uuid
+        name:
+          type: string
+          maxLength: 120
+        price:
+          type: string
+          format: decimal
+          pattern: ^-?\d{0,8}(?:\.\d{0,2})?$
+        is_active:
+          type: boolean
+      required:
+      - branch
+      - id
+      - name
+      - price
     Branch:
       type: object
       properties:
@@ -97,6 +1587,79 @@ components:
       - id
       - name
       - restaurant
+    Category:
+      type: object
+      properties:
+        id:
+          type: string
+          format: uuid
+          readOnly: true
+        branch:
+          type: string
+          format: uuid
+        name:
+          type: string
+          maxLength: 120
+        sort_order:
+          type: integer
+          maximum: 9223372036854775807
+          minimum: 0
+          format: int64
+        is_active:
+          type: boolean
+      required:
+      - branch
+      - id
+      - name
+    CategoryWithItems:
+      type: object
+      description: Category with its nested items — the POS/offline menu tree.
+      properties:
+        id:
+          type: string
+          format: uuid
+          readOnly: true
+        branch:
+          type: string
+          format: uuid
+        name:
+          type: string
+          maxLength: 120
+        sort_order:
+          type: integer
+          maximum: 9223372036854775807
+          minimum: 0
+          format: int64
+        is_active:
+          type: boolean
+        items:
+          type: string
+          readOnly: true
+      required:
+      - branch
+      - id
+      - items
+      - name
+    Customer:
+      type: object
+      properties:
+        id:
+          type: string
+          format: uuid
+          readOnly: true
+        branch:
+          type: string
+          format: uuid
+        phone:
+          type: string
+          maxLength: 20
+        name:
+          type: string
+          maxLength: 120
+      required:
+      - branch
+      - id
+      - phone
     Me:
       type: object
       properties:
@@ -139,6 +1702,550 @@ components:
       - id
       - restaurant
       - username
+    MenuItem:
+      type: object
+      properties:
+        id:
+          type: string
+          format: uuid
+          readOnly: true
+        branch:
+          type: string
+          format: uuid
+        category:
+          type: string
+          format: uuid
+        name:
+          type: string
+          maxLength: 200
+        description:
+          type: string
+        base_price:
+          type: string
+          format: decimal
+          pattern: ^-?\d{0,8}(?:\.\d{0,2})?$
+        is_veg:
+          type: boolean
+        pieces_per_plate:
+          type: integer
+          maximum: 9223372036854775807
+          minimum: 0
+          format: int64
+        gst_rate:
+          type: string
+          format: decimal
+          pattern: ^-?\d{0,3}(?:\.\d{0,2})?$
+        is_available:
+          type: boolean
+        sort_order:
+          type: integer
+          maximum: 9223372036854775807
+          minimum: 0
+          format: int64
+        variation_groups:
+          type: array
+          items:
+            $ref: '#/components/schemas/VariationGroup'
+          readOnly: true
+      required:
+      - base_price
+      - branch
+      - category
+      - id
+      - name
+      - variation_groups
+    ModeEnum:
+      enum:
+      - cash
+      - card
+      - upi
+      type: string
+      description: |-
+        * `cash` - Cash
+        * `card` - Card
+        * `upi` - UPI
+    Order:
+      type: object
+      description: |-
+        Read/write order. On create/replace, prices are snapshotted from the
+        catalog and GST totals are computed server-side (authoritative).
+      properties:
+        id:
+          type: string
+          format: uuid
+          readOnly: true
+        branch:
+          type: string
+          format: uuid
+        table:
+          type: string
+          format: uuid
+          nullable: true
+        customer:
+          type: string
+          format: uuid
+          nullable: true
+        placed_by:
+          type: integer
+          nullable: true
+        order_type:
+          $ref: '#/components/schemas/OrderTypeEnum'
+        status:
+          $ref: '#/components/schemas/OrderStatusEnum'
+        number:
+          type: integer
+          readOnly: true
+          nullable: true
+        subtotal:
+          type: string
+          format: decimal
+          pattern: ^-?\d{0,8}(?:\.\d{0,2})?$
+          readOnly: true
+        tax_total:
+          type: string
+          format: decimal
+          pattern: ^-?\d{0,8}(?:\.\d{0,2})?$
+          readOnly: true
+        discount_total:
+          type: string
+          format: decimal
+          pattern: ^-?\d{0,8}(?:\.\d{0,2})?$
+        grand_total:
+          type: string
+          format: decimal
+          pattern: ^-?\d{0,8}(?:\.\d{0,2})?$
+          readOnly: true
+        items:
+          type: array
+          items:
+            $ref: '#/components/schemas/OrderItemRead'
+          readOnly: true
+        items_write:
+          type: array
+          items:
+            $ref: '#/components/schemas/_OrderItemWrite'
+          writeOnly: true
+        payments:
+          type: array
+          items:
+            $ref: '#/components/schemas/Payment'
+          readOnly: true
+      required:
+      - branch
+      - grand_total
+      - id
+      - items
+      - number
+      - payments
+      - subtotal
+      - tax_total
+    OrderItemAddOnRead:
+      type: object
+      properties:
+        id:
+          type: string
+          format: uuid
+          readOnly: true
+        add_on:
+          type: string
+          format: uuid
+        name_snapshot:
+          type: string
+          maxLength: 160
+        price:
+          type: string
+          format: decimal
+          pattern: ^-?\d{0,8}(?:\.\d{0,2})?$
+      required:
+      - add_on
+      - id
+      - name_snapshot
+    OrderItemOptionRead:
+      type: object
+      properties:
+        id:
+          type: string
+          format: uuid
+          readOnly: true
+        option:
+          type: string
+          format: uuid
+        name_snapshot:
+          type: string
+          maxLength: 160
+        price_delta:
+          type: string
+          format: decimal
+          pattern: ^-?\d{0,8}(?:\.\d{0,2})?$
+      required:
+      - id
+      - name_snapshot
+      - option
+    OrderItemRead:
+      type: object
+      properties:
+        id:
+          type: string
+          format: uuid
+          readOnly: true
+        menu_item:
+          type: string
+          format: uuid
+        name_snapshot:
+          type: string
+          maxLength: 200
+        quantity:
+          type: integer
+          maximum: 9223372036854775807
+          minimum: 0
+          format: int64
+        unit_price:
+          type: string
+          format: decimal
+          pattern: ^-?\d{0,8}(?:\.\d{0,2})?$
+        gst_rate:
+          type: string
+          format: decimal
+          pattern: ^-?\d{0,3}(?:\.\d{0,2})?$
+        notes:
+          type: string
+          maxLength: 200
+        is_void:
+          type: boolean
+        options:
+          type: array
+          items:
+            $ref: '#/components/schemas/OrderItemOptionRead'
+          readOnly: true
+        add_ons:
+          type: array
+          items:
+            $ref: '#/components/schemas/OrderItemAddOnRead'
+          readOnly: true
+        line_total:
+          type: string
+          format: decimal
+          pattern: ^-?\d{0,8}(?:\.\d{0,2})?$
+          readOnly: true
+        tax_amount:
+          type: string
+          format: decimal
+          pattern: ^-?\d{0,8}(?:\.\d{0,2})?$
+          readOnly: true
+      required:
+      - add_ons
+      - id
+      - line_total
+      - menu_item
+      - name_snapshot
+      - options
+      - tax_amount
+      - unit_price
+    OrderStatusEnum:
+      enum:
+      - open
+      - held
+      - billed
+      - paid
+      - void
+      type: string
+      description: |-
+        * `open` - Open
+        * `held` - Held
+        * `billed` - Billed
+        * `paid` - Paid
+        * `void` - Void
+    OrderTypeEnum:
+      enum:
+      - dine_in
+      - takeaway
+      - qr
+      type: string
+      description: |-
+        * `dine_in` - Dine-in
+        * `takeaway` - Takeaway
+        * `qr` - QR self-order
+    PatchedAddOn:
+      type: object
+      properties:
+        id:
+          type: string
+          format: uuid
+          readOnly: true
+        branch:
+          type: string
+          format: uuid
+        name:
+          type: string
+          maxLength: 120
+        price:
+          type: string
+          format: decimal
+          pattern: ^-?\d{0,8}(?:\.\d{0,2})?$
+        is_active:
+          type: boolean
+    PatchedCategory:
+      type: object
+      properties:
+        id:
+          type: string
+          format: uuid
+          readOnly: true
+        branch:
+          type: string
+          format: uuid
+        name:
+          type: string
+          maxLength: 120
+        sort_order:
+          type: integer
+          maximum: 9223372036854775807
+          minimum: 0
+          format: int64
+        is_active:
+          type: boolean
+    PatchedCustomer:
+      type: object
+      properties:
+        id:
+          type: string
+          format: uuid
+          readOnly: true
+        branch:
+          type: string
+          format: uuid
+        phone:
+          type: string
+          maxLength: 20
+        name:
+          type: string
+          maxLength: 120
+    PatchedMenuItem:
+      type: object
+      properties:
+        id:
+          type: string
+          format: uuid
+          readOnly: true
+        branch:
+          type: string
+          format: uuid
+        category:
+          type: string
+          format: uuid
+        name:
+          type: string
+          maxLength: 200
+        description:
+          type: string
+        base_price:
+          type: string
+          format: decimal
+          pattern: ^-?\d{0,8}(?:\.\d{0,2})?$
+        is_veg:
+          type: boolean
+        pieces_per_plate:
+          type: integer
+          maximum: 9223372036854775807
+          minimum: 0
+          format: int64
+        gst_rate:
+          type: string
+          format: decimal
+          pattern: ^-?\d{0,3}(?:\.\d{0,2})?$
+        is_available:
+          type: boolean
+        sort_order:
+          type: integer
+          maximum: 9223372036854775807
+          minimum: 0
+          format: int64
+        variation_groups:
+          type: array
+          items:
+            $ref: '#/components/schemas/VariationGroup'
+          readOnly: true
+    PatchedOrder:
+      type: object
+      description: |-
+        Read/write order. On create/replace, prices are snapshotted from the
+        catalog and GST totals are computed server-side (authoritative).
+      properties:
+        id:
+          type: string
+          format: uuid
+          readOnly: true
+        branch:
+          type: string
+          format: uuid
+        table:
+          type: string
+          format: uuid
+          nullable: true
+        customer:
+          type: string
+          format: uuid
+          nullable: true
+        placed_by:
+          type: integer
+          nullable: true
+        order_type:
+          $ref: '#/components/schemas/OrderTypeEnum'
+        status:
+          $ref: '#/components/schemas/OrderStatusEnum'
+        number:
+          type: integer
+          readOnly: true
+          nullable: true
+        subtotal:
+          type: string
+          format: decimal
+          pattern: ^-?\d{0,8}(?:\.\d{0,2})?$
+          readOnly: true
+        tax_total:
+          type: string
+          format: decimal
+          pattern: ^-?\d{0,8}(?:\.\d{0,2})?$
+          readOnly: true
+        discount_total:
+          type: string
+          format: decimal
+          pattern: ^-?\d{0,8}(?:\.\d{0,2})?$
+        grand_total:
+          type: string
+          format: decimal
+          pattern: ^-?\d{0,8}(?:\.\d{0,2})?$
+          readOnly: true
+        items:
+          type: array
+          items:
+            $ref: '#/components/schemas/OrderItemRead'
+          readOnly: true
+        items_write:
+          type: array
+          items:
+            $ref: '#/components/schemas/_OrderItemWrite'
+          writeOnly: true
+        payments:
+          type: array
+          items:
+            $ref: '#/components/schemas/Payment'
+          readOnly: true
+    PatchedPayment:
+      type: object
+      properties:
+        id:
+          type: string
+          format: uuid
+          readOnly: true
+        order:
+          type: string
+          format: uuid
+        mode:
+          $ref: '#/components/schemas/ModeEnum'
+        amount:
+          type: string
+          format: decimal
+          pattern: ^-?\d{0,8}(?:\.\d{0,2})?$
+        reference:
+          type: string
+          maxLength: 120
+    PatchedTable:
+      type: object
+      properties:
+        id:
+          type: string
+          format: uuid
+          readOnly: true
+        branch:
+          type: string
+          format: uuid
+        name:
+          type: string
+          maxLength: 40
+        seats:
+          type: integer
+          maximum: 9223372036854775807
+          minimum: 0
+          format: int64
+        area:
+          type: string
+          maxLength: 80
+        status:
+          $ref: '#/components/schemas/TableStatusEnum'
+    PatchedVariationGroup:
+      type: object
+      properties:
+        id:
+          type: string
+          format: uuid
+          readOnly: true
+        item:
+          type: string
+          format: uuid
+        name:
+          type: string
+          maxLength: 120
+        is_required:
+          type: boolean
+        sort_order:
+          type: integer
+          maximum: 9223372036854775807
+          minimum: 0
+          format: int64
+        options:
+          type: array
+          items:
+            $ref: '#/components/schemas/VariationOption'
+          readOnly: true
+    PatchedVariationOption:
+      type: object
+      properties:
+        id:
+          type: string
+          format: uuid
+          readOnly: true
+        group:
+          type: string
+          format: uuid
+        name:
+          type: string
+          maxLength: 120
+        price_delta:
+          type: string
+          format: decimal
+          pattern: ^-?\d{0,8}(?:\.\d{0,2})?$
+        is_default:
+          type: boolean
+        sort_order:
+          type: integer
+          maximum: 9223372036854775807
+          minimum: 0
+          format: int64
+    Payment:
+      type: object
+      properties:
+        id:
+          type: string
+          format: uuid
+          readOnly: true
+        order:
+          type: string
+          format: uuid
+        mode:
+          $ref: '#/components/schemas/ModeEnum'
+        amount:
+          type: string
+          format: decimal
+          pattern: ^-?\d{0,8}(?:\.\d{0,2})?$
+        reference:
+          type: string
+          maxLength: 120
+      required:
+      - amount
+      - id
+      - mode
+      - order
     Restaurant:
       type: object
       properties:
@@ -175,6 +2282,41 @@ components:
         * `waiter` - Waiter
         * `cashier` - Cashier
         * `kitchen` - Kitchen
+    Table:
+      type: object
+      properties:
+        id:
+          type: string
+          format: uuid
+          readOnly: true
+        branch:
+          type: string
+          format: uuid
+        name:
+          type: string
+          maxLength: 40
+        seats:
+          type: integer
+          maximum: 9223372036854775807
+          minimum: 0
+          format: int64
+        area:
+          type: string
+          maxLength: 80
+        status:
+          $ref: '#/components/schemas/TableStatusEnum'
+      required:
+      - branch
+      - id
+      - name
+    TableStatusEnum:
+      enum:
+      - free
+      - occupied
+      type: string
+      description: |-
+        * `free` - Free
+        * `occupied` - Occupied
     TokenObtainPair:
       type: object
       properties:
@@ -206,6 +2348,92 @@ components:
       required:
       - access
       - refresh
+    VariationGroup:
+      type: object
+      properties:
+        id:
+          type: string
+          format: uuid
+          readOnly: true
+        item:
+          type: string
+          format: uuid
+        name:
+          type: string
+          maxLength: 120
+        is_required:
+          type: boolean
+        sort_order:
+          type: integer
+          maximum: 9223372036854775807
+          minimum: 0
+          format: int64
+        options:
+          type: array
+          items:
+            $ref: '#/components/schemas/VariationOption'
+          readOnly: true
+      required:
+      - id
+      - item
+      - name
+      - options
+    VariationOption:
+      type: object
+      properties:
+        id:
+          type: string
+          format: uuid
+          readOnly: true
+        group:
+          type: string
+          format: uuid
+        name:
+          type: string
+          maxLength: 120
+        price_delta:
+          type: string
+          format: decimal
+          pattern: ^-?\d{0,8}(?:\.\d{0,2})?$
+        is_default:
+          type: boolean
+        sort_order:
+          type: integer
+          maximum: 9223372036854775807
+          minimum: 0
+          format: int64
+      required:
+      - group
+      - id
+      - name
+    _OrderItemWrite:
+      type: object
+      properties:
+        id:
+          type: string
+          format: uuid
+        menu_item:
+          type: string
+          format: uuid
+        quantity:
+          type: integer
+          minimum: 1
+          default: 1
+        notes:
+          type: string
+          default: ''
+        option_ids:
+          type: array
+          items:
+            type: string
+            format: uuid
+        add_on_ids:
+          type: array
+          items:
+            type: string
+            format: uuid
+      required:
+      - menu_item
   securitySchemes:
     jwtAuth:
       type: http

@@ -10,6 +10,8 @@ urlpatterns = [
     path("api/auth/token/refresh/", TokenRefreshView.as_view(), name="token_refresh"),
     # Apps
     path("api/", include("apps.accounts.urls")),
+    path("api/catalog/", include("apps.catalog.urls")),
+    path("api/ops/", include("apps.operations.urls")),
     # OpenAPI schema + docs (drives packages/types generation)
     path("api/schema/", SpectacularAPIView.as_view(), name="schema"),
     path(

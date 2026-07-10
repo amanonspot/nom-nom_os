@@ -44,6 +44,207 @@ export interface paths {
         patch?: never;
         trace?: never;
     };
+    "/api/catalog/addons/": {
+        parameters: {
+            query?: never;
+            header?: never;
+            path?: never;
+            cookie?: never;
+        };
+        /** @description Base viewset: hides soft-deleted rows and filters by ?branch=<id>. */
+        get: operations["catalog_addons_list"];
+        put?: never;
+        /** @description Base viewset: hides soft-deleted rows and filters by ?branch=<id>. */
+        post: operations["catalog_addons_create"];
+        delete?: never;
+        options?: never;
+        head?: never;
+        patch?: never;
+        trace?: never;
+    };
+    "/api/catalog/addons/{id}/": {
+        parameters: {
+            query?: never;
+            header?: never;
+            path?: never;
+            cookie?: never;
+        };
+        /** @description Base viewset: hides soft-deleted rows and filters by ?branch=<id>. */
+        get: operations["catalog_addons_retrieve"];
+        /** @description Base viewset: hides soft-deleted rows and filters by ?branch=<id>. */
+        put: operations["catalog_addons_update"];
+        post?: never;
+        /** @description Base viewset: hides soft-deleted rows and filters by ?branch=<id>. */
+        delete: operations["catalog_addons_destroy"];
+        options?: never;
+        head?: never;
+        /** @description Base viewset: hides soft-deleted rows and filters by ?branch=<id>. */
+        patch: operations["catalog_addons_partial_update"];
+        trace?: never;
+    };
+    "/api/catalog/categories/": {
+        parameters: {
+            query?: never;
+            header?: never;
+            path?: never;
+            cookie?: never;
+        };
+        /** @description Base viewset: hides soft-deleted rows and filters by ?branch=<id>. */
+        get: operations["catalog_categories_list"];
+        put?: never;
+        /** @description Base viewset: hides soft-deleted rows and filters by ?branch=<id>. */
+        post: operations["catalog_categories_create"];
+        delete?: never;
+        options?: never;
+        head?: never;
+        patch?: never;
+        trace?: never;
+    };
+    "/api/catalog/categories/{id}/": {
+        parameters: {
+            query?: never;
+            header?: never;
+            path?: never;
+            cookie?: never;
+        };
+        /** @description Base viewset: hides soft-deleted rows and filters by ?branch=<id>. */
+        get: operations["catalog_categories_retrieve"];
+        /** @description Base viewset: hides soft-deleted rows and filters by ?branch=<id>. */
+        put: operations["catalog_categories_update"];
+        post?: never;
+        /** @description Base viewset: hides soft-deleted rows and filters by ?branch=<id>. */
+        delete: operations["catalog_categories_destroy"];
+        options?: never;
+        head?: never;
+        /** @description Base viewset: hides soft-deleted rows and filters by ?branch=<id>. */
+        patch: operations["catalog_categories_partial_update"];
+        trace?: never;
+    };
+    "/api/catalog/items/": {
+        parameters: {
+            query?: never;
+            header?: never;
+            path?: never;
+            cookie?: never;
+        };
+        /** @description Base viewset: hides soft-deleted rows and filters by ?branch=<id>. */
+        get: operations["catalog_items_list"];
+        put?: never;
+        /** @description Base viewset: hides soft-deleted rows and filters by ?branch=<id>. */
+        post: operations["catalog_items_create"];
+        delete?: never;
+        options?: never;
+        head?: never;
+        patch?: never;
+        trace?: never;
+    };
+    "/api/catalog/items/{id}/": {
+        parameters: {
+            query?: never;
+            header?: never;
+            path?: never;
+            cookie?: never;
+        };
+        /** @description Base viewset: hides soft-deleted rows and filters by ?branch=<id>. */
+        get: operations["catalog_items_retrieve"];
+        /** @description Base viewset: hides soft-deleted rows and filters by ?branch=<id>. */
+        put: operations["catalog_items_update"];
+        post?: never;
+        /** @description Base viewset: hides soft-deleted rows and filters by ?branch=<id>. */
+        delete: operations["catalog_items_destroy"];
+        options?: never;
+        head?: never;
+        /** @description Base viewset: hides soft-deleted rows and filters by ?branch=<id>. */
+        patch: operations["catalog_items_partial_update"];
+        trace?: never;
+    };
+    "/api/catalog/menu/": {
+        parameters: {
+            query?: never;
+            header?: never;
+            path?: never;
+            cookie?: never;
+        };
+        /** @description Full menu tree (categories → items → variation groups → options) for a branch. */
+        get: operations["catalog_menu"];
+        put?: never;
+        post?: never;
+        delete?: never;
+        options?: never;
+        head?: never;
+        patch?: never;
+        trace?: never;
+    };
+    "/api/catalog/variation-groups/": {
+        parameters: {
+            query?: never;
+            header?: never;
+            path?: never;
+            cookie?: never;
+        };
+        /** @description Variation groups filter by ?item=<id> (branch is implied by the item). */
+        get: operations["catalog_variation_groups_list"];
+        put?: never;
+        /** @description Variation groups filter by ?item=<id> (branch is implied by the item). */
+        post: operations["catalog_variation_groups_create"];
+        delete?: never;
+        options?: never;
+        head?: never;
+        patch?: never;
+        trace?: never;
+    };
+    "/api/catalog/variation-groups/{id}/": {
+        parameters: {
+            query?: never;
+            header?: never;
+            path?: never;
+            cookie?: never;
+        };
+        /** @description Variation groups filter by ?item=<id> (branch is implied by the item). */
+        get: operations["catalog_variation_groups_retrieve"];
+        /** @description Variation groups filter by ?item=<id> (branch is implied by the item). */
+        put: operations["catalog_variation_groups_update"];
+        post?: never;
+        /** @description Variation groups filter by ?item=<id> (branch is implied by the item). */
+        delete: operations["catalog_variation_groups_destroy"];
+        options?: never;
+        head?: never;
+        /** @description Variation groups filter by ?item=<id> (branch is implied by the item). */
+        patch: operations["catalog_variation_groups_partial_update"];
+        trace?: never;
+    };
+    "/api/catalog/variation-options/": {
+        parameters: {
+            query?: never;
+            header?: never;
+            path?: never;
+            cookie?: never;
+        };
+        get: operations["catalog_variation_options_list"];
+        put?: never;
+        post: operations["catalog_variation_options_create"];
+        delete?: never;
+        options?: never;
+        head?: never;
+        patch?: never;
+        trace?: never;
+    };
+    "/api/catalog/variation-options/{id}/": {
+        parameters: {
+            query?: never;
+            header?: never;
+            path?: never;
+            cookie?: never;
+        };
+        get: operations["catalog_variation_options_retrieve"];
+        put: operations["catalog_variation_options_update"];
+        post?: never;
+        delete: operations["catalog_variation_options_destroy"];
+        options?: never;
+        head?: never;
+        patch: operations["catalog_variation_options_partial_update"];
+        trace?: never;
+    };
     "/api/me/": {
         parameters: {
             query?: never;
@@ -61,10 +262,217 @@ export interface paths {
         patch?: never;
         trace?: never;
     };
+    "/api/ops/customers/": {
+        parameters: {
+            query?: never;
+            header?: never;
+            path?: never;
+            cookie?: never;
+        };
+        /** @description Base viewset: hides soft-deleted rows and filters by ?branch=<id>. */
+        get: operations["ops_customers_list"];
+        put?: never;
+        /** @description Base viewset: hides soft-deleted rows and filters by ?branch=<id>. */
+        post: operations["ops_customers_create"];
+        delete?: never;
+        options?: never;
+        head?: never;
+        patch?: never;
+        trace?: never;
+    };
+    "/api/ops/customers/{id}/": {
+        parameters: {
+            query?: never;
+            header?: never;
+            path?: never;
+            cookie?: never;
+        };
+        /** @description Base viewset: hides soft-deleted rows and filters by ?branch=<id>. */
+        get: operations["ops_customers_retrieve"];
+        /** @description Base viewset: hides soft-deleted rows and filters by ?branch=<id>. */
+        put: operations["ops_customers_update"];
+        post?: never;
+        /** @description Base viewset: hides soft-deleted rows and filters by ?branch=<id>. */
+        delete: operations["ops_customers_destroy"];
+        options?: never;
+        head?: never;
+        /** @description Base viewset: hides soft-deleted rows and filters by ?branch=<id>. */
+        patch: operations["ops_customers_partial_update"];
+        trace?: never;
+    };
+    "/api/ops/customers/by_phone/": {
+        parameters: {
+            query?: never;
+            header?: never;
+            path?: never;
+            cookie?: never;
+        };
+        /** @description Base viewset: hides soft-deleted rows and filters by ?branch=<id>. */
+        get: operations["ops_customers_by_phone_retrieve"];
+        put?: never;
+        post?: never;
+        delete?: never;
+        options?: never;
+        head?: never;
+        patch?: never;
+        trace?: never;
+    };
+    "/api/ops/orders/": {
+        parameters: {
+            query?: never;
+            header?: never;
+            path?: never;
+            cookie?: never;
+        };
+        /** @description Base viewset: hides soft-deleted rows and filters by ?branch=<id>. */
+        get: operations["ops_orders_list"];
+        put?: never;
+        /** @description Base viewset: hides soft-deleted rows and filters by ?branch=<id>. */
+        post: operations["ops_orders_create"];
+        delete?: never;
+        options?: never;
+        head?: never;
+        patch?: never;
+        trace?: never;
+    };
+    "/api/ops/orders/{id}/": {
+        parameters: {
+            query?: never;
+            header?: never;
+            path?: never;
+            cookie?: never;
+        };
+        /** @description Base viewset: hides soft-deleted rows and filters by ?branch=<id>. */
+        get: operations["ops_orders_retrieve"];
+        /** @description Base viewset: hides soft-deleted rows and filters by ?branch=<id>. */
+        put: operations["ops_orders_update"];
+        post?: never;
+        /** @description Base viewset: hides soft-deleted rows and filters by ?branch=<id>. */
+        delete: operations["ops_orders_destroy"];
+        options?: never;
+        head?: never;
+        /** @description Base viewset: hides soft-deleted rows and filters by ?branch=<id>. */
+        patch: operations["ops_orders_partial_update"];
+        trace?: never;
+    };
+    "/api/ops/orders/{id}/settle/": {
+        parameters: {
+            query?: never;
+            header?: never;
+            path?: never;
+            cookie?: never;
+        };
+        get?: never;
+        put?: never;
+        /** @description Attach one or more payments and mark the order paid when covered. */
+        post: operations["ops_orders_settle_create"];
+        delete?: never;
+        options?: never;
+        head?: never;
+        patch?: never;
+        trace?: never;
+    };
+    "/api/ops/orders/{id}/void/": {
+        parameters: {
+            query?: never;
+            header?: never;
+            path?: never;
+            cookie?: never;
+        };
+        get?: never;
+        put?: never;
+        /** @description Void an order; requires a valid manager PIN from a privileged user. */
+        post: operations["ops_orders_void_create"];
+        delete?: never;
+        options?: never;
+        head?: never;
+        patch?: never;
+        trace?: never;
+    };
+    "/api/ops/payments/": {
+        parameters: {
+            query?: never;
+            header?: never;
+            path?: never;
+            cookie?: never;
+        };
+        get: operations["ops_payments_list"];
+        put?: never;
+        post: operations["ops_payments_create"];
+        delete?: never;
+        options?: never;
+        head?: never;
+        patch?: never;
+        trace?: never;
+    };
+    "/api/ops/payments/{id}/": {
+        parameters: {
+            query?: never;
+            header?: never;
+            path?: never;
+            cookie?: never;
+        };
+        get: operations["ops_payments_retrieve"];
+        put: operations["ops_payments_update"];
+        post?: never;
+        delete: operations["ops_payments_destroy"];
+        options?: never;
+        head?: never;
+        patch: operations["ops_payments_partial_update"];
+        trace?: never;
+    };
+    "/api/ops/tables/": {
+        parameters: {
+            query?: never;
+            header?: never;
+            path?: never;
+            cookie?: never;
+        };
+        /** @description Base viewset: hides soft-deleted rows and filters by ?branch=<id>. */
+        get: operations["ops_tables_list"];
+        put?: never;
+        /** @description Base viewset: hides soft-deleted rows and filters by ?branch=<id>. */
+        post: operations["ops_tables_create"];
+        delete?: never;
+        options?: never;
+        head?: never;
+        patch?: never;
+        trace?: never;
+    };
+    "/api/ops/tables/{id}/": {
+        parameters: {
+            query?: never;
+            header?: never;
+            path?: never;
+            cookie?: never;
+        };
+        /** @description Base viewset: hides soft-deleted rows and filters by ?branch=<id>. */
+        get: operations["ops_tables_retrieve"];
+        /** @description Base viewset: hides soft-deleted rows and filters by ?branch=<id>. */
+        put: operations["ops_tables_update"];
+        post?: never;
+        /** @description Base viewset: hides soft-deleted rows and filters by ?branch=<id>. */
+        delete: operations["ops_tables_destroy"];
+        options?: never;
+        head?: never;
+        /** @description Base viewset: hides soft-deleted rows and filters by ?branch=<id>. */
+        patch: operations["ops_tables_partial_update"];
+        trace?: never;
+    };
 }
 export type webhooks = Record<string, never>;
 export interface components {
     schemas: {
+        AddOn: {
+            /** Format: uuid */
+            readonly id: string;
+            /** Format: uuid */
+            branch: string;
+            name: string;
+            /** Format: decimal */
+            price: string;
+            is_active?: boolean;
+        };
         Branch: {
             /** Format: uuid */
             readonly id: string;
@@ -73,6 +481,36 @@ export interface components {
             name: string;
             address?: string;
             timezone?: string;
+        };
+        Category: {
+            /** Format: uuid */
+            readonly id: string;
+            /** Format: uuid */
+            branch: string;
+            name: string;
+            /** Format: int64 */
+            sort_order?: number;
+            is_active?: boolean;
+        };
+        /** @description Category with its nested items — the POS/offline menu tree. */
+        CategoryWithItems: {
+            /** Format: uuid */
+            readonly id: string;
+            /** Format: uuid */
+            branch: string;
+            name: string;
+            /** Format: int64 */
+            sort_order?: number;
+            is_active?: boolean;
+            readonly items: string;
+        };
+        Customer: {
+            /** Format: uuid */
+            readonly id: string;
+            /** Format: uuid */
+            branch: string;
+            phone: string;
+            name?: string;
         };
         Me: {
             readonly id: number;
@@ -89,6 +527,250 @@ export interface components {
             readonly restaurant: components["schemas"]["Restaurant"];
             readonly branch: components["schemas"]["Branch"];
             readonly can_authorize_overrides: boolean;
+        };
+        MenuItem: {
+            /** Format: uuid */
+            readonly id: string;
+            /** Format: uuid */
+            branch: string;
+            /** Format: uuid */
+            category: string;
+            name: string;
+            description?: string;
+            /** Format: decimal */
+            base_price: string;
+            is_veg?: boolean;
+            /** Format: int64 */
+            pieces_per_plate?: number;
+            /** Format: decimal */
+            gst_rate?: string;
+            is_available?: boolean;
+            /** Format: int64 */
+            sort_order?: number;
+            readonly variation_groups: components["schemas"]["VariationGroup"][];
+        };
+        /**
+         * @description * `cash` - Cash
+         *     * `card` - Card
+         *     * `upi` - UPI
+         * @enum {string}
+         */
+        ModeEnum: "cash" | "card" | "upi";
+        /**
+         * @description Read/write order. On create/replace, prices are snapshotted from the
+         *     catalog and GST totals are computed server-side (authoritative).
+         */
+        Order: {
+            /** Format: uuid */
+            readonly id: string;
+            /** Format: uuid */
+            branch: string;
+            /** Format: uuid */
+            table?: string | null;
+            /** Format: uuid */
+            customer?: string | null;
+            placed_by?: number | null;
+            order_type?: components["schemas"]["OrderTypeEnum"];
+            status?: components["schemas"]["OrderStatusEnum"];
+            readonly number: number | null;
+            /** Format: decimal */
+            readonly subtotal: string;
+            /** Format: decimal */
+            readonly tax_total: string;
+            /** Format: decimal */
+            discount_total?: string;
+            /** Format: decimal */
+            readonly grand_total: string;
+            readonly items: components["schemas"]["OrderItemRead"][];
+            items_write?: components["schemas"]["_OrderItemWrite"][];
+            readonly payments: components["schemas"]["Payment"][];
+        };
+        OrderItemAddOnRead: {
+            /** Format: uuid */
+            readonly id: string;
+            /** Format: uuid */
+            add_on: string;
+            name_snapshot: string;
+            /** Format: decimal */
+            price?: string;
+        };
+        OrderItemOptionRead: {
+            /** Format: uuid */
+            readonly id: string;
+            /** Format: uuid */
+            option: string;
+            name_snapshot: string;
+            /** Format: decimal */
+            price_delta?: string;
+        };
+        OrderItemRead: {
+            /** Format: uuid */
+            readonly id: string;
+            /** Format: uuid */
+            menu_item: string;
+            name_snapshot: string;
+            /** Format: int64 */
+            quantity?: number;
+            /** Format: decimal */
+            unit_price: string;
+            /** Format: decimal */
+            gst_rate?: string;
+            notes?: string;
+            is_void?: boolean;
+            readonly options: components["schemas"]["OrderItemOptionRead"][];
+            readonly add_ons: components["schemas"]["OrderItemAddOnRead"][];
+            /** Format: decimal */
+            readonly line_total: string;
+            /** Format: decimal */
+            readonly tax_amount: string;
+        };
+        /**
+         * @description * `open` - Open
+         *     * `held` - Held
+         *     * `billed` - Billed
+         *     * `paid` - Paid
+         *     * `void` - Void
+         * @enum {string}
+         */
+        OrderStatusEnum: "open" | "held" | "billed" | "paid" | "void";
+        /**
+         * @description * `dine_in` - Dine-in
+         *     * `takeaway` - Takeaway
+         *     * `qr` - QR self-order
+         * @enum {string}
+         */
+        OrderTypeEnum: "dine_in" | "takeaway" | "qr";
+        PatchedAddOn: {
+            /** Format: uuid */
+            readonly id?: string;
+            /** Format: uuid */
+            branch?: string;
+            name?: string;
+            /** Format: decimal */
+            price?: string;
+            is_active?: boolean;
+        };
+        PatchedCategory: {
+            /** Format: uuid */
+            readonly id?: string;
+            /** Format: uuid */
+            branch?: string;
+            name?: string;
+            /** Format: int64 */
+            sort_order?: number;
+            is_active?: boolean;
+        };
+        PatchedCustomer: {
+            /** Format: uuid */
+            readonly id?: string;
+            /** Format: uuid */
+            branch?: string;
+            phone?: string;
+            name?: string;
+        };
+        PatchedMenuItem: {
+            /** Format: uuid */
+            readonly id?: string;
+            /** Format: uuid */
+            branch?: string;
+            /** Format: uuid */
+            category?: string;
+            name?: string;
+            description?: string;
+            /** Format: decimal */
+            base_price?: string;
+            is_veg?: boolean;
+            /** Format: int64 */
+            pieces_per_plate?: number;
+            /** Format: decimal */
+            gst_rate?: string;
+            is_available?: boolean;
+            /** Format: int64 */
+            sort_order?: number;
+            readonly variation_groups?: components["schemas"]["VariationGroup"][];
+        };
+        /**
+         * @description Read/write order. On create/replace, prices are snapshotted from the
+         *     catalog and GST totals are computed server-side (authoritative).
+         */
+        PatchedOrder: {
+            /** Format: uuid */
+            readonly id?: string;
+            /** Format: uuid */
+            branch?: string;
+            /** Format: uuid */
+            table?: string | null;
+            /** Format: uuid */
+            customer?: string | null;
+            placed_by?: number | null;
+            order_type?: components["schemas"]["OrderTypeEnum"];
+            status?: components["schemas"]["OrderStatusEnum"];
+            readonly number?: number | null;
+            /** Format: decimal */
+            readonly subtotal?: string;
+            /** Format: decimal */
+            readonly tax_total?: string;
+            /** Format: decimal */
+            discount_total?: string;
+            /** Format: decimal */
+            readonly grand_total?: string;
+            readonly items?: components["schemas"]["OrderItemRead"][];
+            items_write?: components["schemas"]["_OrderItemWrite"][];
+            readonly payments?: components["schemas"]["Payment"][];
+        };
+        PatchedPayment: {
+            /** Format: uuid */
+            readonly id?: string;
+            /** Format: uuid */
+            order?: string;
+            mode?: components["schemas"]["ModeEnum"];
+            /** Format: decimal */
+            amount?: string;
+            reference?: string;
+        };
+        PatchedTable: {
+            /** Format: uuid */
+            readonly id?: string;
+            /** Format: uuid */
+            branch?: string;
+            name?: string;
+            /** Format: int64 */
+            seats?: number;
+            area?: string;
+            status?: components["schemas"]["TableStatusEnum"];
+        };
+        PatchedVariationGroup: {
+            /** Format: uuid */
+            readonly id?: string;
+            /** Format: uuid */
+            item?: string;
+            name?: string;
+            is_required?: boolean;
+            /** Format: int64 */
+            sort_order?: number;
+            readonly options?: components["schemas"]["VariationOption"][];
+        };
+        PatchedVariationOption: {
+            /** Format: uuid */
+            readonly id?: string;
+            /** Format: uuid */
+            group?: string;
+            name?: string;
+            /** Format: decimal */
+            price_delta?: string;
+            is_default?: boolean;
+            /** Format: int64 */
+            sort_order?: number;
+        };
+        Payment: {
+            /** Format: uuid */
+            readonly id: string;
+            /** Format: uuid */
+            order: string;
+            mode: components["schemas"]["ModeEnum"];
+            /** Format: decimal */
+            amount: string;
+            reference?: string;
         };
         Restaurant: {
             /** Format: uuid */
@@ -108,6 +790,23 @@ export interface components {
          * @enum {string}
          */
         RoleEnum: "owner" | "admin" | "manager" | "waiter" | "cashier" | "kitchen";
+        Table: {
+            /** Format: uuid */
+            readonly id: string;
+            /** Format: uuid */
+            branch: string;
+            name: string;
+            /** Format: int64 */
+            seats?: number;
+            area?: string;
+            status?: components["schemas"]["TableStatusEnum"];
+        };
+        /**
+         * @description * `free` - Free
+         *     * `occupied` - Occupied
+         * @enum {string}
+         */
+        TableStatusEnum: "free" | "occupied";
         TokenObtainPair: {
             username: string;
             password: string;
@@ -117,6 +816,41 @@ export interface components {
         TokenRefresh: {
             readonly access: string;
             refresh: string;
+        };
+        VariationGroup: {
+            /** Format: uuid */
+            readonly id: string;
+            /** Format: uuid */
+            item: string;
+            name: string;
+            is_required?: boolean;
+            /** Format: int64 */
+            sort_order?: number;
+            readonly options: components["schemas"]["VariationOption"][];
+        };
+        VariationOption: {
+            /** Format: uuid */
+            readonly id: string;
+            /** Format: uuid */
+            group: string;
+            name: string;
+            /** Format: decimal */
+            price_delta?: string;
+            is_default?: boolean;
+            /** Format: int64 */
+            sort_order?: number;
+        };
+        _OrderItemWrite: {
+            /** Format: uuid */
+            id?: string;
+            /** Format: uuid */
+            menu_item: string;
+            /** @default 1 */
+            quantity: number;
+            /** @default  */
+            notes: string;
+            option_ids?: string[];
+            add_on_ids?: string[];
         };
     };
     responses: never;
@@ -177,6 +911,740 @@ export interface operations {
             };
         };
     };
+    catalog_addons_list: {
+        parameters: {
+            query?: never;
+            header?: never;
+            path?: never;
+            cookie?: never;
+        };
+        requestBody?: never;
+        responses: {
+            200: {
+                headers: {
+                    [name: string]: unknown;
+                };
+                content: {
+                    "application/json": components["schemas"]["AddOn"][];
+                };
+            };
+        };
+    };
+    catalog_addons_create: {
+        parameters: {
+            query?: never;
+            header?: never;
+            path?: never;
+            cookie?: never;
+        };
+        requestBody: {
+            content: {
+                "application/json": components["schemas"]["AddOn"];
+                "application/x-www-form-urlencoded": components["schemas"]["AddOn"];
+                "multipart/form-data": components["schemas"]["AddOn"];
+            };
+        };
+        responses: {
+            201: {
+                headers: {
+                    [name: string]: unknown;
+                };
+                content: {
+                    "application/json": components["schemas"]["AddOn"];
+                };
+            };
+        };
+    };
+    catalog_addons_retrieve: {
+        parameters: {
+            query?: never;
+            header?: never;
+            path: {
+                /** @description A UUID string identifying this add on. */
+                id: string;
+            };
+            cookie?: never;
+        };
+        requestBody?: never;
+        responses: {
+            200: {
+                headers: {
+                    [name: string]: unknown;
+                };
+                content: {
+                    "application/json": components["schemas"]["AddOn"];
+                };
+            };
+        };
+    };
+    catalog_addons_update: {
+        parameters: {
+            query?: never;
+            header?: never;
+            path: {
+                /** @description A UUID string identifying this add on. */
+                id: string;
+            };
+            cookie?: never;
+        };
+        requestBody: {
+            content: {
+                "application/json": components["schemas"]["AddOn"];
+                "application/x-www-form-urlencoded": components["schemas"]["AddOn"];
+                "multipart/form-data": components["schemas"]["AddOn"];
+            };
+        };
+        responses: {
+            200: {
+                headers: {
+                    [name: string]: unknown;
+                };
+                content: {
+                    "application/json": components["schemas"]["AddOn"];
+                };
+            };
+        };
+    };
+    catalog_addons_destroy: {
+        parameters: {
+            query?: never;
+            header?: never;
+            path: {
+                /** @description A UUID string identifying this add on. */
+                id: string;
+            };
+            cookie?: never;
+        };
+        requestBody?: never;
+        responses: {
+            /** @description No response body */
+            204: {
+                headers: {
+                    [name: string]: unknown;
+                };
+                content?: never;
+            };
+        };
+    };
+    catalog_addons_partial_update: {
+        parameters: {
+            query?: never;
+            header?: never;
+            path: {
+                /** @description A UUID string identifying this add on. */
+                id: string;
+            };
+            cookie?: never;
+        };
+        requestBody?: {
+            content: {
+                "application/json": components["schemas"]["PatchedAddOn"];
+                "application/x-www-form-urlencoded": components["schemas"]["PatchedAddOn"];
+                "multipart/form-data": components["schemas"]["PatchedAddOn"];
+            };
+        };
+        responses: {
+            200: {
+                headers: {
+                    [name: string]: unknown;
+                };
+                content: {
+                    "application/json": components["schemas"]["AddOn"];
+                };
+            };
+        };
+    };
+    catalog_categories_list: {
+        parameters: {
+            query?: never;
+            header?: never;
+            path?: never;
+            cookie?: never;
+        };
+        requestBody?: never;
+        responses: {
+            200: {
+                headers: {
+                    [name: string]: unknown;
+                };
+                content: {
+                    "application/json": components["schemas"]["Category"][];
+                };
+            };
+        };
+    };
+    catalog_categories_create: {
+        parameters: {
+            query?: never;
+            header?: never;
+            path?: never;
+            cookie?: never;
+        };
+        requestBody: {
+            content: {
+                "application/json": components["schemas"]["Category"];
+                "application/x-www-form-urlencoded": components["schemas"]["Category"];
+                "multipart/form-data": components["schemas"]["Category"];
+            };
+        };
+        responses: {
+            201: {
+                headers: {
+                    [name: string]: unknown;
+                };
+                content: {
+                    "application/json": components["schemas"]["Category"];
+                };
+            };
+        };
+    };
+    catalog_categories_retrieve: {
+        parameters: {
+            query?: never;
+            header?: never;
+            path: {
+                /** @description A UUID string identifying this category. */
+                id: string;
+            };
+            cookie?: never;
+        };
+        requestBody?: never;
+        responses: {
+            200: {
+                headers: {
+                    [name: string]: unknown;
+                };
+                content: {
+                    "application/json": components["schemas"]["Category"];
+                };
+            };
+        };
+    };
+    catalog_categories_update: {
+        parameters: {
+            query?: never;
+            header?: never;
+            path: {
+                /** @description A UUID string identifying this category. */
+                id: string;
+            };
+            cookie?: never;
+        };
+        requestBody: {
+            content: {
+                "application/json": components["schemas"]["Category"];
+                "application/x-www-form-urlencoded": components["schemas"]["Category"];
+                "multipart/form-data": components["schemas"]["Category"];
+            };
+        };
+        responses: {
+            200: {
+                headers: {
+                    [name: string]: unknown;
+                };
+                content: {
+                    "application/json": components["schemas"]["Category"];
+                };
+            };
+        };
+    };
+    catalog_categories_destroy: {
+        parameters: {
+            query?: never;
+            header?: never;
+            path: {
+                /** @description A UUID string identifying this category. */
+                id: string;
+            };
+            cookie?: never;
+        };
+        requestBody?: never;
+        responses: {
+            /** @description No response body */
+            204: {
+                headers: {
+                    [name: string]: unknown;
+                };
+                content?: never;
+            };
+        };
+    };
+    catalog_categories_partial_update: {
+        parameters: {
+            query?: never;
+            header?: never;
+            path: {
+                /** @description A UUID string identifying this category. */
+                id: string;
+            };
+            cookie?: never;
+        };
+        requestBody?: {
+            content: {
+                "application/json": components["schemas"]["PatchedCategory"];
+                "application/x-www-form-urlencoded": components["schemas"]["PatchedCategory"];
+                "multipart/form-data": components["schemas"]["PatchedCategory"];
+            };
+        };
+        responses: {
+            200: {
+                headers: {
+                    [name: string]: unknown;
+                };
+                content: {
+                    "application/json": components["schemas"]["Category"];
+                };
+            };
+        };
+    };
+    catalog_items_list: {
+        parameters: {
+            query?: never;
+            header?: never;
+            path?: never;
+            cookie?: never;
+        };
+        requestBody?: never;
+        responses: {
+            200: {
+                headers: {
+                    [name: string]: unknown;
+                };
+                content: {
+                    "application/json": components["schemas"]["MenuItem"][];
+                };
+            };
+        };
+    };
+    catalog_items_create: {
+        parameters: {
+            query?: never;
+            header?: never;
+            path?: never;
+            cookie?: never;
+        };
+        requestBody: {
+            content: {
+                "application/json": components["schemas"]["MenuItem"];
+                "application/x-www-form-urlencoded": components["schemas"]["MenuItem"];
+                "multipart/form-data": components["schemas"]["MenuItem"];
+            };
+        };
+        responses: {
+            201: {
+                headers: {
+                    [name: string]: unknown;
+                };
+                content: {
+                    "application/json": components["schemas"]["MenuItem"];
+                };
+            };
+        };
+    };
+    catalog_items_retrieve: {
+        parameters: {
+            query?: never;
+            header?: never;
+            path: {
+                /** @description A UUID string identifying this menu item. */
+                id: string;
+            };
+            cookie?: never;
+        };
+        requestBody?: never;
+        responses: {
+            200: {
+                headers: {
+                    [name: string]: unknown;
+                };
+                content: {
+                    "application/json": components["schemas"]["MenuItem"];
+                };
+            };
+        };
+    };
+    catalog_items_update: {
+        parameters: {
+            query?: never;
+            header?: never;
+            path: {
+                /** @description A UUID string identifying this menu item. */
+                id: string;
+            };
+            cookie?: never;
+        };
+        requestBody: {
+            content: {
+                "application/json": components["schemas"]["MenuItem"];
+                "application/x-www-form-urlencoded": components["schemas"]["MenuItem"];
+                "multipart/form-data": components["schemas"]["MenuItem"];
+            };
+        };
+        responses: {
+            200: {
+                headers: {
+                    [name: string]: unknown;
+                };
+                content: {
+                    "application/json": components["schemas"]["MenuItem"];
+                };
+            };
+        };
+    };
+    catalog_items_destroy: {
+        parameters: {
+            query?: never;
+            header?: never;
+            path: {
+                /** @description A UUID string identifying this menu item. */
+                id: string;
+            };
+            cookie?: never;
+        };
+        requestBody?: never;
+        responses: {
+            /** @description No response body */
+            204: {
+                headers: {
+                    [name: string]: unknown;
+                };
+                content?: never;
+            };
+        };
+    };
+    catalog_items_partial_update: {
+        parameters: {
+            query?: never;
+            header?: never;
+            path: {
+                /** @description A UUID string identifying this menu item. */
+                id: string;
+            };
+            cookie?: never;
+        };
+        requestBody?: {
+            content: {
+                "application/json": components["schemas"]["PatchedMenuItem"];
+                "application/x-www-form-urlencoded": components["schemas"]["PatchedMenuItem"];
+                "multipart/form-data": components["schemas"]["PatchedMenuItem"];
+            };
+        };
+        responses: {
+            200: {
+                headers: {
+                    [name: string]: unknown;
+                };
+                content: {
+                    "application/json": components["schemas"]["MenuItem"];
+                };
+            };
+        };
+    };
+    catalog_menu: {
+        parameters: {
+            query?: never;
+            header?: never;
+            path?: never;
+            cookie?: never;
+        };
+        requestBody?: never;
+        responses: {
+            200: {
+                headers: {
+                    [name: string]: unknown;
+                };
+                content: {
+                    "application/json": components["schemas"]["CategoryWithItems"][];
+                };
+            };
+        };
+    };
+    catalog_variation_groups_list: {
+        parameters: {
+            query?: never;
+            header?: never;
+            path?: never;
+            cookie?: never;
+        };
+        requestBody?: never;
+        responses: {
+            200: {
+                headers: {
+                    [name: string]: unknown;
+                };
+                content: {
+                    "application/json": components["schemas"]["VariationGroup"][];
+                };
+            };
+        };
+    };
+    catalog_variation_groups_create: {
+        parameters: {
+            query?: never;
+            header?: never;
+            path?: never;
+            cookie?: never;
+        };
+        requestBody: {
+            content: {
+                "application/json": components["schemas"]["VariationGroup"];
+                "application/x-www-form-urlencoded": components["schemas"]["VariationGroup"];
+                "multipart/form-data": components["schemas"]["VariationGroup"];
+            };
+        };
+        responses: {
+            201: {
+                headers: {
+                    [name: string]: unknown;
+                };
+                content: {
+                    "application/json": components["schemas"]["VariationGroup"];
+                };
+            };
+        };
+    };
+    catalog_variation_groups_retrieve: {
+        parameters: {
+            query?: never;
+            header?: never;
+            path: {
+                /** @description A UUID string identifying this variation group. */
+                id: string;
+            };
+            cookie?: never;
+        };
+        requestBody?: never;
+        responses: {
+            200: {
+                headers: {
+                    [name: string]: unknown;
+                };
+                content: {
+                    "application/json": components["schemas"]["VariationGroup"];
+                };
+            };
+        };
+    };
+    catalog_variation_groups_update: {
+        parameters: {
+            query?: never;
+            header?: never;
+            path: {
+                /** @description A UUID string identifying this variation group. */
+                id: string;
+            };
+            cookie?: never;
+        };
+        requestBody: {
+            content: {
+                "application/json": components["schemas"]["VariationGroup"];
+                "application/x-www-form-urlencoded": components["schemas"]["VariationGroup"];
+                "multipart/form-data": components["schemas"]["VariationGroup"];
+            };
+        };
+        responses: {
+            200: {
+                headers: {
+                    [name: string]: unknown;
+                };
+                content: {
+                    "application/json": components["schemas"]["VariationGroup"];
+                };
+            };
+        };
+    };
+    catalog_variation_groups_destroy: {
+        parameters: {
+            query?: never;
+            header?: never;
+            path: {
+                /** @description A UUID string identifying this variation group. */
+                id: string;
+            };
+            cookie?: never;
+        };
+        requestBody?: never;
+        responses: {
+            /** @description No response body */
+            204: {
+                headers: {
+                    [name: string]: unknown;
+                };
+                content?: never;
+            };
+        };
+    };
+    catalog_variation_groups_partial_update: {
+        parameters: {
+            query?: never;
+            header?: never;
+            path: {
+                /** @description A UUID string identifying this variation group. */
+                id: string;
+            };
+            cookie?: never;
+        };
+        requestBody?: {
+            content: {
+                "application/json": components["schemas"]["PatchedVariationGroup"];
+                "application/x-www-form-urlencoded": components["schemas"]["PatchedVariationGroup"];
+                "multipart/form-data": components["schemas"]["PatchedVariationGroup"];
+            };
+        };
+        responses: {
+            200: {
+                headers: {
+                    [name: string]: unknown;
+                };
+                content: {
+                    "application/json": components["schemas"]["VariationGroup"];
+                };
+            };
+        };
+    };
+    catalog_variation_options_list: {
+        parameters: {
+            query?: never;
+            header?: never;
+            path?: never;
+            cookie?: never;
+        };
+        requestBody?: never;
+        responses: {
+            200: {
+                headers: {
+                    [name: string]: unknown;
+                };
+                content: {
+                    "application/json": components["schemas"]["VariationOption"][];
+                };
+            };
+        };
+    };
+    catalog_variation_options_create: {
+        parameters: {
+            query?: never;
+            header?: never;
+            path?: never;
+            cookie?: never;
+        };
+        requestBody: {
+            content: {
+                "application/json": components["schemas"]["VariationOption"];
+                "application/x-www-form-urlencoded": components["schemas"]["VariationOption"];
+                "multipart/form-data": components["schemas"]["VariationOption"];
+            };
+        };
+        responses: {
+            201: {
+                headers: {
+                    [name: string]: unknown;
+                };
+                content: {
+                    "application/json": components["schemas"]["VariationOption"];
+                };
+            };
+        };
+    };
+    catalog_variation_options_retrieve: {
+        parameters: {
+            query?: never;
+            header?: never;
+            path: {
+                /** @description A UUID string identifying this variation option. */
+                id: string;
+            };
+            cookie?: never;
+        };
+        requestBody?: never;
+        responses: {
+            200: {
+                headers: {
+                    [name: string]: unknown;
+                };
+                content: {
+                    "application/json": components["schemas"]["VariationOption"];
+                };
+            };
+        };
+    };
+    catalog_variation_options_update: {
+        parameters: {
+            query?: never;
+            header?: never;
+            path: {
+                /** @description A UUID string identifying this variation option. */
+                id: string;
+            };
+            cookie?: never;
+        };
+        requestBody: {
+            content: {
+                "application/json": components["schemas"]["VariationOption"];
+                "application/x-www-form-urlencoded": components["schemas"]["VariationOption"];
+                "multipart/form-data": components["schemas"]["VariationOption"];
+            };
+        };
+        responses: {
+            200: {
+                headers: {
+                    [name: string]: unknown;
+                };
+                content: {
+                    "application/json": components["schemas"]["VariationOption"];
+                };
+            };
+        };
+    };
+    catalog_variation_options_destroy: {
+        parameters: {
+            query?: never;
+            header?: never;
+            path: {
+                /** @description A UUID string identifying this variation option. */
+                id: string;
+            };
+            cookie?: never;
+        };
+        requestBody?: never;
+        responses: {
+            /** @description No response body */
+            204: {
+                headers: {
+                    [name: string]: unknown;
+                };
+                content?: never;
+            };
+        };
+    };
+    catalog_variation_options_partial_update: {
+        parameters: {
+            query?: never;
+            header?: never;
+            path: {
+                /** @description A UUID string identifying this variation option. */
+                id: string;
+            };
+            cookie?: never;
+        };
+        requestBody?: {
+            content: {
+                "application/json": components["schemas"]["PatchedVariationOption"];
+                "application/x-www-form-urlencoded": components["schemas"]["PatchedVariationOption"];
+                "multipart/form-data": components["schemas"]["PatchedVariationOption"];
+            };
+        };
+        responses: {
+            200: {
+                headers: {
+                    [name: string]: unknown;
+                };
+                content: {
+                    "application/json": components["schemas"]["VariationOption"];
+                };
+            };
+        };
+    };
     me: {
         parameters: {
             query?: never;
@@ -192,6 +1660,656 @@ export interface operations {
                 };
                 content: {
                     "application/json": components["schemas"]["Me"];
+                };
+            };
+        };
+    };
+    ops_customers_list: {
+        parameters: {
+            query?: never;
+            header?: never;
+            path?: never;
+            cookie?: never;
+        };
+        requestBody?: never;
+        responses: {
+            200: {
+                headers: {
+                    [name: string]: unknown;
+                };
+                content: {
+                    "application/json": components["schemas"]["Customer"][];
+                };
+            };
+        };
+    };
+    ops_customers_create: {
+        parameters: {
+            query?: never;
+            header?: never;
+            path?: never;
+            cookie?: never;
+        };
+        requestBody: {
+            content: {
+                "application/json": components["schemas"]["Customer"];
+                "application/x-www-form-urlencoded": components["schemas"]["Customer"];
+                "multipart/form-data": components["schemas"]["Customer"];
+            };
+        };
+        responses: {
+            201: {
+                headers: {
+                    [name: string]: unknown;
+                };
+                content: {
+                    "application/json": components["schemas"]["Customer"];
+                };
+            };
+        };
+    };
+    ops_customers_retrieve: {
+        parameters: {
+            query?: never;
+            header?: never;
+            path: {
+                /** @description A UUID string identifying this customer. */
+                id: string;
+            };
+            cookie?: never;
+        };
+        requestBody?: never;
+        responses: {
+            200: {
+                headers: {
+                    [name: string]: unknown;
+                };
+                content: {
+                    "application/json": components["schemas"]["Customer"];
+                };
+            };
+        };
+    };
+    ops_customers_update: {
+        parameters: {
+            query?: never;
+            header?: never;
+            path: {
+                /** @description A UUID string identifying this customer. */
+                id: string;
+            };
+            cookie?: never;
+        };
+        requestBody: {
+            content: {
+                "application/json": components["schemas"]["Customer"];
+                "application/x-www-form-urlencoded": components["schemas"]["Customer"];
+                "multipart/form-data": components["schemas"]["Customer"];
+            };
+        };
+        responses: {
+            200: {
+                headers: {
+                    [name: string]: unknown;
+                };
+                content: {
+                    "application/json": components["schemas"]["Customer"];
+                };
+            };
+        };
+    };
+    ops_customers_destroy: {
+        parameters: {
+            query?: never;
+            header?: never;
+            path: {
+                /** @description A UUID string identifying this customer. */
+                id: string;
+            };
+            cookie?: never;
+        };
+        requestBody?: never;
+        responses: {
+            /** @description No response body */
+            204: {
+                headers: {
+                    [name: string]: unknown;
+                };
+                content?: never;
+            };
+        };
+    };
+    ops_customers_partial_update: {
+        parameters: {
+            query?: never;
+            header?: never;
+            path: {
+                /** @description A UUID string identifying this customer. */
+                id: string;
+            };
+            cookie?: never;
+        };
+        requestBody?: {
+            content: {
+                "application/json": components["schemas"]["PatchedCustomer"];
+                "application/x-www-form-urlencoded": components["schemas"]["PatchedCustomer"];
+                "multipart/form-data": components["schemas"]["PatchedCustomer"];
+            };
+        };
+        responses: {
+            200: {
+                headers: {
+                    [name: string]: unknown;
+                };
+                content: {
+                    "application/json": components["schemas"]["Customer"];
+                };
+            };
+        };
+    };
+    ops_customers_by_phone_retrieve: {
+        parameters: {
+            query?: {
+                phone?: string;
+            };
+            header?: never;
+            path?: never;
+            cookie?: never;
+        };
+        requestBody?: never;
+        responses: {
+            200: {
+                headers: {
+                    [name: string]: unknown;
+                };
+                content: {
+                    "application/json": components["schemas"]["Customer"];
+                };
+            };
+        };
+    };
+    ops_orders_list: {
+        parameters: {
+            query?: never;
+            header?: never;
+            path?: never;
+            cookie?: never;
+        };
+        requestBody?: never;
+        responses: {
+            200: {
+                headers: {
+                    [name: string]: unknown;
+                };
+                content: {
+                    "application/json": components["schemas"]["Order"][];
+                };
+            };
+        };
+    };
+    ops_orders_create: {
+        parameters: {
+            query?: never;
+            header?: never;
+            path?: never;
+            cookie?: never;
+        };
+        requestBody: {
+            content: {
+                "application/json": components["schemas"]["Order"];
+                "application/x-www-form-urlencoded": components["schemas"]["Order"];
+                "multipart/form-data": components["schemas"]["Order"];
+            };
+        };
+        responses: {
+            201: {
+                headers: {
+                    [name: string]: unknown;
+                };
+                content: {
+                    "application/json": components["schemas"]["Order"];
+                };
+            };
+        };
+    };
+    ops_orders_retrieve: {
+        parameters: {
+            query?: never;
+            header?: never;
+            path: {
+                /** @description A UUID string identifying this order. */
+                id: string;
+            };
+            cookie?: never;
+        };
+        requestBody?: never;
+        responses: {
+            200: {
+                headers: {
+                    [name: string]: unknown;
+                };
+                content: {
+                    "application/json": components["schemas"]["Order"];
+                };
+            };
+        };
+    };
+    ops_orders_update: {
+        parameters: {
+            query?: never;
+            header?: never;
+            path: {
+                /** @description A UUID string identifying this order. */
+                id: string;
+            };
+            cookie?: never;
+        };
+        requestBody: {
+            content: {
+                "application/json": components["schemas"]["Order"];
+                "application/x-www-form-urlencoded": components["schemas"]["Order"];
+                "multipart/form-data": components["schemas"]["Order"];
+            };
+        };
+        responses: {
+            200: {
+                headers: {
+                    [name: string]: unknown;
+                };
+                content: {
+                    "application/json": components["schemas"]["Order"];
+                };
+            };
+        };
+    };
+    ops_orders_destroy: {
+        parameters: {
+            query?: never;
+            header?: never;
+            path: {
+                /** @description A UUID string identifying this order. */
+                id: string;
+            };
+            cookie?: never;
+        };
+        requestBody?: never;
+        responses: {
+            /** @description No response body */
+            204: {
+                headers: {
+                    [name: string]: unknown;
+                };
+                content?: never;
+            };
+        };
+    };
+    ops_orders_partial_update: {
+        parameters: {
+            query?: never;
+            header?: never;
+            path: {
+                /** @description A UUID string identifying this order. */
+                id: string;
+            };
+            cookie?: never;
+        };
+        requestBody?: {
+            content: {
+                "application/json": components["schemas"]["PatchedOrder"];
+                "application/x-www-form-urlencoded": components["schemas"]["PatchedOrder"];
+                "multipart/form-data": components["schemas"]["PatchedOrder"];
+            };
+        };
+        responses: {
+            200: {
+                headers: {
+                    [name: string]: unknown;
+                };
+                content: {
+                    "application/json": components["schemas"]["Order"];
+                };
+            };
+        };
+    };
+    ops_orders_settle_create: {
+        parameters: {
+            query?: never;
+            header?: never;
+            path: {
+                /** @description A UUID string identifying this order. */
+                id: string;
+            };
+            cookie?: never;
+        };
+        requestBody: {
+            content: {
+                "application/json": components["schemas"]["Payment"][];
+                "application/x-www-form-urlencoded": components["schemas"]["Payment"][];
+                "multipart/form-data": components["schemas"]["Payment"][];
+            };
+        };
+        responses: {
+            200: {
+                headers: {
+                    [name: string]: unknown;
+                };
+                content: {
+                    "application/json": components["schemas"]["Order"];
+                };
+            };
+        };
+    };
+    ops_orders_void_create: {
+        parameters: {
+            query?: never;
+            header?: never;
+            path: {
+                /** @description A UUID string identifying this order. */
+                id: string;
+            };
+            cookie?: never;
+        };
+        requestBody?: {
+            content: {
+                type: {
+                    [key: string]: unknown;
+                };
+                properties: unknown;
+            };
+        };
+        responses: {
+            200: {
+                headers: {
+                    [name: string]: unknown;
+                };
+                content: {
+                    "application/json": components["schemas"]["Order"];
+                };
+            };
+        };
+    };
+    ops_payments_list: {
+        parameters: {
+            query?: never;
+            header?: never;
+            path?: never;
+            cookie?: never;
+        };
+        requestBody?: never;
+        responses: {
+            200: {
+                headers: {
+                    [name: string]: unknown;
+                };
+                content: {
+                    "application/json": components["schemas"]["Payment"][];
+                };
+            };
+        };
+    };
+    ops_payments_create: {
+        parameters: {
+            query?: never;
+            header?: never;
+            path?: never;
+            cookie?: never;
+        };
+        requestBody: {
+            content: {
+                "application/json": components["schemas"]["Payment"];
+                "application/x-www-form-urlencoded": components["schemas"]["Payment"];
+                "multipart/form-data": components["schemas"]["Payment"];
+            };
+        };
+        responses: {
+            201: {
+                headers: {
+                    [name: string]: unknown;
+                };
+                content: {
+                    "application/json": components["schemas"]["Payment"];
+                };
+            };
+        };
+    };
+    ops_payments_retrieve: {
+        parameters: {
+            query?: never;
+            header?: never;
+            path: {
+                /** @description A UUID string identifying this payment. */
+                id: string;
+            };
+            cookie?: never;
+        };
+        requestBody?: never;
+        responses: {
+            200: {
+                headers: {
+                    [name: string]: unknown;
+                };
+                content: {
+                    "application/json": components["schemas"]["Payment"];
+                };
+            };
+        };
+    };
+    ops_payments_update: {
+        parameters: {
+            query?: never;
+            header?: never;
+            path: {
+                /** @description A UUID string identifying this payment. */
+                id: string;
+            };
+            cookie?: never;
+        };
+        requestBody: {
+            content: {
+                "application/json": components["schemas"]["Payment"];
+                "application/x-www-form-urlencoded": components["schemas"]["Payment"];
+                "multipart/form-data": components["schemas"]["Payment"];
+            };
+        };
+        responses: {
+            200: {
+                headers: {
+                    [name: string]: unknown;
+                };
+                content: {
+                    "application/json": components["schemas"]["Payment"];
+                };
+            };
+        };
+    };
+    ops_payments_destroy: {
+        parameters: {
+            query?: never;
+            header?: never;
+            path: {
+                /** @description A UUID string identifying this payment. */
+                id: string;
+            };
+            cookie?: never;
+        };
+        requestBody?: never;
+        responses: {
+            /** @description No response body */
+            204: {
+                headers: {
+                    [name: string]: unknown;
+                };
+                content?: never;
+            };
+        };
+    };
+    ops_payments_partial_update: {
+        parameters: {
+            query?: never;
+            header?: never;
+            path: {
+                /** @description A UUID string identifying this payment. */
+                id: string;
+            };
+            cookie?: never;
+        };
+        requestBody?: {
+            content: {
+                "application/json": components["schemas"]["PatchedPayment"];
+                "application/x-www-form-urlencoded": components["schemas"]["PatchedPayment"];
+                "multipart/form-data": components["schemas"]["PatchedPayment"];
+            };
+        };
+        responses: {
+            200: {
+                headers: {
+                    [name: string]: unknown;
+                };
+                content: {
+                    "application/json": components["schemas"]["Payment"];
+                };
+            };
+        };
+    };
+    ops_tables_list: {
+        parameters: {
+            query?: never;
+            header?: never;
+            path?: never;
+            cookie?: never;
+        };
+        requestBody?: never;
+        responses: {
+            200: {
+                headers: {
+                    [name: string]: unknown;
+                };
+                content: {
+                    "application/json": components["schemas"]["Table"][];
+                };
+            };
+        };
+    };
+    ops_tables_create: {
+        parameters: {
+            query?: never;
+            header?: never;
+            path?: never;
+            cookie?: never;
+        };
+        requestBody: {
+            content: {
+                "application/json": components["schemas"]["Table"];
+                "application/x-www-form-urlencoded": components["schemas"]["Table"];
+                "multipart/form-data": components["schemas"]["Table"];
+            };
+        };
+        responses: {
+            201: {
+                headers: {
+                    [name: string]: unknown;
+                };
+                content: {
+                    "application/json": components["schemas"]["Table"];
+                };
+            };
+        };
+    };
+    ops_tables_retrieve: {
+        parameters: {
+            query?: never;
+            header?: never;
+            path: {
+                /** @description A UUID string identifying this table. */
+                id: string;
+            };
+            cookie?: never;
+        };
+        requestBody?: never;
+        responses: {
+            200: {
+                headers: {
+                    [name: string]: unknown;
+                };
+                content: {
+                    "application/json": components["schemas"]["Table"];
+                };
+            };
+        };
+    };
+    ops_tables_update: {
+        parameters: {
+            query?: never;
+            header?: never;
+            path: {
+                /** @description A UUID string identifying this table. */
+                id: string;
+            };
+            cookie?: never;
+        };
+        requestBody: {
+            content: {
+                "application/json": components["schemas"]["Table"];
+                "application/x-www-form-urlencoded": components["schemas"]["Table"];
+                "multipart/form-data": components["schemas"]["Table"];
+            };
+        };
+        responses: {
+            200: {
+                headers: {
+                    [name: string]: unknown;
+                };
+                content: {
+                    "application/json": components["schemas"]["Table"];
+                };
+            };
+        };
+    };
+    ops_tables_destroy: {
+        parameters: {
+            query?: never;
+            header?: never;
+            path: {
+                /** @description A UUID string identifying this table. */
+                id: string;
+            };
+            cookie?: never;
+        };
+        requestBody?: never;
+        responses: {
+            /** @description No response body */
+            204: {
+                headers: {
+                    [name: string]: unknown;
+                };
+                content?: never;
+            };
+        };
+    };
+    ops_tables_partial_update: {
+        parameters: {
+            query?: never;
+            header?: never;
+            path: {
+                /** @description A UUID string identifying this table. */
+                id: string;
+            };
+            cookie?: never;
+        };
+        requestBody?: {
+            content: {
+                "application/json": components["schemas"]["PatchedTable"];
+                "application/x-www-form-urlencoded": components["schemas"]["PatchedTable"];
+                "multipart/form-data": components["schemas"]["PatchedTable"];
+            };
+        };
+        responses: {
+            200: {
+                headers: {
+                    [name: string]: unknown;
+                };
+                content: {
+                    "application/json": components["schemas"]["Table"];
                 };
             };
         };
