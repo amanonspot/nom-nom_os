@@ -14,8 +14,9 @@
     "gen:types": "turbo run gen:types"
   },
   "devDependencies": {
+    "prettier": "^3.4.2",
+    "tsx": "^4.23.0",
     "turbo": "^2.3.3",
-    "typescript": "^5.7.2",
-    "prettier": "^3.4.2"
+    "typescript": "^5.7.2"
   }
 }
