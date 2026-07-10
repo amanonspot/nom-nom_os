@@ -12,6 +12,12 @@
       "runtimeExecutable": "pnpm",
       "runtimeArgs": ["--filter", "@nomnom/pos", "dev"],
       "port": 3101
+    },
+    {
+      "name": "kds",
+      "runtimeExecutable": "pnpm",
+      "runtimeArgs": ["--filter", "@nomnom/kds", "dev"],
+      "port": 3102
     }
   ]
 }

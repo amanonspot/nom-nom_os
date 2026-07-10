@@ -13,7 +13,7 @@ import { PinDialog } from './PinDialog';
 import { SyncStatus } from './SyncStatus';
 
 export function PosScreen() {
-  const { session, menu, tables, addOns, engine, logout, setTableStatus } = usePos();
+  const { session, menu, tables, addOns, engine, notice, logout, setTableStatus } = usePos();
   const [draft, setDraft] = useState<LocalOrder | null>(null);
   const [table, setTable] = useState<Table | null>(null);
   const [activeCat, setActiveCat] = useState<string | null>(null);
@@ -61,6 +61,17 @@ export function PosScreen() {
     };
   }
 
+  async function sendToKitchen() {
+    if (!draft || !engine) return;
+    // Persist as an open order (kitchen_status=pending server-side) so it
+    // broadcasts to the KDS. Print the KOT and keep the ticket open so the
+    // cashier can add more or bill it later (re-sends upsert idempotently).
+    const openOrder: LocalOrder = { ...draft, status: 'open' };
+    await engine.enqueueOrder(openOrder);
+    setDraft(openOrder);
+    printKOT(openOrder, table?.name);
+  }
+
   async function finalizeAndPay(splits: PaymentSplit[]) {
     if (!draft || !engine) return;
     const paidOrder: LocalOrder = { ...draft, status: 'paid', payments: splits };
@@ -79,6 +90,7 @@ export function PosScreen() {
   if (!draft) {
     return (
       <div className="mx-auto max-w-4xl px-4 py-6">
+        {notice && <NoticeToast text={notice} />}
         <Header name={session?.name} onLogout={logout} />
         <div className="mb-3 flex items-center justify-between">
           <h2 className="font-heading text-lg font-semibold text-spoto-ink">Floor</h2>
@@ -108,6 +120,7 @@ export function PosScreen() {
   const activeCategory = menu.find((c) => c.id === activeCat) ?? menu[0];
   return (
     <div className="mx-auto flex min-h-screen max-w-5xl flex-col px-4 py-4">
+      {notice && <NoticeToast text={notice} />}
       <Header
         name={session?.name}
         onLogout={logout}
@@ -154,7 +167,7 @@ export function PosScreen() {
           order={draft}
           onQty={(id, q) => setDraft(setLineQuantity(draft, id, q))}
           onRemove={(id) => setDraft(removeLine(draft, id))}
-          onKot={() => printKOT(draft, table?.name)}
+          onKot={sendToKitchen}
           onPay={() => setShowPayment(true)}
           onVoid={() => setShowVoid(true)}
         />
@@ -272,10 +285,10 @@ function Cart({
           <Row label="Total" value={order.grandTotal} bold />
         </dl>
         <div className="grid grid-cols-2 gap-2">
-          <Button variant="ghost" disabled={empty} onClick={onKot}>
-            Print KOT
+          <Button variant="secondary" disabled={empty} onClick={onKot}>
+            Send to Kitchen
           </Button>
-          <Button disabled={empty} onClick={onPay}>
+          <Button variant="cta" disabled={empty} onClick={onPay}>
             Bill &amp; Pay
           </Button>
         </div>
@@ -284,6 +297,14 @@ function Cart({
         </button>
       </div>
     </aside>
+  );
+}
+
+function NoticeToast({ text }: { text: string }) {
+  return (
+    <div className="fixed left-1/2 top-4 z-[60] -translate-x-1/2 rounded-full bg-spoto-green px-5 py-2 text-sm font-heading font-bold text-[#101010] shadow-lg">
+      🔔 {text}
+    </div>
   );
 }
 

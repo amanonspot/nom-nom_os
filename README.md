@@ -28,15 +28,27 @@ See the phased build plan for milestone scope.
 # 1. Infra
 docker compose -f backend/docker-compose.yml up -d
 
-# 2. Backend
+# 2. Backend (Daphne ASGI serves REST + WebSockets)
 cd backend && python3 -m venv .venv && source .venv/bin/activate
 pip install -r requirements.txt
-python manage.py migrate && python manage.py runserver
+python manage.py migrate && python manage.py seed_demo   # demo tenant
+python manage.py runserver
 
-# 3. Frontends
+# 3. Frontends — POS :3101, Admin :3100, KDS :3102
 pnpm install
 pnpm dev
 ```
+
+Demo login: `manager1` / `pass12345` (manager PIN `4321`).
+
+## Realtime & sync (Phase 2)
+
+- **Sync API**: `POST /api/sync/push` (batched, idempotent order upsert on the client UUID)
+  and `GET /api/sync/pull?branch&since` (delta rows + tombstones for last-write-wins).
+- **KDS**: the `kds` app connects `ws/kds/<branch>/` (Django Channels). Sending an order to the
+  kitchen from the POS broadcasts it live to the board; kitchen status advances **per-item or
+  per-ticket** (`pending → cooking → ready → served`), rolling up to the order. A poll fallback
+  covers dropped sockets. See `DEPLOY.md` (Redis is required for realtime in production).
 
 ## Repository layout
 

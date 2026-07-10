@@ -30,3 +30,8 @@ export const fetchTables = (token: string, branch: string) =>
 
 export const fetchAddOns = (token: string, branch: string) =>
   authed<AddOn[]>(`/api/catalog/addons/?branch=${branch}`, token);
+
+/** WebSocket URL for the branch order feed (shared with the KDS group). */
+export function wsUrl(branch: string, token: string): string {
+  return `${API_URL.replace(/^http/, 'ws')}/ws/kds/${branch}/?token=${encodeURIComponent(token)}`;
+}

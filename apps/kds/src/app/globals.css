@@ -1,0 +1,5 @@
+@import 'tailwindcss';
+@import '@nomnom/ui/styles/tokens.css';
+
+/* Register the shared UI package's source so its utilities are generated. */
+@source '../../../../packages/ui/src';

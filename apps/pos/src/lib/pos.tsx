@@ -19,6 +19,7 @@ import {
   fetchMenu,
   fetchTables,
   login as apiLogin,
+  wsUrl,
 } from './api';
 
 interface Session {
@@ -40,6 +41,7 @@ interface PosContextValue {
   tables: Table[];
   addOns: AddOn[];
   sync: SyncStatus;
+  notice: string | null;
   engine: SyncEngine | null;
   login: (username: string, password: string) => Promise<void>;
   logout: () => void;
@@ -61,6 +63,7 @@ export function PosProvider({ children }: { children: React.ReactNode }) {
     pending: 0,
     syncing: false,
   });
+  const [notice, setNotice] = useState<string | null>(null);
 
   const persistenceRef = useRef<IdbPersistence | null>(null);
   const engineRef = useRef<SyncEngine | null>(null);
@@ -116,21 +119,65 @@ export function PosProvider({ children }: { children: React.ReactNode }) {
     })();
   }, [loadData]);
 
-  // Wire sync-status updates + connectivity + periodic flush.
+  // Wire sync-status updates + connectivity + periodic flush + delta pull.
   useEffect(() => {
     const engine = engineRef.current;
     if (!engine) return;
     const unsub = engine.subscribe(setSync);
-    const onOnline = () => void engine.flush();
+    const branchId = session?.branchId;
+    const tick = () => {
+      void engine.flush();
+      if (branchId) void engine.pull(branchId);
+    };
+    const onOnline = () => tick();
     window.addEventListener('online', onOnline);
-    const interval = setInterval(() => void engine.flush(), 8000);
-    void engine.flush();
+    const interval = setInterval(tick, 8000);
+    tick();
     return () => {
       unsub();
       window.removeEventListener('online', onOnline);
       clearInterval(interval);
     };
-  }, [ready]);
+  }, [ready, session]);
+
+  // Live "order ready" notifications from the kitchen (same branch WS group),
+  // with auto-reconnect so a server restart or dropped socket self-heals.
+  useEffect(() => {
+    if (!session?.branchId || !session.token) return;
+    let ws: WebSocket | null = null;
+    let retry: ReturnType<typeof setTimeout> | null = null;
+    let closed = false;
+
+    const connect = () => {
+      ws = new WebSocket(wsUrl(session.branchId, session.token));
+      ws.onmessage = (ev) => {
+        try {
+          const msg = JSON.parse(ev.data) as {
+            event: string;
+            order: { kitchen_status?: string; number?: number };
+          };
+          if (msg.event === 'order.kitchen' && msg.order?.kitchen_status === 'ready') {
+            const label = msg.order.number ? `Order ${msg.order.number}` : 'An order';
+            setNotice(`${label} is ready`);
+            window.setTimeout(() => setNotice(null), 5000);
+          }
+        } catch {
+          /* ignore */
+        }
+      };
+      ws.onclose = () => {
+        if (!closed) retry = setTimeout(connect, 3000);
+      };
+      ws.onerror = () => ws?.close();
+    };
+    connect();
+
+    return () => {
+      closed = true;
+      if (retry) clearTimeout(retry);
+      ws?.close();
+    };
+  }, [session]);
 
   const login = useCallback(
     async (username: string, password: string) => {
@@ -173,12 +220,13 @@ export function PosProvider({ children }: { children: React.ReactNode }) {
       tables,
       addOns,
       sync,
+      notice,
       engine: engineRef.current,
       login,
       logout,
       setTableStatus,
     }),
-    [ready, session, menu, tables, addOns, sync, login, logout, setTableStatus],
+    [ready, session, menu, tables, addOns, sync, notice, login, logout, setTableStatus],
   );
 
   return <PosContext.Provider value={value}>{children}</PosContext.Provider>;
