@@ -1,7 +1,7 @@
 'use client';
 
 import { useCallback, useEffect, useState } from 'react';
-import { Button, StatusBadge } from '@nomnom/ui';
+import { Button, Input, StatusBadge } from '@nomnom/ui';
 import type { AddOn, CategoryWithItems, MenuItem } from '@nomnom/types';
 import { useSession } from '@/lib/session';
 import { ItemForm } from './ItemForm';
@@ -14,6 +14,7 @@ export function MenuManager({ onDataChange }: { onDataChange?: () => void }) {
   const [activeCat, setActiveCat] = useState<string | null>(null);
   const [editItem, setEditItem] = useState<MenuItem | 'new' | null>(null);
   const [expanded, setExpanded] = useState<string | null>(null);
+  const [newCat, setNewCat] = useState('');
 
   const reload = useCallback(async () => {
     const [t, a] = await Promise.all([
@@ -32,13 +33,15 @@ export function MenuManager({ onDataChange }: { onDataChange?: () => void }) {
 
   const category = tree.find((c) => c.id === activeCat) ?? tree[0];
 
-  async function addCategory() {
-    const name = prompt('Category name');
+  async function addCategory(e: React.FormEvent) {
+    e.preventDefault();
+    const name = newCat.trim();
     if (!name) return;
     await authFetch('/api/catalog/categories/', {
       method: 'POST',
       body: JSON.stringify({ branch: branchId, name, sort_order: tree.length + 1 }),
     });
+    setNewCat('');
     await reload();
   }
 
@@ -46,13 +49,10 @@ export function MenuManager({ onDataChange }: { onDataChange?: () => void }) {
     <div className="grid gap-6 md:grid-cols-[220px_1fr]">
       {/* Categories */}
       <aside>
-        <div className="mb-2 flex items-center justify-between">
-          <h2 className="font-heading text-sm font-semibold uppercase tracking-wide text-spoto-muted">
-            Categories
-          </h2>
-          <button onClick={addCategory} className="text-spoto-purple-ink">+</button>
-        </div>
-        <ul className="flex flex-col gap-1">
+        <h2 className="mb-2 font-heading text-sm font-semibold uppercase tracking-wide text-spoto-muted">
+          Categories
+        </h2>
+        <ul className="mb-3 flex flex-col gap-1">
           {tree.map((c) => (
             <li key={c.id}>
               <button
@@ -66,6 +66,17 @@ export function MenuManager({ onDataChange }: { onDataChange?: () => void }) {
             </li>
           ))}
         </ul>
+        <form onSubmit={addCategory} className="flex gap-2">
+          <Input
+            value={newCat}
+            onChange={(e) => setNewCat(e.target.value)}
+            placeholder="New category"
+            className="min-h-9 flex-1 py-1 text-sm"
+          />
+          <Button type="submit" size="sm" disabled={!newCat.trim()}>
+            +
+          </Button>
+        </form>
       </aside>
 
       {/* Items in category */}
@@ -124,15 +135,18 @@ export function MenuManager({ onDataChange }: { onDataChange?: () => void }) {
 
 function AddOnManager({ addOns, onChange }: { addOns: AddOn[]; onChange: () => Promise<void> }) {
   const { authFetch, branchId } = useSession();
+  const [name, setName] = useState('');
+  const [price, setPrice] = useState('');
 
-  async function add() {
-    const name = prompt('Add-on name');
-    if (!name) return;
-    const price = prompt('Price (₹)', '0') ?? '0';
+  async function add(e: React.FormEvent) {
+    e.preventDefault();
+    if (!name.trim()) return;
     await authFetch('/api/catalog/addons/', {
       method: 'POST',
-      body: JSON.stringify({ branch: branchId, name, price }),
+      body: JSON.stringify({ branch: branchId, name: name.trim(), price: price || '0' }),
     });
+    setName('');
+    setPrice('');
     await onChange();
   }
 
@@ -143,11 +157,10 @@ function AddOnManager({ addOns, onChange }: { addOns: AddOn[]; onChange: () => P
 
   return (
     <div className="mt-8">
-      <div className="mb-2 flex items-center justify-between">
-        <h3 className="font-heading text-sm font-semibold uppercase tracking-wide text-spoto-muted">Add-ons</h3>
-        <button onClick={add} className="text-spoto-purple-ink">+ Add-on</button>
-      </div>
-      <div className="flex flex-wrap gap-2">
+      <h3 className="mb-2 font-heading text-sm font-semibold uppercase tracking-wide text-spoto-muted">
+        Add-ons
+      </h3>
+      <div className="mb-3 flex flex-wrap gap-2">
         {addOns.map((a) => (
           <span key={a.id} className="flex items-center gap-2 rounded-lg border border-spoto-line bg-spoto-surface px-3 py-1.5 text-sm text-spoto-ink">
             {a.name} · ₹{Number(a.price)}
@@ -156,6 +169,24 @@ function AddOnManager({ addOns, onChange }: { addOns: AddOn[]; onChange: () => P
         ))}
         {addOns.length === 0 && <p className="text-sm text-spoto-muted">No add-ons.</p>}
       </div>
+      <form onSubmit={add} className="flex max-w-md gap-2">
+        <Input
+          value={name}
+          onChange={(e) => setName(e.target.value)}
+          placeholder="Add-on name"
+          className="min-h-9 flex-1 py-1 text-sm"
+        />
+        <Input
+          value={price}
+          onChange={(e) => setPrice(e.target.value)}
+          placeholder="₹"
+          inputMode="decimal"
+          className="min-h-9 w-20 py-1 text-sm"
+        />
+        <Button type="submit" size="sm" variant="secondary" disabled={!name.trim()}>
+          Add
+        </Button>
+      </form>
     </div>
   );
 }

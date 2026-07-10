@@ -25,6 +25,7 @@ export function ItemForm({
   const [available, setAvailable] = useState(item?.is_available ?? true);
   const [saving, setSaving] = useState(false);
   const [error, setError] = useState<string | null>(null);
+  const [confirmDelete, setConfirmDelete] = useState(false);
 
   async function save(e: React.FormEvent) {
     e.preventDefault();
@@ -54,7 +55,7 @@ export function ItemForm({
   }
 
   async function remove() {
-    if (!item || !confirm('Delete this item?')) return;
+    if (!item) return;
     await authFetch(`/api/catalog/items/${item.id}/`, { method: 'DELETE' });
     await onSaved();
   }
@@ -95,9 +96,29 @@ export function ItemForm({
         </div>
 
         {error && <p className="mt-2 text-sm text-danger">{error}</p>}
-        <div className="mt-5 flex gap-2">
-          {item && <Button type="button" variant="destructive" onClick={remove}>Delete</Button>}
-          <Button type="submit" className="ml-auto" disabled={saving}>{saving ? 'Saving…' : 'Save'}</Button>
+        <div className="mt-5 flex items-center gap-2">
+          {item &&
+            (confirmDelete ? (
+              <>
+                <Button type="button" variant="destructive" onClick={remove}>
+                  Confirm delete
+                </Button>
+                <button
+                  type="button"
+                  onClick={() => setConfirmDelete(false)}
+                  className="text-sm text-spoto-muted"
+                >
+                  Cancel
+                </button>
+              </>
+            ) : (
+              <Button type="button" variant="outline" onClick={() => setConfirmDelete(true)}>
+                Delete
+              </Button>
+            ))}
+          <Button type="submit" className="ml-auto" disabled={saving}>
+            {saving ? 'Saving…' : 'Save'}
+          </Button>
         </div>
       </form>
     </div>
