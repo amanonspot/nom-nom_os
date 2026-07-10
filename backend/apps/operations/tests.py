@@ -82,6 +82,24 @@ class OrderFlowTests(APITestCase):
         self.assertEqual(res.status_code, 200, res.content)
         self.assertEqual(res.json()["status"], Order.Status.PAID)
 
+    def test_client_uuid_roundtrips_and_create_is_idempotent(self):
+        import uuid
+
+        cid = str(uuid.uuid4())
+        payload = {
+            "id": cid,
+            "branch": str(self.branch.id),
+            "order_type": "takeaway",
+            "items_write": [{"menu_item": str(self.item.id), "quantity": 1}],
+        }
+        r1 = self.client.post("/api/ops/orders/", payload, format="json")
+        self.assertEqual(r1.status_code, 201, r1.content)
+        self.assertEqual(r1.json()["id"], cid)  # server honored the client id
+        # Re-sending the same create must upsert, not duplicate or 500.
+        r2 = self.client.post("/api/ops/orders/", payload, format="json")
+        self.assertIn(r2.status_code, (200, 201))
+        self.assertEqual(Order.objects.filter(id=cid).count(), 1)
+
     def test_menu_tree_nested(self):
         res = self.client.get(f"/api/catalog/menu/?branch={self.branch.id}")
         self.assertEqual(res.status_code, 200)

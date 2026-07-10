@@ -88,6 +88,9 @@ class OrderSerializer(serializers.ModelSerializer):
     """Read/write order. On create/replace, prices are snapshotted from the
     catalog and GST totals are computed server-side (authoritative)."""
 
+    # Honor the client-generated UUID so the same id round-trips (offline-first)
+    # and re-sending a create is idempotent rather than a duplicate-PK error.
+    id = serializers.UUIDField(required=False)
     items = OrderItemReadSerializer(many=True, read_only=True)
     items_write = _OrderItemWriteSerializer(many=True, write_only=True, required=False)
     payments = PaymentSerializer(many=True, read_only=True)
@@ -144,7 +147,12 @@ class OrderSerializer(serializers.ModelSerializer):
     @transaction.atomic
     def create(self, validated_data):
         items_data = validated_data.pop("items_write", [])
-        order = Order.objects.create(**validated_data)
+        order_id = validated_data.pop("id", None)
+        # Idempotent upsert on the client UUID: a re-sent create updates in place.
+        if order_id and Order.objects.filter(id=order_id).exists():
+            instance = Order.objects.get(id=order_id)
+            return self.update(instance, {**validated_data, "items_write": items_data})
+        order = Order.objects.create(id=order_id, **validated_data) if order_id else Order.objects.create(**validated_data)
         self._build_lines(order, items_data)
         order.recompute_totals()
         if order.table and order.status == Order.Status.OPEN:

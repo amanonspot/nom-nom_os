@@ -63,6 +63,12 @@ importers:
 
   apps/pos:
     dependencies:
+      '@nomnom/persistence-idb':
+        specifier: workspace:*
+        version: link:../../packages/persistence-idb
+      '@nomnom/sync-client':
+        specifier: workspace:*
+        version: link:../../packages/sync-client
       '@nomnom/types':
         specifier: workspace:*
         version: link:../../packages/types

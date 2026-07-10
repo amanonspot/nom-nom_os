@@ -502,7 +502,7 @@ export interface components {
             /** Format: int64 */
             sort_order?: number;
             is_active?: boolean;
-            readonly items: string;
+            readonly items: components["schemas"]["MenuItem"][];
         };
         Customer: {
             /** Format: uuid */

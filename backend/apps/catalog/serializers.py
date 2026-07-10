@@ -1,3 +1,4 @@
+from drf_spectacular.utils import extend_schema_field
 from rest_framework import serializers
 
 from .models import AddOn, Category, MenuItem, VariationGroup, VariationOption
@@ -59,6 +60,7 @@ class CategoryWithItemsSerializer(serializers.ModelSerializer):
         model = Category
         fields = ["id", "branch", "name", "sort_order", "is_active", "items"]
 
+    @extend_schema_field(MenuItemSerializer(many=True))
     def get_items(self, obj):
         items = obj.items.alive().filter(is_available=True)
         return MenuItemSerializer(items, many=True, context=self.context).data

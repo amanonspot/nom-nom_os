@@ -39,6 +39,19 @@ export function createHttpTransport({ apiUrl, getToken }: HttpTransportOptions):
       });
       if (!res.ok) throw new Error(`push failed: ${res.status} ${await res.text()}`);
       const data = (await res.json()) as { id: string };
+
+      // If the order was billed offline, settle its payments after create.
+      if (order.payments && order.payments.length > 0) {
+        const settle = await fetch(`${apiUrl}/api/ops/orders/${data.id}/settle/`, {
+          method: 'POST',
+          headers: {
+            'Content-Type': 'application/json',
+            ...(token ? { Authorization: `Bearer ${token}` } : {}),
+          },
+          body: JSON.stringify(order.payments),
+        });
+        if (!settle.ok) throw new Error(`settle failed: ${settle.status}`);
+      }
       return { id: data.id };
     },
   };

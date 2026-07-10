@@ -10,6 +10,8 @@
     "typecheck": "tsc --noEmit"
   },
   "dependencies": {
+    "@nomnom/persistence-idb": "workspace:*",
+    "@nomnom/sync-client": "workspace:*",
     "@nomnom/types": "workspace:*",
     "@nomnom/ui": "workspace:*",
     "framer-motion": "^12.41.0",

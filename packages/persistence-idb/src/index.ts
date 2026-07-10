@@ -63,6 +63,12 @@ export class IdbPersistence implements PersistencePort {
   getTables(branchId: string): Promise<unknown | null> {
     return this.getCache(`tables:${branchId}`);
   }
+  saveAddOns(branchId: string, addOns: unknown): Promise<void> {
+    return this.putCache(`addons:${branchId}`, addOns);
+  }
+  getAddOns(branchId: string): Promise<unknown | null> {
+    return this.getCache(`addons:${branchId}`);
+  }
 
   async saveOrder(order: LocalOrder): Promise<void> {
     const db = await this.dbp;

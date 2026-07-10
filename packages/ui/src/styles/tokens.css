@@ -57,7 +57,7 @@
 
 /*
  * Light theme for operational surfaces (POS, KDS). Apply `class="theme-pos"`
- * on <html>. Every component using bg-*/text-*/border-* recolors automatically.
+ * on <html>. Every component using the bg, text and border utilities recolors.
  */
 .theme-pos {
   --bg: #f7f8fa;

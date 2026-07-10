@@ -34,6 +34,8 @@ export interface LocalOrder {
   taxTotal: number;
   grandTotal: number;
   status: 'open' | 'held' | 'billed' | 'paid' | 'void';
+  /** Payment splits captured at billing (settled server-side after create). */
+  payments?: { mode: 'cash' | 'card' | 'upi'; amount: number }[];
   syncState: SyncState;
   /** Server id once acknowledged (equals `id` in our model). */
   serverId?: string | null;

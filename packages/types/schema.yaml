@@ -1633,7 +1633,9 @@ components:
         is_active:
           type: boolean
         items:
-          type: string
+          type: array
+          items:
+            $ref: '#/components/schemas/MenuItem'
           readOnly: true
       required:
       - branch

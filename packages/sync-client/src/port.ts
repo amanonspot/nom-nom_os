@@ -15,6 +15,8 @@ export interface PersistencePort {
   getMenu(branchId: string): Promise<unknown | null>;
   saveTables(branchId: string, tables: unknown): Promise<void>;
   getTables(branchId: string): Promise<unknown | null>;
+  saveAddOns(branchId: string, addOns: unknown): Promise<void>;
+  getAddOns(branchId: string): Promise<unknown | null>;
 
   // --- Orders (local source of truth) ---
   saveOrder(order: LocalOrder): Promise<void>;
