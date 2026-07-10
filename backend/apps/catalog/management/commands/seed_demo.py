@@ -21,7 +21,12 @@ class Command(BaseCommand):
     help = "Seed demo data for Nom Nom OS."
 
     def handle(self, *args, **options):
-        Restaurant.objects.filter(name="Nom Nom Diner").delete()
+        # Orders PROTECT their menu items, so clear orders before the restaurant.
+        from apps.operations.models import Order
+
+        old = Restaurant.objects.filter(name="Nom Nom Diner")
+        Order.objects.filter(branch__restaurant__in=old).delete()
+        old.delete()
         r = Restaurant.objects.create(name="Nom Nom Diner", gstin="29ABCDE1234F1Z5")
         b = Branch.objects.create(restaurant=r, name="MG Road")
 
