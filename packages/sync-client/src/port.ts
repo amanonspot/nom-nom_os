@@ -7,7 +7,7 @@
  * and the outbox are the durable local source of truth until synced.
  */
 
-import type { LocalOrder, OutboxEntry } from './types';
+import type { LocalOrder, OutboxEntry, PulledRow } from './types';
 
 export interface PersistencePort {
   // --- Read caches (populated on pull; served offline) ---
@@ -27,4 +27,16 @@ export interface PersistencePort {
   enqueue(entry: OutboxEntry): Promise<void>;
   pending(): Promise<OutboxEntry[]>;
   updateEntry(entry: OutboxEntry): Promise<void>;
+
+  // --- Pull sync ---
+  /** ISO timestamp of the last successful pull (delta cursor). */
+  getSyncCursor(): Promise<string | null>;
+  setSyncCursor(iso: string): Promise<void>;
+  /**
+   * Merge pulled rows (with last_modified + is_deleted) into a keyed store,
+   * last-write-wins; tombstones are removed. Returns the ids that changed.
+   */
+  mergePulled(store: 'remoteOrders', rows: PulledRow[]): Promise<string[]>;
+  getRemoteOrder(id: string): Promise<PulledRow | null>;
+  listRemoteOrders(): Promise<PulledRow[]>;
 }

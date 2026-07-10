@@ -43,6 +43,33 @@ export interface LocalOrder {
   updatedAt: string;
 }
 
+/** A row as returned by GET /api/sync/pull — always carries the sync clock. */
+export interface PulledRow {
+  id: string;
+  last_modified: string;
+  is_deleted: boolean;
+  [k: string]: unknown;
+}
+
+export interface PullResult {
+  server_time: string;
+  tables: PulledRow[];
+  orders: PulledRow[];
+  categories: PulledRow[];
+  items: PulledRow[];
+  variation_groups: PulledRow[];
+  variation_options: PulledRow[];
+  addons: PulledRow[];
+  customers: PulledRow[];
+}
+
+export interface PushAck {
+  id: string;
+  status: 'ok' | 'error';
+  last_modified?: string;
+  errors?: unknown;
+}
+
 export type OutboxOp = 'create_order' | 'update_order' | 'settle_order';
 
 export interface OutboxEntry {
