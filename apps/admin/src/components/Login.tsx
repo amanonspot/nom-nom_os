@@ -1,7 +1,7 @@
 'use client';
 
 import { useState } from 'react';
-import { Button, FadeIn } from '@nomnom/ui';
+import { Button } from '@nomnom/ui';
 import { useSession } from '@/lib/session';
 
 export function Login() {
@@ -26,20 +26,20 @@ export function Login() {
 
   return (
     <main className="mx-auto flex min-h-screen max-w-sm flex-col justify-center gap-6 px-6">
-      <FadeIn>
-        <p className="text-sm uppercase tracking-widest text-accent-2">Nom Nom OS</p>
-        <h1 className="font-display text-3xl font-bold text-fg">Admin Portal</h1>
-      </FadeIn>
-      <form onSubmit={onSubmit} className="flex flex-col gap-4 rounded-2xl border border-border bg-surface p-6">
-        <label className="flex flex-col gap-1 text-sm text-muted">
+      <div className="animate-fade-in">
+        <p className="text-sm uppercase tracking-widest text-spoto-purple-ink">Nom Nom OS</p>
+        <h1 className="font-heading text-3xl font-bold text-spoto-ink">Admin Portal</h1>
+      </div>
+      <form onSubmit={onSubmit} className="flex flex-col gap-4 rounded-2xl border border-spoto-line bg-spoto-surface p-6">
+        <label className="flex flex-col gap-1 text-sm text-spoto-muted">
           Username
           <input value={username} onChange={(e) => setUsername(e.target.value)}
-            className="rounded-lg border border-border bg-bg px-3 py-2 text-fg outline-none focus:border-accent" />
+            className="rounded-lg border border-spoto-line bg-spoto-bg px-3 py-2 text-spoto-ink outline-none focus:border-spoto-purple" />
         </label>
-        <label className="flex flex-col gap-1 text-sm text-muted">
+        <label className="flex flex-col gap-1 text-sm text-spoto-muted">
           Password
           <input type="password" value={password} onChange={(e) => setPassword(e.target.value)}
-            className="rounded-lg border border-border bg-bg px-3 py-2 text-fg outline-none focus:border-accent" />
+            className="rounded-lg border border-spoto-line bg-spoto-bg px-3 py-2 text-spoto-ink outline-none focus:border-spoto-purple" />
         </label>
         {error && <p className="text-sm text-danger">{error}</p>}
         <Button type="submit" disabled={loading}>{loading ? 'Signing in…' : 'Sign in'}</Button>

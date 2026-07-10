@@ -8,7 +8,7 @@ function Gate() {
   const { ready, session } = usePos();
   if (!ready) {
     return (
-      <div className="flex min-h-screen items-center justify-center text-muted">Loading…</div>
+      <div className="flex min-h-screen items-center justify-center text-spoto-muted">Loading…</div>
     );
   }
   return session ? <PosScreen /> : <Login />;

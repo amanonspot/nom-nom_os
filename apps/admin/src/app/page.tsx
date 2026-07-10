@@ -7,7 +7,7 @@ import { Dashboard } from '@/components/Dashboard';
 function Gate() {
   const { ready, token } = useSession();
   if (!ready) {
-    return <div className="flex min-h-screen items-center justify-center text-muted">Loading…</div>;
+    return <div className="flex min-h-screen items-center justify-center text-spoto-muted">Loading…</div>;
   }
   return token ? <Dashboard /> : <Login />;
 }

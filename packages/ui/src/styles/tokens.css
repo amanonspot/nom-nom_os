@@ -1,82 +1,171 @@
 /*
- * Nom Nom OS design tokens — ported from the SPOTO design system.
+ * Nom Nom OS design tokens — adopted from the Spoto Ranger admin design system
+ * (github.com/amanonspot/spotorangeradmin), re-themed LIGHT for restaurant
+ * counter/kitchen legibility. Brand accents kept: purple primary + lime-green
+ * CTA, Montserrat headings + Open Sans body. Tokens are exposed as Tailwind v4
+ * utilities via @theme, so features never hardcode one-off colors.
  *
- * Architecture (Tailwind v4): CSS variables drive an `@theme inline` block so
- * utilities like `bg-bg`, `text-accent`, `border-border` resolve to these vars.
- * Surfaces re-theme by swapping variables under a scope class — no fork.
- *
- *   :root        → SPOTO dark identity (admin portal + marketing)
- *   .theme-pos   → light theme for operational POS/KDS (counter/kitchen legibility)
+ * The consuming app imports `tailwindcss` and registers this package via
+ * `@source` (see each app's globals.css), so utilities used in these components
+ * are generated even though the package resolves through node_modules.
  */
+@theme {
+  /* Surfaces (light) */
+  --color-spoto-bg: #f6f6f8;
+  --color-spoto-surface: #ffffff;
+  --color-spoto-surface-2: #f2f2f5;
+  --color-spoto-elevated: #e9e9ee;
 
-@theme inline {
-  --color-bg: var(--bg);
-  --color-surface: var(--surface);
-  --color-fg: var(--fg);
-  --color-muted: var(--muted);
-  --color-muted-dim: var(--muted-dim);
-  --color-accent: var(--accent);
-  --color-accent-2: var(--accent-2);
-  --color-border: var(--border);
-  --color-border-soft: var(--border-soft);
+  /* Brand accents */
+  --color-spoto-purple: #af7aeb;
+  --color-spoto-purple-hover: #9575e6;
+  --color-spoto-purple-ink: #6d28d9; /* purple text on light surfaces */
+  --color-spoto-green: #b7f041;
+  --color-spoto-green-hover: #a5db35;
 
-  /* Food-service semantics (shared across themes) */
-  --color-veg: var(--veg);
-  --color-nonveg: var(--nonveg);
-  --color-success: var(--success);
-  --color-warning: var(--warning);
-  --color-danger: var(--danger);
-  --color-status-free: var(--status-free);
-  --color-status-occupied: var(--status-occupied);
+  /* Text + lines */
+  --color-spoto-ink: #101010;
+  --color-spoto-muted: #6b7280;
+  --color-spoto-line: #e4e4e9;
 
-  --font-display: var(--font-bricolage);
-  --font-body: var(--font-instrument);
+  /* Food-service semantics (used across POS/KDS) */
+  --color-veg: #16a34a;
+  --color-nonveg: #dc2626;
+  --color-success: #16a34a;
+  --color-warning: #d97706;
+  --color-danger: #dc2626;
+  --color-status-free: #16a34a;
+  --color-status-occupied: #d97706;
+
+  --font-heading: "Montserrat", -apple-system, BlinkMacSystemFont, "Segoe UI", sans-serif;
+  --font-body: "Open Sans", -apple-system, BlinkMacSystemFont, "Segoe UI", sans-serif;
+
+  --radius-spoto: 0.75rem;
 }
 
-:root {
-  /* SPOTO dark identity — admin portal + marketing */
-  --bg: #050505;
-  --surface: #0f172a;
-  --fg: #ffffff;
-  --muted: #8b9bbf;
-  --muted-dim: #4a5578;
-  --accent: #6c63ff;
-  --accent-2: #00d9ff;
-  --border: rgba(108, 99, 255, 0.16);
-  --border-soft: rgba(108, 99, 255, 0.08);
-
-  /* Food-service semantics */
-  --veg: #16a34a;
-  --nonveg: #dc2626;
-  --success: #16a34a;
-  --warning: #f59e0b;
-  --danger: #dc2626;
-  --status-free: #16a34a;
-  --status-occupied: #f59e0b;
+* {
+  box-sizing: border-box;
 }
 
-/*
- * Light theme for operational surfaces (POS, KDS). Apply `class="theme-pos"`
- * on <html>. Every component using the bg, text and border utilities recolors.
- */
-.theme-pos {
-  --bg: #f7f8fa;
-  --surface: #ffffff;
-  --fg: #0f172a;
-  --muted: #64748b;
-  --muted-dim: #94a3b8;
-  --accent: #6c63ff;
-  --accent-2: #4338ca;
-  --border: rgba(15, 23, 42, 0.12);
-  --border-soft: rgba(15, 23, 42, 0.06);
+html {
+  background: var(--color-spoto-bg);
+  color: var(--color-spoto-ink);
+  -webkit-font-smoothing: antialiased;
+  -moz-osx-font-smoothing: grayscale;
 }
 
 body {
-  background: var(--bg);
-  color: var(--fg);
-  font-family: var(--font-body), system-ui, sans-serif;
+  margin: 0;
+  min-height: 100vh;
+  background: var(--color-spoto-bg);
+  color: var(--color-spoto-ink);
+  /* Keep inputs >= 16px to avoid iOS focus zoom. */
+  font-family: var(--font-body);
+  font-size: 16px;
 }
 
-.font-display {
-  font-family: var(--font-display), system-ui, sans-serif;
+h1,
+h2,
+h3,
+h4,
+h5,
+h6 {
+  font-family: var(--font-heading);
+  font-weight: 600;
+}
+
+.font-heading {
+  font-family: var(--font-heading);
+}
+
+.font-body {
+  font-family: var(--font-body);
+}
+
+button,
+input,
+select,
+textarea {
+  font: inherit;
+}
+
+a {
+  color: inherit;
+  text-decoration: none;
+}
+
+/*
+ * Brand button shimmer (adopted from spotorangeradmin), tuned for light: a soft
+ * sweep + purple lift on hover.
+ */
+.btn-shimmer {
+  position: relative;
+  overflow: hidden;
+  transition: transform 0.15s, box-shadow 0.15s, filter 0.15s;
+}
+.btn-shimmer::after {
+  content: "";
+  position: absolute;
+  inset: 0;
+  background: linear-gradient(105deg, transparent 35%, rgba(255, 255, 255, 0.35) 50%, transparent 65%);
+  background-size: 200% 100%;
+  background-position: -200% 0;
+  transition: background-position 0s;
+}
+.btn-shimmer:hover::after {
+  background-position: 200% 0;
+  transition: background-position 0.55s ease;
+}
+.btn-shimmer:hover {
+  transform: translateY(-1px);
+  box-shadow: 0 8px 24px rgba(175, 122, 235, 0.25);
+}
+.btn-shimmer:active {
+  transform: scale(0.97);
+  box-shadow: none;
+}
+
+/* Loading shimmer for skeleton blocks (light). */
+@keyframes spoto-shimmer {
+  0% {
+    background-position: -200% 0;
+  }
+  100% {
+    background-position: 200% 0;
+  }
+}
+.spoto-shimmer {
+  position: relative;
+  overflow: hidden;
+  background: linear-gradient(
+    90deg,
+    rgba(16, 16, 16, 0.04) 0%,
+    rgba(16, 16, 16, 0.09) 45%,
+    rgba(16, 16, 16, 0.04) 100%
+  );
+  background-size: 200% 100%;
+  animation: spoto-shimmer 1.4s linear infinite;
+}
+
+/* Subtle entrance used in place of the removed framer-motion FadeIn. */
+@keyframes spoto-fade-in {
+  from {
+    opacity: 0;
+    transform: translateY(8px);
+  }
+  to {
+    opacity: 1;
+    transform: translateY(0);
+  }
+}
+.animate-fade-in {
+  animation: spoto-fade-in 0.4s ease both;
+}
+
+.scrollbar-hide {
+  -ms-overflow-style: none;
+  scrollbar-width: none;
+}
+.scrollbar-hide::-webkit-scrollbar {
+  display: none;
 }

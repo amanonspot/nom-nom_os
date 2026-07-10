@@ -81,7 +81,7 @@ export function PosScreen() {
       <div className="mx-auto max-w-4xl px-4 py-6">
         <Header name={session?.name} onLogout={logout} />
         <div className="mb-3 flex items-center justify-between">
-          <h2 className="font-display text-lg font-semibold text-fg">Floor</h2>
+          <h2 className="font-heading text-lg font-semibold text-spoto-ink">Floor</h2>
           <Button variant="ghost" onClick={() => startOrder(null)}>
             + Takeaway
           </Button>
@@ -91,9 +91,9 @@ export function PosScreen() {
             <button
               key={t.id}
               onClick={() => startOrder(t)}
-              className="flex flex-col items-center gap-2 rounded-xl border border-border bg-surface p-4"
+              className="flex flex-col items-center gap-2 rounded-xl border border-spoto-line bg-spoto-surface p-4"
             >
-              <span className="font-display text-lg font-semibold text-fg">{t.name}</span>
+              <span className="font-heading text-lg font-semibold text-spoto-ink">{t.name}</span>
               <StatusBadge tone={t.status === 'free' ? 'free' : 'occupied'}>
                 {t.status}
               </StatusBadge>
@@ -124,8 +124,8 @@ export function PosScreen() {
                 onClick={() => setActiveCat(c.id)}
                 className={`rounded-lg border px-3 py-1.5 text-sm ${
                   c.id === activeCategory?.id
-                    ? 'border-accent bg-accent text-white'
-                    : 'border-border bg-surface text-fg'
+                    ? 'border-spoto-purple bg-spoto-purple text-white'
+                    : 'border-spoto-line bg-spoto-surface text-spoto-ink'
                 }`}
               >
                 {c.name}
@@ -137,13 +137,13 @@ export function PosScreen() {
               <button
                 key={item.id}
                 onClick={() => onPickItem(item)}
-                className="flex flex-col items-start gap-1 rounded-xl border border-border bg-surface p-3 text-left"
+                className="flex flex-col items-start gap-1 rounded-xl border border-spoto-line bg-spoto-surface p-3 text-left"
               >
                 <span
                   className={`h-2.5 w-2.5 rounded-full ${item.is_veg ? 'bg-veg' : 'bg-nonveg'}`}
                 />
-                <span className="font-medium text-fg">{item.name}</span>
-                <span className="text-sm text-muted">₹{Number(item.base_price).toFixed(2)}</span>
+                <span className="font-medium text-spoto-ink">{item.name}</span>
+                <span className="text-sm text-spoto-muted">₹{Number(item.base_price).toFixed(2)}</span>
               </button>
             ))}
           </div>
@@ -200,18 +200,18 @@ function Header({
     <header className="mb-5 flex items-center justify-between">
       <div className="flex items-center gap-3">
         {onBack && (
-          <button onClick={onBack} className="rounded-lg border border-border px-2 py-1 text-fg">
+          <button onClick={onBack} className="rounded-lg border border-spoto-line px-2 py-1 text-spoto-ink">
             ←
           </button>
         )}
         <div>
-          <p className="text-xs uppercase tracking-widest text-accent">Nom Nom POS</p>
-          <h1 className="font-display text-xl font-bold text-fg">{title ?? `Hi, ${name}`}</h1>
+          <p className="text-xs uppercase tracking-widest text-spoto-purple-ink">Nom Nom POS</p>
+          <h1 className="font-heading text-xl font-bold text-spoto-ink">{title ?? `Hi, ${name}`}</h1>
         </div>
       </div>
       <div className="flex items-center gap-3">
         <SyncStatus />
-        <button onClick={onLogout} className="text-sm text-muted underline">
+        <button onClick={onLogout} className="text-sm text-spoto-muted underline">
           Sign out
         </button>
       </div>
@@ -236,36 +236,36 @@ function Cart({
 }) {
   const empty = order.lines.length === 0;
   return (
-    <aside className="flex flex-col rounded-2xl border border-border bg-surface">
-      <div className="border-b border-border p-4">
-        <h2 className="font-display text-lg font-semibold text-fg">Order</h2>
+    <aside className="flex flex-col rounded-2xl border border-spoto-line bg-spoto-surface">
+      <div className="border-b border-spoto-line p-4">
+        <h2 className="font-heading text-lg font-semibold text-spoto-ink">Order</h2>
       </div>
       <div className="flex-1 overflow-y-auto p-4">
-        {empty && <p className="text-sm text-muted">Tap items to add them.</p>}
+        {empty && <p className="text-sm text-spoto-muted">Tap items to add them.</p>}
         {order.lines.map((l) => (
           <div key={l.id} className="mb-3 flex items-start justify-between gap-2">
             <div className="min-w-0">
-              <p className="truncate font-medium text-fg">{l.nameSnapshot}</p>
+              <p className="truncate font-medium text-spoto-ink">{l.nameSnapshot}</p>
               {(l.optionLabels.length > 0 || l.addOnLabels.length > 0) && (
-                <p className="truncate text-xs text-muted">
+                <p className="truncate text-xs text-spoto-muted">
                   {[...l.optionLabels, ...l.addOnLabels].join(', ')}
                 </p>
               )}
-              {l.notes && <p className="truncate text-xs text-muted">↳ {l.notes}</p>}
+              {l.notes && <p className="truncate text-xs text-spoto-muted">↳ {l.notes}</p>}
               <div className="mt-1 flex items-center gap-2">
-                <button onClick={() => onQty(l.id, l.quantity - 1)} className="h-6 w-6 rounded border border-border text-fg">−</button>
-                <span className="w-5 text-center text-sm text-fg">{l.quantity}</span>
-                <button onClick={() => onQty(l.id, l.quantity + 1)} className="h-6 w-6 rounded border border-border text-fg">+</button>
+                <button onClick={() => onQty(l.id, l.quantity - 1)} className="h-6 w-6 rounded border border-spoto-line text-spoto-ink">−</button>
+                <span className="w-5 text-center text-sm text-spoto-ink">{l.quantity}</span>
+                <button onClick={() => onQty(l.id, l.quantity + 1)} className="h-6 w-6 rounded border border-spoto-line text-spoto-ink">+</button>
                 <button onClick={() => onRemove(l.id)} className="ml-1 text-xs text-danger">remove</button>
               </div>
             </div>
-            <span className="whitespace-nowrap font-medium text-fg">
+            <span className="whitespace-nowrap font-medium text-spoto-ink">
               ₹{(l.unitPrice * l.quantity).toFixed(2)}
             </span>
           </div>
         ))}
       </div>
-      <div className="border-t border-border p-4">
+      <div className="border-t border-spoto-line p-4">
         <dl className="mb-3 space-y-1 text-sm">
           <Row label="Subtotal" value={order.subtotal} />
           <Row label="GST" value={order.taxTotal} />
@@ -289,7 +289,7 @@ function Cart({
 
 function Row({ label, value, bold }: { label: string; value: number; bold?: boolean }) {
   return (
-    <div className={`flex justify-between ${bold ? 'font-semibold text-fg' : 'text-muted'}`}>
+    <div className={`flex justify-between ${bold ? 'font-semibold text-spoto-ink' : 'text-spoto-muted'}`}>
       <dt>{label}</dt>
       <dd>₹{value.toFixed(2)}</dd>
     </div>

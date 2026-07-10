@@ -47,13 +47,13 @@ export function ItemDialog({
 
   return (
     <div className="fixed inset-0 z-50 flex items-end justify-center bg-black/40 p-0 sm:items-center sm:p-4">
-      <div className="flex max-h-[90vh] w-full max-w-md flex-col overflow-hidden rounded-t-2xl bg-surface sm:rounded-2xl">
-        <div className="flex items-center justify-between border-b border-border p-4">
+      <div className="flex max-h-[90vh] w-full max-w-md flex-col overflow-hidden rounded-t-2xl bg-spoto-surface sm:rounded-2xl">
+        <div className="flex items-center justify-between border-b border-spoto-line p-4">
           <div>
-            <h2 className="font-display text-xl font-semibold text-fg">{item.name}</h2>
-            <p className="text-sm text-muted">Base ₹{Number(item.base_price).toFixed(2)}</p>
+            <h2 className="font-heading text-xl font-semibold text-spoto-ink">{item.name}</h2>
+            <p className="text-sm text-spoto-muted">Base ₹{Number(item.base_price).toFixed(2)}</p>
           </div>
-          <button onClick={onClose} className="text-2xl leading-none text-muted">
+          <button onClick={onClose} className="text-2xl leading-none text-spoto-muted">
             ×
           </button>
         </div>
@@ -61,7 +61,7 @@ export function ItemDialog({
         <div className="flex-1 overflow-y-auto p-4">
           {groups.map((g) => (
             <fieldset key={g.id} className="mb-4">
-              <legend className="mb-2 text-sm font-medium text-muted">
+              <legend className="mb-2 text-sm font-medium text-spoto-muted">
                 {g.name}
                 {g.is_required && <span className="text-danger"> *</span>}
               </legend>
@@ -74,8 +74,8 @@ export function ItemDialog({
                       onClick={() => setSelected((s) => ({ ...s, [g.id]: o.id }))}
                       className={`rounded-lg border px-3 py-2 text-sm ${
                         active
-                          ? 'border-accent bg-accent text-white'
-                          : 'border-border bg-bg text-fg'
+                          ? 'border-spoto-purple bg-spoto-purple text-white'
+                          : 'border-spoto-line bg-spoto-bg text-spoto-ink'
                       }`}
                     >
                       {o.name}
@@ -90,7 +90,7 @@ export function ItemDialog({
 
           {addOns.length > 0 && (
             <fieldset className="mb-4">
-              <legend className="mb-2 text-sm font-medium text-muted">Add-ons</legend>
+              <legend className="mb-2 text-sm font-medium text-spoto-muted">Add-ons</legend>
               <div className="flex flex-wrap gap-2">
                 {addOns.map((a) => {
                   const active = chosenAddOns.has(a.id);
@@ -105,7 +105,7 @@ export function ItemDialog({
                         })
                       }
                       className={`rounded-lg border px-3 py-2 text-sm ${
-                        active ? 'border-accent bg-accent text-white' : 'border-border bg-bg text-fg'
+                        active ? 'border-spoto-purple bg-spoto-purple text-white' : 'border-spoto-line bg-spoto-bg text-spoto-ink'
                       }`}
                     >
                       {a.name} (+₹{Number(a.price)})
@@ -116,35 +116,35 @@ export function ItemDialog({
             </fieldset>
           )}
 
-          <label className="mb-4 flex flex-col gap-1 text-sm text-muted">
+          <label className="mb-4 flex flex-col gap-1 text-sm text-spoto-muted">
             Notes
             <input
               value={notes}
               onChange={(e) => setNotes(e.target.value)}
               placeholder="e.g. extra spicy"
-              className="rounded-lg border border-border bg-bg px-3 py-2 text-fg outline-none focus:border-accent"
+              className="rounded-lg border border-spoto-line bg-spoto-bg px-3 py-2 text-spoto-ink outline-none focus:border-spoto-purple"
             />
           </label>
 
           <div className="flex items-center gap-3">
-            <span className="text-sm text-muted">Qty</span>
+            <span className="text-sm text-spoto-muted">Qty</span>
             <button
               onClick={() => setQuantity((q) => Math.max(1, q - 1))}
-              className="h-9 w-9 rounded-lg border border-border text-fg"
+              className="h-9 w-9 rounded-lg border border-spoto-line text-spoto-ink"
             >
               −
             </button>
-            <span className="w-6 text-center font-medium text-fg">{quantity}</span>
+            <span className="w-6 text-center font-medium text-spoto-ink">{quantity}</span>
             <button
               onClick={() => setQuantity((q) => q + 1)}
-              className="h-9 w-9 rounded-lg border border-border text-fg"
+              className="h-9 w-9 rounded-lg border border-spoto-line text-spoto-ink"
             >
               +
             </button>
           </div>
         </div>
 
-        <div className="border-t border-border p-4">
+        <div className="border-t border-spoto-line p-4">
           <Button className="w-full" onClick={() => onAdd(preview)}>
             Add · ₹{(preview.unitPrice * preview.quantity).toFixed(2)}
           </Button>

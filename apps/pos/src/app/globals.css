@@ -1,2 +1,6 @@
 @import 'tailwindcss';
 @import '@nomnom/ui/styles/tokens.css';
+
+/* Utilities used inside @nomnom/ui resolve via node_modules, which Tailwind
+   ignores by default — register the package source explicitly. */
+@source '../../../../packages/ui/src';

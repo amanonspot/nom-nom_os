@@ -39,29 +39,29 @@ export function PaymentDialog({
 
   return (
     <div className="fixed inset-0 z-50 flex items-center justify-center bg-black/40 p-4">
-      <div className="w-full max-w-sm rounded-2xl bg-surface p-5">
+      <div className="w-full max-w-sm rounded-2xl bg-spoto-surface p-5">
         <div className="mb-4 flex items-center justify-between">
-          <h2 className="font-display text-xl font-semibold text-fg">Payment</h2>
-          <button onClick={onClose} className="text-2xl leading-none text-muted">
+          <h2 className="font-heading text-xl font-semibold text-spoto-ink">Payment</h2>
+          <button onClick={onClose} className="text-2xl leading-none text-spoto-muted">
             ×
           </button>
         </div>
-        <p className="mb-4 text-sm text-muted">
-          Total due <span className="font-semibold text-fg">₹{total.toFixed(2)}</span>
+        <p className="mb-4 text-sm text-spoto-muted">
+          Total due <span className="font-semibold text-spoto-ink">₹{total.toFixed(2)}</span>
         </p>
         {(['cash', 'card', 'upi'] as PaymentMode[]).map((mode) => (
           <label key={mode} className="mb-3 flex items-center justify-between gap-3">
-            <span className="w-16 text-sm capitalize text-muted">{mode}</span>
+            <span className="w-16 text-sm capitalize text-spoto-muted">{mode}</span>
             <input
               inputMode="decimal"
               value={amounts[mode]}
               onChange={(e) => setAmounts((a) => ({ ...a, [mode]: e.target.value }))}
-              className="flex-1 rounded-lg border border-border bg-bg px-3 py-2 text-right text-fg outline-none focus:border-accent"
+              className="flex-1 rounded-lg border border-spoto-line bg-spoto-bg px-3 py-2 text-right text-spoto-ink outline-none focus:border-spoto-purple"
             />
           </label>
         ))}
         <div className="mb-4 mt-2 flex justify-between text-sm">
-          <span className="text-muted">{due > 0 ? 'Remaining' : 'Change'}</span>
+          <span className="text-spoto-muted">{due > 0 ? 'Remaining' : 'Change'}</span>
           <span className={due > 0 ? 'text-danger' : 'text-success'}>
             ₹{Math.abs(due).toFixed(2)}
           </span>

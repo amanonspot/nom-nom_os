@@ -1,17 +1,17 @@
 import type { Metadata } from 'next';
-import { Bricolage_Grotesque, Instrument_Sans } from 'next/font/google';
+import { Montserrat, Open_Sans } from 'next/font/google';
 import './globals.css';
 
-const bricolage = Bricolage_Grotesque({
-  variable: '--font-bricolage',
+const montserrat = Montserrat({
+  variable: '--font-heading',
   subsets: ['latin'],
-  weight: ['600', '700', '800'],
+  weight: ['400', '500', '600', '700'],
 });
 
-const instrument = Instrument_Sans({
-  variable: '--font-instrument',
+const openSans = Open_Sans({
+  variable: '--font-body',
   subsets: ['latin'],
-  weight: ['400', '500', '600'],
+  weight: ['400', '500', '600', '700'],
 });
 
 export const metadata: Metadata = {
@@ -20,10 +20,9 @@ export const metadata: Metadata = {
 };
 
 export default function RootLayout({ children }: Readonly<{ children: React.ReactNode }>) {
-  // Admin carries the SPOTO dark identity (default :root tokens).
   return (
-    <html lang="en" className={`${bricolage.variable} ${instrument.variable} h-full antialiased`}>
-      <body className="min-h-full bg-bg text-fg">{children}</body>
+    <html lang="en" className={`${montserrat.variable} ${openSans.variable} h-full antialiased`}>
+      <body className="min-h-full bg-spoto-bg text-spoto-ink">{children}</body>
     </html>
   );
 }

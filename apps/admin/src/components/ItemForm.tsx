@@ -61,34 +61,34 @@ export function ItemForm({
 
   return (
     <div className="fixed inset-0 z-50 flex items-center justify-center bg-black/50 p-4">
-      <form onSubmit={save} className="w-full max-w-md rounded-2xl bg-surface p-5">
+      <form onSubmit={save} className="w-full max-w-md rounded-2xl bg-spoto-surface p-5">
         <div className="mb-4 flex items-center justify-between">
-          <h2 className="font-display text-xl font-semibold text-fg">{item ? 'Edit item' : 'New item'}</h2>
-          <button type="button" onClick={onClose} className="text-2xl leading-none text-muted">×</button>
+          <h2 className="font-heading text-xl font-semibold text-spoto-ink">{item ? 'Edit item' : 'New item'}</h2>
+          <button type="button" onClick={onClose} className="text-2xl leading-none text-spoto-muted">×</button>
         </div>
 
         <Field label="Name">
           <input value={name} onChange={(e) => setName(e.target.value)} required
-            className="w-full rounded-lg border border-border bg-bg px-3 py-2 text-fg outline-none focus:border-accent" />
+            className="w-full rounded-lg border border-spoto-line bg-spoto-bg px-3 py-2 text-spoto-ink outline-none focus:border-spoto-purple" />
         </Field>
         <div className="grid grid-cols-2 gap-3">
           <Field label="Base price (₹)">
             <input inputMode="decimal" value={basePrice} onChange={(e) => setBasePrice(e.target.value)} required
-              className="w-full rounded-lg border border-border bg-bg px-3 py-2 text-fg outline-none focus:border-accent" />
+              className="w-full rounded-lg border border-spoto-line bg-spoto-bg px-3 py-2 text-spoto-ink outline-none focus:border-spoto-purple" />
           </Field>
           <Field label="GST %">
             <input inputMode="decimal" value={gstRate} onChange={(e) => setGstRate(e.target.value)}
-              className="w-full rounded-lg border border-border bg-bg px-3 py-2 text-fg outline-none focus:border-accent" />
+              className="w-full rounded-lg border border-spoto-line bg-spoto-bg px-3 py-2 text-spoto-ink outline-none focus:border-spoto-purple" />
           </Field>
           <Field label="Pieces / plate">
             <input inputMode="numeric" value={pieces} onChange={(e) => setPieces(e.target.value)}
-              className="w-full rounded-lg border border-border bg-bg px-3 py-2 text-fg outline-none focus:border-accent" />
+              className="w-full rounded-lg border border-spoto-line bg-spoto-bg px-3 py-2 text-spoto-ink outline-none focus:border-spoto-purple" />
           </Field>
           <div className="flex flex-col justify-end gap-2 pb-1">
-            <label className="flex items-center gap-2 text-sm text-fg">
+            <label className="flex items-center gap-2 text-sm text-spoto-ink">
               <input type="checkbox" checked={isVeg} onChange={(e) => setIsVeg(e.target.checked)} /> Veg
             </label>
-            <label className="flex items-center gap-2 text-sm text-fg">
+            <label className="flex items-center gap-2 text-sm text-spoto-ink">
               <input type="checkbox" checked={available} onChange={(e) => setAvailable(e.target.checked)} /> Available
             </label>
           </div>
@@ -96,7 +96,7 @@ export function ItemForm({
 
         {error && <p className="mt-2 text-sm text-danger">{error}</p>}
         <div className="mt-5 flex gap-2">
-          {item && <Button type="button" variant="danger" onClick={remove}>Delete</Button>}
+          {item && <Button type="button" variant="destructive" onClick={remove}>Delete</Button>}
           <Button type="submit" className="ml-auto" disabled={saving}>{saving ? 'Saving…' : 'Save'}</Button>
         </div>
       </form>
@@ -106,7 +106,7 @@ export function ItemForm({
 
 function Field({ label, children }: { label: string; children: React.ReactNode }) {
   return (
-    <label className="mb-3 flex flex-col gap-1 text-sm text-muted">
+    <label className="mb-3 flex flex-col gap-1 text-sm text-spoto-muted">
       {label}
       {children}
     </label>

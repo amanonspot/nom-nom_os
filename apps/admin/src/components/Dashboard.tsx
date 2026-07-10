@@ -1,43 +1,51 @@
 'use client';
 
-import { useState } from 'react';
+import { useCallback, useEffect, useState } from 'react';
+import { LayoutGrid, ListTree, UtensilsCrossed } from 'lucide-react';
+import { StatCard } from '@nomnom/ui';
+import type { CategoryWithItems, Table } from '@nomnom/types';
 import { useSession } from '@/lib/session';
+import { AppShell, type Tab } from './AppShell';
 import { MenuManager } from './MenuManager';
 import { TableManager } from './TableManager';
 
-type Tab = 'menu' | 'tables';
-
 export function Dashboard() {
-  const { me, logout } = useSession();
+  const { me, logout, authFetch, branchId } = useSession();
   const [tab, setTab] = useState<Tab>('menu');
+  const [stats, setStats] = useState({ categories: 0, items: 0, tables: 0 });
+
+  const loadStats = useCallback(async () => {
+    if (!branchId) return;
+    const [tree, tables] = await Promise.all([
+      authFetch<CategoryWithItems[]>(`/api/catalog/menu/?branch=${branchId}`),
+      authFetch<Table[]>(`/api/ops/tables/?branch=${branchId}`),
+    ]);
+    const items = tree.reduce((n, c) => n + (c.items?.length ?? 0), 0);
+    setStats({ categories: tree.length, items, tables: tables.length });
+  }, [authFetch, branchId]);
+
+  useEffect(() => {
+    void loadStats();
+  }, [loadStats, tab]);
 
   return (
-    <div className="mx-auto max-w-5xl px-4 py-6">
-      <header className="mb-6 flex items-center justify-between">
-        <div>
-          <p className="text-xs uppercase tracking-widest text-accent-2">Nom Nom OS · Admin</p>
-          <h1 className="font-display text-2xl font-bold text-fg">
-            {me?.restaurant?.name ?? 'Restaurant'} — {me?.branch?.name ?? ''}
-          </h1>
-        </div>
-        <button onClick={logout} className="text-sm text-muted underline">Sign out</button>
-      </header>
+    <AppShell tab={tab} setTab={setTab} me={me} onLogout={logout}>
+      <div className="mb-6">
+        <p className="text-xs uppercase tracking-widest text-spoto-purple-ink">
+          {me?.restaurant?.name ?? 'Restaurant'} · {me?.branch?.name ?? ''}
+        </p>
+        <h1 className="font-heading text-2xl font-bold text-spoto-ink">
+          {tab === 'menu' ? 'Menu' : 'Tables'}
+        </h1>
+      </div>
 
-      <nav className="mb-6 flex gap-2">
-        {(['menu', 'tables'] as Tab[]).map((t) => (
-          <button
-            key={t}
-            onClick={() => setTab(t)}
-            className={`rounded-lg px-4 py-2 text-sm capitalize ${
-              tab === t ? 'bg-accent text-white' : 'border border-border bg-surface text-fg'
-            }`}
-          >
-            {t}
-          </button>
-        ))}
-      </nav>
+      <div className="mb-8 grid gap-3 sm:grid-cols-3">
+        <StatCard label="Categories" value={stats.categories} icon={ListTree} accent="purple" />
+        <StatCard label="Menu items" value={stats.items} icon={UtensilsCrossed} accent="green" />
+        <StatCard label="Tables" value={stats.tables} icon={LayoutGrid} accent="amber" />
+      </div>
 
-      {tab === 'menu' ? <MenuManager /> : <TableManager />}
-    </div>
+      {tab === 'menu' ? <MenuManager onDataChange={loadStats} /> : <TableManager onDataChange={loadStats} />}
+    </AppShell>
   );
 }

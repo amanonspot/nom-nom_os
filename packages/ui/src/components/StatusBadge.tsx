@@ -1,19 +1,38 @@
+import { cn } from '../lib/utils';
+
+/*
+ * Tone-based badge — API kept stable for the apps (veg/table-status/etc.), but
+ * restyled to the spotorangeradmin look: rounded-full pill, heading font, a
+ * tinted background with a matching text color.
+ */
 type Tone = 'veg' | 'nonveg' | 'success' | 'warning' | 'danger' | 'free' | 'occupied';
 
 const tones: Record<Tone, string> = {
-  veg: 'text-veg border-veg',
-  nonveg: 'text-nonveg border-nonveg',
-  success: 'text-success border-success',
-  warning: 'text-warning border-warning',
-  danger: 'text-danger border-danger',
-  free: 'text-status-free border-status-free',
-  occupied: 'text-status-occupied border-status-occupied',
+  veg: 'bg-veg/15 text-veg',
+  nonveg: 'bg-nonveg/15 text-nonveg',
+  success: 'bg-success/15 text-success',
+  warning: 'bg-warning/15 text-warning',
+  danger: 'bg-danger/15 text-danger',
+  free: 'bg-status-free/15 text-status-free',
+  occupied: 'bg-status-occupied/15 text-status-occupied',
 };
 
-export function StatusBadge({ tone, children }: { tone: Tone; children: React.ReactNode }) {
+export function StatusBadge({
+  tone,
+  children,
+  className,
+}: {
+  tone: Tone;
+  children: React.ReactNode;
+  className?: string;
+}) {
   return (
     <span
-      className={`inline-flex items-center gap-1 rounded-full border px-2 py-0.5 text-xs font-medium ${tones[tone]}`}
+      className={cn(
+        'inline-flex items-center gap-1 rounded-full px-3 py-1 text-xs font-heading font-bold',
+        tones[tone],
+        className,
+      )}
     >
       {children}
     </span>

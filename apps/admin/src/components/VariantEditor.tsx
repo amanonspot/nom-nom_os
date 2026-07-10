@@ -48,18 +48,18 @@ export function VariantEditor({ item, onChange }: { item: MenuItem; onChange: ()
     run(() => authFetch(`/api/catalog/variation-options/${id}/`, { method: 'DELETE' }));
 
   return (
-    <div className="border-t border-border bg-bg/40 p-3" aria-busy={busy}>
+    <div className="border-t border-spoto-line bg-spoto-bg/40 p-3" aria-busy={busy}>
       {groups.map((g) => (
         <div key={g.id} className="mb-3">
           <div className="mb-1 flex items-center gap-2">
-            <span className="text-sm font-medium text-fg">{g.name}</span>
+            <span className="text-sm font-medium text-spoto-ink">{g.name}</span>
             {g.is_required && <span className="text-xs text-danger">required</span>}
-            <button onClick={() => addOption(g.id)} className="text-xs text-accent-2">+ option</button>
+            <button onClick={() => addOption(g.id)} className="text-xs text-spoto-purple-ink">+ option</button>
             <button onClick={() => delGroup(g.id)} className="text-xs text-danger">delete group</button>
           </div>
           <div className="flex flex-wrap gap-2">
             {g.options.map((o) => (
-              <span key={o.id} className="flex items-center gap-1 rounded-md border border-border px-2 py-1 text-xs text-fg">
+              <span key={o.id} className="flex items-center gap-1 rounded-md border border-spoto-line px-2 py-1 text-xs text-spoto-ink">
                 {o.name}
                 {Number(o.price_delta) !== 0 && ` (${Number(o.price_delta) > 0 ? '+' : ''}₹${Number(o.price_delta)})`}
                 <button onClick={() => delOption(o.id)} className="text-danger">×</button>
@@ -68,7 +68,7 @@ export function VariantEditor({ item, onChange }: { item: MenuItem; onChange: ()
           </div>
         </div>
       ))}
-      <button onClick={addGroup} className="text-sm text-accent-2">+ Variation group</button>
+      <button onClick={addGroup} className="text-sm text-spoto-purple-ink">+ Variation group</button>
     </div>
   );
 }
