@@ -63,6 +63,7 @@ class OrderItemReadSerializer(serializers.ModelSerializer):
             "gst_rate",
             "notes",
             "is_void",
+            "kitchen_status",
             "options",
             "add_ons",
             "line_total",
@@ -105,6 +106,7 @@ class OrderSerializer(serializers.ModelSerializer):
             "placed_by",
             "order_type",
             "status",
+            "kitchen_status",
             "number",
             "subtotal",
             "tax_total",
@@ -114,7 +116,7 @@ class OrderSerializer(serializers.ModelSerializer):
             "items_write",
             "payments",
         ]
-        read_only_fields = ["number", "subtotal", "tax_total", "grand_total"]
+        read_only_fields = ["number", "subtotal", "tax_total", "grand_total", "kitchen_status"]
 
     def _build_lines(self, order, items_data):
         for line in items_data:

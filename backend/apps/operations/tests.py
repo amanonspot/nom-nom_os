@@ -106,3 +106,40 @@ class OrderFlowTests(APITestCase):
         tree = res.json()
         item = tree[0]["items"][0]
         self.assertEqual(item["variation_groups"][0]["options"][0]["name"], "Mutton")
+
+    def _two_item_order(self):
+        payload = {
+            "branch": str(self.branch.id),
+            "order_type": "takeaway",
+            "items_write": [
+                {"menu_item": str(self.item.id), "quantity": 1},
+                {"menu_item": str(self.item.id), "quantity": 2},
+            ],
+        }
+        return self.client.post("/api/ops/orders/", payload, format="json").json()
+
+    def test_kitchen_rollup_per_ticket(self):
+        order = self._two_item_order()
+        self.assertEqual(order["kitchen_status"], "pending")
+        # Bump the whole ticket to cooking.
+        res = self.client.post(f"/api/ops/orders/{order['id']}/kitchen/", {"status": "cooking"}, format="json")
+        self.assertEqual(res.status_code, 200)
+        self.assertEqual(res.json()["kitchen_status"], "cooking")
+        for item in res.json()["items"]:
+            self.assertEqual(item["kitchen_status"], "cooking")
+
+    def test_kitchen_rollup_per_item_is_least_advanced(self):
+        order = self._two_item_order()
+        item_ids = [i["id"] for i in order["items"]]
+        # Advance only the first item to ready; order stays 'pending' (other item pending).
+        r1 = self.client.post(f"/api/ops/order-items/{item_ids[0]}/kitchen/", {"status": "ready"}, format="json")
+        self.assertEqual(r1.status_code, 200)
+        self.assertEqual(r1.json()["kitchen_status"], "pending")
+        # Advance the second item to ready too; order rolls up to 'ready'.
+        r2 = self.client.post(f"/api/ops/order-items/{item_ids[1]}/kitchen/", {"status": "ready"}, format="json")
+        self.assertEqual(r2.json()["kitchen_status"], "ready")
+
+    def test_kitchen_rejects_bad_status(self):
+        order = self._two_item_order()
+        res = self.client.post(f"/api/ops/orders/{order['id']}/kitchen/", {"status": "burnt"}, format="json")
+        self.assertEqual(res.status_code, 400)

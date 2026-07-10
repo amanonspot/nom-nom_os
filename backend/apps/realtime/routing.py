@@ -1,7 +1,9 @@
-"""WebSocket URL routing. KDS consumers are added in Phase 2."""
+"""WebSocket URL routing for the KDS."""
 
 from django.urls import path
 
-websocket_urlpatterns: list[path] = [
-    # path("ws/kds/<branch_id>/", KdsConsumer.as_asgi()),  # Phase 2
+from .consumers import KdsConsumer
+
+websocket_urlpatterns = [
+    path("ws/kds/<branch_id>/", KdsConsumer.as_asgi()),
 ]

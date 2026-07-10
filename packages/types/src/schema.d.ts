@@ -317,6 +317,57 @@ export interface paths {
         patch?: never;
         trace?: never;
     };
+    "/api/ops/order-items/": {
+        parameters: {
+            query?: never;
+            header?: never;
+            path?: never;
+            cookie?: never;
+        };
+        /** @description Read + per-item kitchen status advance. */
+        get: operations["ops_order_items_list"];
+        put?: never;
+        post?: never;
+        delete?: never;
+        options?: never;
+        head?: never;
+        patch?: never;
+        trace?: never;
+    };
+    "/api/ops/order-items/{id}/": {
+        parameters: {
+            query?: never;
+            header?: never;
+            path?: never;
+            cookie?: never;
+        };
+        /** @description Read + per-item kitchen status advance. */
+        get: operations["ops_order_items_retrieve"];
+        put?: never;
+        post?: never;
+        delete?: never;
+        options?: never;
+        head?: never;
+        patch?: never;
+        trace?: never;
+    };
+    "/api/ops/order-items/{id}/kitchen/": {
+        parameters: {
+            query?: never;
+            header?: never;
+            path?: never;
+            cookie?: never;
+        };
+        get?: never;
+        put?: never;
+        /** @description Advance a single line's kitchen status, then recompute the order. */
+        post: operations["ops_order_items_kitchen_create"];
+        delete?: never;
+        options?: never;
+        head?: never;
+        patch?: never;
+        trace?: never;
+    };
     "/api/ops/orders/": {
         parameters: {
             query?: never;
@@ -353,6 +404,26 @@ export interface paths {
         head?: never;
         /** @description Base viewset: hides soft-deleted rows and filters by ?branch=<id>. */
         patch: operations["ops_orders_partial_update"];
+        trace?: never;
+    };
+    "/api/ops/orders/{id}/kitchen/": {
+        parameters: {
+            query?: never;
+            header?: never;
+            path?: never;
+            cookie?: never;
+        };
+        get?: never;
+        put?: never;
+        /**
+         * @description Advance the whole ticket: set every active item to the given kitchen
+         *     status, then recompute the order roll-up.
+         */
+        post: operations["ops_orders_kitchen_create"];
+        delete?: never;
+        options?: never;
+        head?: never;
+        patch?: never;
         trace?: never;
     };
     "/api/ops/orders/{id}/settle/": {
@@ -459,6 +530,43 @@ export interface paths {
         patch: operations["ops_tables_partial_update"];
         trace?: never;
     };
+    "/api/sync/pull/": {
+        parameters: {
+            query?: never;
+            header?: never;
+            path?: never;
+            cookie?: never;
+        };
+        /**
+         * @description Return rows changed since ?since (ISO8601). Includes tombstones
+         *     (is_deleted). Omit `since` for a full snapshot.
+         */
+        get: operations["sync_pull"];
+        put?: never;
+        post?: never;
+        delete?: never;
+        options?: never;
+        head?: never;
+        patch?: never;
+        trace?: never;
+    };
+    "/api/sync/push/": {
+        parameters: {
+            query?: never;
+            header?: never;
+            path?: never;
+            cookie?: never;
+        };
+        get?: never;
+        put?: never;
+        /** @description Upsert a batch of orders in order; return per-order acks. */
+        post: operations["sync_push"];
+        delete?: never;
+        options?: never;
+        head?: never;
+        patch?: never;
+        trace?: never;
+    };
 }
 export type webhooks = Record<string, never>;
 export interface components {
@@ -512,6 +620,14 @@ export interface components {
             phone: string;
             name?: string;
         };
+        /**
+         * @description * `pending` - Pending
+         *     * `cooking` - Cooking
+         *     * `ready` - Ready
+         *     * `served` - Served
+         * @enum {string}
+         */
+        KitchenStatusEnum: "pending" | "cooking" | "ready" | "served";
         Me: {
             readonly id: number;
             /** @description Required. 150 characters or fewer. Letters, digits and @/./+/-/_ only. */
@@ -562,7 +678,7 @@ export interface components {
          */
         Order: {
             /** Format: uuid */
-            readonly id: string;
+            id?: string;
             /** Format: uuid */
             branch: string;
             /** Format: uuid */
@@ -572,6 +688,7 @@ export interface components {
             placed_by?: number | null;
             order_type?: components["schemas"]["OrderTypeEnum"];
             status?: components["schemas"]["OrderStatusEnum"];
+            readonly kitchen_status: components["schemas"]["KitchenStatusEnum"];
             readonly number: number | null;
             /** Format: decimal */
             readonly subtotal: string;
@@ -617,6 +734,7 @@ export interface components {
             gst_rate?: string;
             notes?: string;
             is_void?: boolean;
+            kitchen_status?: components["schemas"]["KitchenStatusEnum"];
             readonly options: components["schemas"]["OrderItemOptionRead"][];
             readonly add_ons: components["schemas"]["OrderItemAddOnRead"][];
             /** Format: decimal */
@@ -695,7 +813,7 @@ export interface components {
          */
         PatchedOrder: {
             /** Format: uuid */
-            readonly id?: string;
+            id?: string;
             /** Format: uuid */
             branch?: string;
             /** Format: uuid */
@@ -705,6 +823,7 @@ export interface components {
             placed_by?: number | null;
             order_type?: components["schemas"]["OrderTypeEnum"];
             status?: components["schemas"]["OrderStatusEnum"];
+            readonly kitchen_status?: components["schemas"]["KitchenStatusEnum"];
             readonly number?: number | null;
             /** Format: decimal */
             readonly subtotal?: string;
@@ -1828,6 +1947,76 @@ export interface operations {
             };
         };
     };
+    ops_order_items_list: {
+        parameters: {
+            query?: never;
+            header?: never;
+            path?: never;
+            cookie?: never;
+        };
+        requestBody?: never;
+        responses: {
+            200: {
+                headers: {
+                    [name: string]: unknown;
+                };
+                content: {
+                    "application/json": components["schemas"]["OrderItemRead"][];
+                };
+            };
+        };
+    };
+    ops_order_items_retrieve: {
+        parameters: {
+            query?: never;
+            header?: never;
+            path: {
+                /** @description A UUID string identifying this order item. */
+                id: string;
+            };
+            cookie?: never;
+        };
+        requestBody?: never;
+        responses: {
+            200: {
+                headers: {
+                    [name: string]: unknown;
+                };
+                content: {
+                    "application/json": components["schemas"]["OrderItemRead"];
+                };
+            };
+        };
+    };
+    ops_order_items_kitchen_create: {
+        parameters: {
+            query?: never;
+            header?: never;
+            path: {
+                /** @description A UUID string identifying this order item. */
+                id: string;
+            };
+            cookie?: never;
+        };
+        requestBody?: {
+            content: {
+                type: {
+                    [key: string]: unknown;
+                };
+                properties: unknown;
+            };
+        };
+        responses: {
+            200: {
+                headers: {
+                    [name: string]: unknown;
+                };
+                content: {
+                    "application/json": components["schemas"]["OrderItemRead"];
+                };
+            };
+        };
+    };
     ops_orders_list: {
         parameters: {
             query?: never;
@@ -1958,6 +2147,37 @@ export interface operations {
                 "application/json": components["schemas"]["PatchedOrder"];
                 "application/x-www-form-urlencoded": components["schemas"]["PatchedOrder"];
                 "multipart/form-data": components["schemas"]["PatchedOrder"];
+            };
+        };
+        responses: {
+            200: {
+                headers: {
+                    [name: string]: unknown;
+                };
+                content: {
+                    "application/json": components["schemas"]["Order"];
+                };
+            };
+        };
+    };
+    ops_orders_kitchen_create: {
+        parameters: {
+            query?: {
+                kitchen_status?: string;
+            };
+            header?: never;
+            path: {
+                /** @description A UUID string identifying this order. */
+                id: string;
+            };
+            cookie?: never;
+        };
+        requestBody?: {
+            content: {
+                type: {
+                    [key: string]: unknown;
+                };
+                properties: unknown;
             };
         };
         responses: {
@@ -2310,6 +2530,58 @@ export interface operations {
                 };
                 content: {
                     "application/json": components["schemas"]["Table"];
+                };
+            };
+        };
+    };
+    sync_pull: {
+        parameters: {
+            query?: {
+                branch?: string;
+                since?: string;
+            };
+            header?: never;
+            path?: never;
+            cookie?: never;
+        };
+        requestBody?: never;
+        responses: {
+            type: {
+                headers: {
+                    [name: string]: unknown;
+                };
+                content: {
+                    "application/json": {
+                        [key: string]: unknown;
+                    };
+                };
+            };
+        };
+    };
+    sync_push: {
+        parameters: {
+            query?: never;
+            header?: never;
+            path?: never;
+            cookie?: never;
+        };
+        requestBody?: {
+            content: {
+                type: {
+                    [key: string]: unknown;
+                };
+                properties: unknown;
+            };
+        };
+        responses: {
+            type: {
+                headers: {
+                    [name: string]: unknown;
+                };
+                content: {
+                    "application/json": {
+                        [key: string]: unknown;
+                    };
                 };
             };
         };

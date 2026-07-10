@@ -48,6 +48,22 @@ class Customer(SyncableModel):
         return f"{self.name or 'Guest'} ({self.phone})"
 
 
+class KitchenStatus(models.TextChoices):
+    PENDING = "pending", "Pending"
+    COOKING = "cooking", "Cooking"
+    READY = "ready", "Ready"
+    SERVED = "served", "Served"
+
+
+# Progression order for the KDS roll-up (least → most advanced).
+KITCHEN_RANK = {
+    KitchenStatus.PENDING: 0,
+    KitchenStatus.COOKING: 1,
+    KitchenStatus.READY: 2,
+    KitchenStatus.SERVED: 3,
+}
+
+
 class Order(SyncableModel):
     class Status(models.TextChoices):
         OPEN = "open", "Open"
@@ -75,6 +91,10 @@ class Order(SyncableModel):
         max_length=12, choices=OrderType.choices, default=OrderType.DINE_IN
     )
     status = models.CharField(max_length=12, choices=Status.choices, default=Status.OPEN)
+    # Kitchen (KDS) status — a roll-up of the order's items; see recompute_kitchen_status.
+    kitchen_status = models.CharField(
+        max_length=12, choices=KitchenStatus.choices, default=KitchenStatus.PENDING
+    )
     # Human-friendly per-branch sequence (assigned server-side; nullable offline).
     number = models.PositiveIntegerField(null=True, blank=True)
 
@@ -107,6 +127,20 @@ class Order(SyncableModel):
             self.save()
         return self.grand_total
 
+    def recompute_kitchen_status(self, save=True):
+        """Order status = the least-advanced active item (per-order roll-up of
+        per-item statuses). No active items → pending."""
+        # .filter() bypasses any prefetch cache so we see freshly-saved items.
+        ranks = [
+            KITCHEN_RANK[KitchenStatus(item.kitchen_status)]
+            for item in self.items.filter(is_deleted=False, is_void=False)
+        ]
+        rank = min(ranks) if ranks else 0
+        self.kitchen_status = {v: k for k, v in KITCHEN_RANK.items()}[rank]
+        if save:
+            super().save(update_fields=["kitchen_status", "last_modified"])
+        return self.kitchen_status
+
     def __str__(self):
         return f"Order {self.number or self.id}"
 
@@ -123,6 +157,9 @@ class OrderItem(SyncableModel):
     gst_rate = models.DecimalField(max_digits=5, decimal_places=2, default=0)
     notes = models.CharField(max_length=200, blank=True)
     is_void = models.BooleanField(default=False)
+    kitchen_status = models.CharField(
+        max_length=12, choices=KitchenStatus.choices, default=KitchenStatus.PENDING
+    )
 
     @property
     def line_total(self) -> Decimal:

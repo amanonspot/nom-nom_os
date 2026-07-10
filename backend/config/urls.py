@@ -12,6 +12,7 @@ urlpatterns = [
     path("api/", include("apps.accounts.urls")),
     path("api/catalog/", include("apps.catalog.urls")),
     path("api/ops/", include("apps.operations.urls")),
+    path("api/sync/", include("apps.sync.urls")),
     # OpenAPI schema + docs (drives packages/types generation)
     path("api/schema/", SpectacularAPIView.as_view(), name="schema"),
     path(

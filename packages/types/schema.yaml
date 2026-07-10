@@ -1017,6 +1017,80 @@ paths:
               schema:
                 $ref: '#/components/schemas/Customer'
           description: ''
+  /api/ops/order-items/:
+    get:
+      operationId: ops_order_items_list
+      description: Read + per-item kitchen status advance.
+      tags:
+      - ops
+      security:
+      - jwtAuth: []
+      responses:
+        '200':
+          content:
+            application/json:
+              schema:
+                type: array
+                items:
+                  $ref: '#/components/schemas/OrderItemRead'
+          description: ''
+  /api/ops/order-items/{id}/:
+    get:
+      operationId: ops_order_items_retrieve
+      description: Read + per-item kitchen status advance.
+      parameters:
+      - in: path
+        name: id
+        schema:
+          type: string
+          format: uuid
+        description: A UUID string identifying this order item.
+        required: true
+      tags:
+      - ops
+      security:
+      - jwtAuth: []
+      responses:
+        '200':
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/OrderItemRead'
+          description: ''
+  /api/ops/order-items/{id}/kitchen/:
+    post:
+      operationId: ops_order_items_kitchen_create
+      description: Advance a single line's kitchen status, then recompute the order.
+      parameters:
+      - in: path
+        name: id
+        schema:
+          type: string
+          format: uuid
+        description: A UUID string identifying this order item.
+        required: true
+      tags:
+      - ops
+      requestBody:
+        content:
+          type:
+            schema:
+              type: object
+              additionalProperties: {}
+              description: Unspecified request body
+          properties:
+            schema:
+              status:
+                type: string
+      security:
+      - jwtAuth: []
+      responses:
+        '200':
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/OrderItemRead'
+          description: ''
   /api/ops/orders/:
     get:
       operationId: ops_orders_list
@@ -1168,6 +1242,46 @@ paths:
       responses:
         '204':
           description: No response body
+  /api/ops/orders/{id}/kitchen/:
+    post:
+      operationId: ops_orders_kitchen_create
+      description: |-
+        Advance the whole ticket: set every active item to the given kitchen
+        status, then recompute the order roll-up.
+      parameters:
+      - in: path
+        name: id
+        schema:
+          type: string
+          format: uuid
+        description: A UUID string identifying this order.
+        required: true
+      - in: query
+        name: kitchen_status
+        schema:
+          type: string
+      tags:
+      - ops
+      requestBody:
+        content:
+          type:
+            schema:
+              type: object
+              additionalProperties: {}
+              description: Unspecified request body
+          properties:
+            schema:
+              status:
+                type: string
+      security:
+      - jwtAuth: []
+      responses:
+        '200':
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/Order'
+          description: ''
   /api/ops/orders/{id}/settle/:
     post:
       operationId: ops_orders_settle_create
@@ -1539,6 +1653,62 @@ paths:
       responses:
         '204':
           description: No response body
+  /api/sync/pull/:
+    get:
+      operationId: sync_pull
+      description: |-
+        Return rows changed since ?since (ISO8601). Includes tombstones
+        (is_deleted). Omit `since` for a full snapshot.
+      parameters:
+      - in: query
+        name: branch
+        schema:
+          type: string
+      - in: query
+        name: since
+        schema:
+          type: string
+      tags:
+      - sync
+      security:
+      - jwtAuth: []
+      responses:
+        type:
+          content:
+            application/json:
+              schema:
+                type: object
+                additionalProperties: {}
+                description: Unspecified response body
+          description: ''
+  /api/sync/push/:
+    post:
+      operationId: sync_push
+      description: Upsert a batch of orders in order; return per-order acks.
+      tags:
+      - sync
+      requestBody:
+        content:
+          type:
+            schema:
+              type: object
+              additionalProperties: {}
+              description: Unspecified request body
+          properties:
+            schema:
+              orders:
+                type: array
+      security:
+      - jwtAuth: []
+      responses:
+        type:
+          content:
+            application/json:
+              schema:
+                type: object
+                additionalProperties: {}
+                description: Unspecified response body
+          description: ''
 components:
   schemas:
     AddOn:
@@ -1662,6 +1832,18 @@ components:
       - branch
       - id
       - phone
+    KitchenStatusEnum:
+      enum:
+      - pending
+      - cooking
+      - ready
+      - served
+      type: string
+      description: |-
+        * `pending` - Pending
+        * `cooking` - Cooking
+        * `ready` - Ready
+        * `served` - Served
     Me:
       type: object
       properties:
@@ -1775,7 +1957,6 @@ components:
         id:
           type: string
           format: uuid
-          readOnly: true
         branch:
           type: string
           format: uuid
@@ -1794,6 +1975,10 @@ components:
           $ref: '#/components/schemas/OrderTypeEnum'
         status:
           $ref: '#/components/schemas/OrderStatusEnum'
+        kitchen_status:
+          allOf:
+          - $ref: '#/components/schemas/KitchenStatusEnum'
+          readOnly: true
         number:
           type: integer
           readOnly: true
@@ -1835,8 +2020,8 @@ components:
       required:
       - branch
       - grand_total
-      - id
       - items
+      - kitchen_status
       - number
       - payments
       - subtotal
@@ -1914,6 +2099,8 @@ components:
           maxLength: 200
         is_void:
           type: boolean
+        kitchen_status:
+          $ref: '#/components/schemas/KitchenStatusEnum'
         options:
           type: array
           items:
@@ -2076,7 +2263,6 @@ components:
         id:
           type: string
           format: uuid
-          readOnly: true
         branch:
           type: string
           format: uuid
@@ -2095,6 +2281,10 @@ components:
           $ref: '#/components/schemas/OrderTypeEnum'
         status:
           $ref: '#/components/schemas/OrderStatusEnum'
+        kitchen_status:
+          allOf:
+          - $ref: '#/components/schemas/KitchenStatusEnum'
+          readOnly: true
         number:
           type: integer
           readOnly: true
