@@ -31,7 +31,7 @@ class CustomerSerializer(serializers.ModelSerializer):
 class PaymentSerializer(serializers.ModelSerializer):
     class Meta:
         model = Payment
-        fields = ["id", "order", "mode", "amount", "reference"]
+        fields = ["id", "order", "mode", "amount", "tendered", "reference"]
 
 
 class OrderItemOptionReadSerializer(serializers.ModelSerializer):
@@ -63,6 +63,7 @@ class OrderItemReadSerializer(serializers.ModelSerializer):
             "gst_rate",
             "notes",
             "is_void",
+            "is_complimentary",
             "kitchen_status",
             "options",
             "add_ons",
@@ -77,6 +78,7 @@ class _OrderItemWriteSerializer(serializers.Serializer):
     menu_item = serializers.PrimaryKeyRelatedField(queryset=MenuItem.objects.all())
     quantity = serializers.IntegerField(min_value=1, default=1)
     notes = serializers.CharField(required=False, allow_blank=True, default="")
+    is_complimentary = serializers.BooleanField(required=False, default=False)
     option_ids = serializers.PrimaryKeyRelatedField(
         queryset=VariationOption.objects.all(), many=True, required=False, default=list
     )
@@ -95,6 +97,9 @@ class OrderSerializer(serializers.ModelSerializer):
     items = OrderItemReadSerializer(many=True, read_only=True)
     items_write = _OrderItemWriteSerializer(many=True, write_only=True, required=False)
     payments = PaymentSerializer(many=True, read_only=True)
+    # Guest capture: phone (+ optional name) → get_or_create Customer, link.
+    customer_phone = serializers.CharField(write_only=True, required=False, allow_blank=True)
+    customer_name = serializers.CharField(write_only=True, required=False, allow_blank=True)
 
     class Meta:
         model = Order
@@ -103,8 +108,12 @@ class OrderSerializer(serializers.ModelSerializer):
             "branch",
             "table",
             "customer",
+            "customer_phone",
+            "customer_name",
             "placed_by",
             "order_type",
+            "covers",
+            "delivery_address",
             "status",
             "kitchen_status",
             "number",
@@ -112,11 +121,37 @@ class OrderSerializer(serializers.ModelSerializer):
             "tax_total",
             "discount_total",
             "grand_total",
+            "is_complimentary",
+            "comp_reason",
+            "served_at",
+            "paid_at",
             "items",
             "items_write",
             "payments",
         ]
-        read_only_fields = ["number", "subtotal", "tax_total", "grand_total", "kitchen_status"]
+        read_only_fields = [
+            "number",
+            "subtotal",
+            "tax_total",
+            "grand_total",
+            "kitchen_status",
+            "served_at",
+            "paid_at",
+        ]
+
+    def _resolve_customer(self, validated_data, branch):
+        """Pop guest phone/name → get_or_create a Customer and set it on the order."""
+        phone = validated_data.pop("customer_phone", "").strip()
+        name = validated_data.pop("customer_name", "").strip()
+        if not phone:
+            return
+        customer, created = Customer.objects.get_or_create(
+            branch=branch, phone=phone, defaults={"name": name}
+        )
+        if name and (created or not customer.name):
+            customer.name = name
+            customer.save()
+        validated_data["customer"] = customer
 
     def _build_lines(self, order, items_data):
         for line in items_data:
@@ -133,6 +168,7 @@ class OrderSerializer(serializers.ModelSerializer):
                 unit_price=unit,
                 gst_rate=item.gst_rate,
                 notes=line.get("notes", ""),
+                is_complimentary=line.get("is_complimentary", False),
             )
             for opt in options:
                 OrderItemOption.objects.create(
@@ -154,9 +190,15 @@ class OrderSerializer(serializers.ModelSerializer):
         if order_id and Order.objects.filter(id=order_id).exists():
             instance = Order.objects.get(id=order_id)
             return self.update(instance, {**validated_data, "items_write": items_data})
-        order = Order.objects.create(id=order_id, **validated_data) if order_id else Order.objects.create(**validated_data)
+        self._resolve_customer(validated_data, validated_data.get("branch"))
+        order = (
+            Order.objects.create(id=order_id, **validated_data)
+            if order_id
+            else Order.objects.create(**validated_data)
+        )
+        order.assign_number()  # the Bill No
         self._build_lines(order, items_data)
-        order.recompute_totals()
+        order.recompute_totals()  # saves (persists number + totals)
         if order.table and order.status == Order.Status.OPEN:
             order.table.status = Table.Status.OCCUPIED
             order.table.save()
@@ -165,8 +207,10 @@ class OrderSerializer(serializers.ModelSerializer):
     @transaction.atomic
     def update(self, instance, validated_data):
         items_data = validated_data.pop("items_write", None)
+        self._resolve_customer(validated_data, instance.branch)
         for attr, value in validated_data.items():
             setattr(instance, attr, value)
+        instance.assign_number()
         instance.save()
         if items_data is not None:
             instance.items.all().delete()  # replace lines wholesale

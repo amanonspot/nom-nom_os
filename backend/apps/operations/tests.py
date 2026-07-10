@@ -143,3 +143,72 @@ class OrderFlowTests(APITestCase):
         order = self._two_item_order()
         res = self.client.post(f"/api/ops/orders/{order['id']}/kitchen/", {"status": "burnt"}, format="json")
         self.assertEqual(res.status_code, 400)
+
+    # --- POS overhaul: bill no, guest, change table, comp, calculator ------
+    def test_bill_number_is_sequential_per_branch(self):
+        n1 = self._create_order().json()["number"]
+        n2 = self._create_order().json()["number"]
+        self.assertEqual(n2, n1 + 1)
+
+    def test_guest_phone_creates_and_links_customer(self):
+        from apps.operations.models import Customer
+
+        payload = {
+            "branch": str(self.branch.id),
+            "order_type": "takeaway",
+            "customer_phone": "9998887777",
+            "customer_name": "Asha",
+            "items_write": [{"menu_item": str(self.item.id), "quantity": 1}],
+        }
+        res = self.client.post("/api/ops/orders/", payload, format="json")
+        self.assertEqual(res.status_code, 201, res.content)
+        cust = Customer.objects.get(branch=self.branch, phone="9998887777")
+        self.assertEqual(cust.name, "Asha")
+        self.assertEqual(res.json()["customer"], str(cust.id))
+
+    def test_assign_table_moves_and_frees(self):
+        t2 = Table.objects.create(branch=self.branch, name="T2")
+        order = self._create_order().json()  # occupies self.table (T1)
+        self.table.refresh_from_db()
+        self.assertEqual(self.table.status, Table.Status.OCCUPIED)
+        res = self.client.post(
+            f"/api/ops/orders/{order['id']}/assign_table/", {"table": str(t2.id)}, format="json"
+        )
+        self.assertEqual(res.status_code, 200, res.content)
+        self.table.refresh_from_db(); t2.refresh_from_db()
+        self.assertEqual(self.table.status, Table.Status.FREE)   # old freed
+        self.assertEqual(t2.status, Table.Status.OCCUPIED)       # new occupied
+
+    def test_comp_item_and_bill_require_pin_and_zero_totals(self):
+        order = self._create_order(qty=2).json()  # 2× (180+80+30)=580 + 5% = 609
+        oid = order["id"]
+        # Wrong PIN rejected.
+        bad = self.client.post(f"/api/ops/orders/{oid}/comp/", {"scope": "bill", "pin": "0000"}, format="json")
+        self.assertEqual(bad.status_code, 403)
+        # Comp the single line → subtotal drops to 0 (only line comped).
+        item_id = order["items"][0]["id"]
+        r_item = self.client.post(
+            f"/api/ops/orders/{oid}/comp/",
+            {"scope": "item", "item": item_id, "reason": "cold food", "pin": "4321"},
+            format="json",
+        )
+        self.assertEqual(r_item.status_code, 200, r_item.content)
+        self.assertEqual(Decimal(r_item.json()["subtotal"]), Decimal("0.00"))
+        # Comp the whole bill → grand_total 0.
+        r_bill = self.client.post(
+            f"/api/ops/orders/{oid}/comp/", {"scope": "bill", "reason": "vip", "pin": "4321"}, format="json"
+        )
+        self.assertEqual(Decimal(r_bill.json()["grand_total"]), Decimal("0.00"))
+
+    def test_settle_records_tendered_and_paid_at(self):
+        order = self._create_order().json()
+        oid, total = order["id"], order["grand_total"]
+        res = self.client.post(
+            f"/api/ops/orders/{oid}/settle/",
+            [{"mode": "cash", "amount": total, "tendered": "1000.00"}],
+            format="json",
+        )
+        self.assertEqual(res.status_code, 200, res.content)
+        self.assertEqual(res.json()["status"], Order.Status.PAID)
+        self.assertIsNotNone(res.json()["paid_at"])
+        self.assertEqual(res.json()["payments"][0]["tendered"], "1000.00")

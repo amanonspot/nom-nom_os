@@ -1,4 +1,5 @@
 from django.db import models as dj_models
+from django.utils import timezone
 from drf_spectacular.utils import OpenApiParameter, extend_schema
 from rest_framework import status, viewsets
 from rest_framework.decorators import action
@@ -100,11 +101,76 @@ class OrderViewSet(BranchScopedViewSet):
         paid = order.payments.alive().aggregate(t=dj_models.Sum("amount"))["t"] or 0
         if paid >= order.grand_total:
             order.status = Order.Status.PAID
+            order.paid_at = timezone.now()
             order.save()
             if order.table:
                 order.table.status = Table.Status.FREE
                 order.table.save()
+        # Re-fetch so the response includes the freshly-created payments.
+        fresh = self.get_queryset().get(pk=order.pk)
+        return Response(self.get_serializer(fresh).data)
+
+    @extend_schema(request={"type": "object", "properties": {"table": {"type": "string"}}})
+    @action(detail=True, methods=["post"])
+    def assign_table(self, request, pk=None):
+        """Move an order to a different table (guests shift): free the old table,
+        occupy the new one."""
+        order = self.get_object()
+        table_id = request.data.get("table")
+        try:
+            new_table = Table.objects.alive().get(id=table_id, branch=order.branch)
+        except Table.DoesNotExist:
+            return Response({"detail": "Table not found."}, status=status.HTTP_404_NOT_FOUND)
+        old = order.table
+        if old and old.id != new_table.id and order.status != Order.Status.PAID:
+            old.status = Table.Status.FREE
+            old.save()
+        order.table = new_table
+        order.save()
+        if order.status in {Order.Status.OPEN, Order.Status.HELD, Order.Status.BILLED}:
+            new_table.status = Table.Status.OCCUPIED
+            new_table.save()
         return Response(self.get_serializer(order).data)
+
+    @extend_schema(
+        request={
+            "type": "object",
+            "properties": {
+                "scope": {"type": "string"},
+                "item": {"type": "string"},
+                "reason": {"type": "string"},
+                "pin": {"type": "string"},
+            },
+        }
+    )
+    @action(detail=True, methods=["post"])
+    def comp(self, request, pk=None):
+        """Complimentary handling (unhappy guest). scope='bill' comps the whole
+        order; scope='item' comps a single line. Manager-PIN gated."""
+        order = self.get_object()
+        user = request.user
+        pin = request.data.get("pin", "")
+        if not (user.can_authorize_overrides and user.check_manager_pin(pin)):
+            return Response(
+                {"detail": "Manager PIN required."}, status=status.HTTP_403_FORBIDDEN
+            )
+        scope = request.data.get("scope", "bill")
+        reason = request.data.get("reason", "")
+        if scope == "item":
+            try:
+                line = order.items.alive().get(id=request.data.get("item"))
+            except OrderItem.DoesNotExist:
+                return Response({"detail": "Item not found."}, status=status.HTTP_404_NOT_FOUND)
+            line.is_complimentary = True
+            line.comp_reason = reason
+            line.save()
+        else:
+            order.is_complimentary = True
+            order.comp_reason = reason
+            order.save()
+        order.recompute_totals()
+        fresh = self.get_queryset().get(pk=order.pk)
+        return Response(self.get_serializer(fresh).data)
 
 
 class OrderItemViewSet(viewsets.ReadOnlyModelViewSet):

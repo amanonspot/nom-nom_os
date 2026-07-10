@@ -406,6 +406,46 @@ export interface paths {
         patch: operations["ops_orders_partial_update"];
         trace?: never;
     };
+    "/api/ops/orders/{id}/assign_table/": {
+        parameters: {
+            query?: never;
+            header?: never;
+            path?: never;
+            cookie?: never;
+        };
+        get?: never;
+        put?: never;
+        /**
+         * @description Move an order to a different table (guests shift): free the old table,
+         *     occupy the new one.
+         */
+        post: operations["ops_orders_assign_table_create"];
+        delete?: never;
+        options?: never;
+        head?: never;
+        patch?: never;
+        trace?: never;
+    };
+    "/api/ops/orders/{id}/comp/": {
+        parameters: {
+            query?: never;
+            header?: never;
+            path?: never;
+            cookie?: never;
+        };
+        get?: never;
+        put?: never;
+        /**
+         * @description Complimentary handling (unhappy guest). scope='bill' comps the whole
+         *     order; scope='item' comps a single line. Manager-PIN gated.
+         */
+        post: operations["ops_orders_comp_create"];
+        delete?: never;
+        options?: never;
+        head?: never;
+        patch?: never;
+        trace?: never;
+    };
     "/api/ops/orders/{id}/kitchen/": {
         parameters: {
             query?: never;
@@ -685,8 +725,13 @@ export interface components {
             table?: string | null;
             /** Format: uuid */
             customer?: string | null;
+            customer_phone?: string;
+            customer_name?: string;
             placed_by?: number | null;
             order_type?: components["schemas"]["OrderTypeEnum"];
+            /** Format: int64 */
+            covers?: number;
+            delivery_address?: string;
             status?: components["schemas"]["OrderStatusEnum"];
             readonly kitchen_status: components["schemas"]["KitchenStatusEnum"];
             readonly number: number | null;
@@ -698,6 +743,12 @@ export interface components {
             discount_total?: string;
             /** Format: decimal */
             readonly grand_total: string;
+            is_complimentary?: boolean;
+            comp_reason?: string;
+            /** Format: date-time */
+            readonly served_at: string | null;
+            /** Format: date-time */
+            readonly paid_at: string | null;
             readonly items: components["schemas"]["OrderItemRead"][];
             items_write?: components["schemas"]["_OrderItemWrite"][];
             readonly payments: components["schemas"]["Payment"][];
@@ -734,6 +785,7 @@ export interface components {
             gst_rate?: string;
             notes?: string;
             is_void?: boolean;
+            is_complimentary?: boolean;
             kitchen_status?: components["schemas"]["KitchenStatusEnum"];
             readonly options: components["schemas"]["OrderItemOptionRead"][];
             readonly add_ons: components["schemas"]["OrderItemAddOnRead"][];
@@ -753,11 +805,12 @@ export interface components {
         OrderStatusEnum: "open" | "held" | "billed" | "paid" | "void";
         /**
          * @description * `dine_in` - Dine-in
-         *     * `takeaway` - Takeaway
+         *     * `takeaway` - Pick up
+         *     * `delivery` - Delivery
          *     * `qr` - QR self-order
          * @enum {string}
          */
-        OrderTypeEnum: "dine_in" | "takeaway" | "qr";
+        OrderTypeEnum: "dine_in" | "takeaway" | "delivery" | "qr";
         PatchedAddOn: {
             /** Format: uuid */
             readonly id?: string;
@@ -820,8 +873,13 @@ export interface components {
             table?: string | null;
             /** Format: uuid */
             customer?: string | null;
+            customer_phone?: string;
+            customer_name?: string;
             placed_by?: number | null;
             order_type?: components["schemas"]["OrderTypeEnum"];
+            /** Format: int64 */
+            covers?: number;
+            delivery_address?: string;
             status?: components["schemas"]["OrderStatusEnum"];
             readonly kitchen_status?: components["schemas"]["KitchenStatusEnum"];
             readonly number?: number | null;
@@ -833,6 +891,12 @@ export interface components {
             discount_total?: string;
             /** Format: decimal */
             readonly grand_total?: string;
+            is_complimentary?: boolean;
+            comp_reason?: string;
+            /** Format: date-time */
+            readonly served_at?: string | null;
+            /** Format: date-time */
+            readonly paid_at?: string | null;
             readonly items?: components["schemas"]["OrderItemRead"][];
             items_write?: components["schemas"]["_OrderItemWrite"][];
             readonly payments?: components["schemas"]["Payment"][];
@@ -845,6 +909,8 @@ export interface components {
             mode?: components["schemas"]["ModeEnum"];
             /** Format: decimal */
             amount?: string;
+            /** Format: decimal */
+            tendered?: string | null;
             reference?: string;
         };
         PatchedTable: {
@@ -889,6 +955,8 @@ export interface components {
             mode: components["schemas"]["ModeEnum"];
             /** Format: decimal */
             amount: string;
+            /** Format: decimal */
+            tendered?: string | null;
             reference?: string;
         };
         Restaurant: {
@@ -968,6 +1036,8 @@ export interface components {
             quantity: number;
             /** @default  */
             notes: string;
+            /** @default false */
+            is_complimentary: boolean;
             option_ids?: string[];
             add_on_ids?: string[];
         };
@@ -2147,6 +2217,64 @@ export interface operations {
                 "application/json": components["schemas"]["PatchedOrder"];
                 "application/x-www-form-urlencoded": components["schemas"]["PatchedOrder"];
                 "multipart/form-data": components["schemas"]["PatchedOrder"];
+            };
+        };
+        responses: {
+            200: {
+                headers: {
+                    [name: string]: unknown;
+                };
+                content: {
+                    "application/json": components["schemas"]["Order"];
+                };
+            };
+        };
+    };
+    ops_orders_assign_table_create: {
+        parameters: {
+            query?: never;
+            header?: never;
+            path: {
+                /** @description A UUID string identifying this order. */
+                id: string;
+            };
+            cookie?: never;
+        };
+        requestBody?: {
+            content: {
+                type: {
+                    [key: string]: unknown;
+                };
+                properties: unknown;
+            };
+        };
+        responses: {
+            200: {
+                headers: {
+                    [name: string]: unknown;
+                };
+                content: {
+                    "application/json": components["schemas"]["Order"];
+                };
+            };
+        };
+    };
+    ops_orders_comp_create: {
+        parameters: {
+            query?: never;
+            header?: never;
+            path: {
+                /** @description A UUID string identifying this order. */
+                id: string;
+            };
+            cookie?: never;
+        };
+        requestBody?: {
+            content: {
+                type: {
+                    [key: string]: unknown;
+                };
+                properties: unknown;
             };
         };
         responses: {

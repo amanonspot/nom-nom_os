@@ -9,6 +9,7 @@ stored as Decimal; a line's total is captured as a snapshot (``unit_price`` +
 from decimal import Decimal
 
 from django.db import models
+from django.utils import timezone
 
 from apps.accounts.models import Branch, User
 from apps.catalog.models import AddOn, MenuItem, VariationOption
@@ -74,7 +75,8 @@ class Order(SyncableModel):
 
     class OrderType(models.TextChoices):
         DINE_IN = "dine_in", "Dine-in"
-        TAKEAWAY = "takeaway", "Takeaway"
+        TAKEAWAY = "takeaway", "Pick up"
+        DELIVERY = "delivery", "Delivery"
         QR = "qr", "QR self-order"
 
     branch = models.ForeignKey(Branch, related_name="orders", on_delete=models.CASCADE)
@@ -90,12 +92,15 @@ class Order(SyncableModel):
     order_type = models.CharField(
         max_length=12, choices=OrderType.choices, default=OrderType.DINE_IN
     )
+    # Party size (guests seated). Delivery: the drop address.
+    covers = models.PositiveIntegerField(default=1)
+    delivery_address = models.TextField(blank=True)
     status = models.CharField(max_length=12, choices=Status.choices, default=Status.OPEN)
     # Kitchen (KDS) status — a roll-up of the order's items; see recompute_kitchen_status.
     kitchen_status = models.CharField(
         max_length=12, choices=KitchenStatus.choices, default=KitchenStatus.PENDING
     )
-    # Human-friendly per-branch sequence (assigned server-side; nullable offline).
+    # Human-friendly per-branch sequence (the Bill No), assigned server-side.
     number = models.PositiveIntegerField(null=True, blank=True)
 
     # Monetary snapshot, recomputed on save from live lines.
@@ -103,6 +108,14 @@ class Order(SyncableModel):
     tax_total = models.DecimalField(max_digits=10, decimal_places=2, default=0)
     discount_total = models.DecimalField(max_digits=10, decimal_places=2, default=0)
     grand_total = models.DecimalField(max_digits=10, decimal_places=2, default=0)
+
+    # Whole-bill complimentary (unhappy-guest handling); zeroes the total.
+    is_complimentary = models.BooleanField(default=False)
+    comp_reason = models.CharField(max_length=200, blank=True)
+
+    # Turnaround timeline: created_at = punched; then served, then paid.
+    served_at = models.DateTimeField(null=True, blank=True)
+    paid_at = models.DateTimeField(null=True, blank=True)
 
     voided_by = models.ForeignKey(
         User,
@@ -115,17 +128,34 @@ class Order(SyncableModel):
     def recompute_totals(self, save=True):
         subtotal = Decimal("0")
         tax = Decimal("0")
-        for line in self.items.all():
-            if line.is_deleted or line.is_void:
-                continue
+        # .filter() bypasses any prefetch cache so we see freshly-saved lines.
+        for line in self.items.filter(is_deleted=False, is_void=False):
+            if line.is_complimentary:
+                continue  # comped lines are on the house — excluded from the bill
             subtotal += line.line_total
             tax += line.tax_amount
         self.subtotal = subtotal
         self.tax_total = tax
-        self.grand_total = subtotal + tax - self.discount_total
+        if self.is_complimentary:
+            self.grand_total = Decimal("0")  # whole bill on the house
+        else:
+            self.grand_total = subtotal + tax - self.discount_total
         if save:
             self.save()
         return self.grand_total
+
+    def assign_number(self):
+        """Assign the per-branch sequential Bill No on first persist."""
+        if self.number:
+            return self.number
+        last = (
+            Order.objects.filter(branch=self.branch, number__isnull=False)
+            .order_by("-number")
+            .values_list("number", flat=True)
+            .first()
+        )
+        self.number = (last or 0) + 1
+        return self.number
 
     def recompute_kitchen_status(self, save=True):
         """Order status = the least-advanced active item (per-order roll-up of
@@ -137,8 +167,13 @@ class Order(SyncableModel):
         ]
         rank = min(ranks) if ranks else 0
         self.kitchen_status = {v: k for k, v in KITCHEN_RANK.items()}[rank]
+        fields = ["kitchen_status", "last_modified"]
+        # Stamp the first time the whole ticket is ready (for turnaround timing).
+        if self.kitchen_status == KitchenStatus.READY and self.served_at is None:
+            self.served_at = timezone.now()
+            fields.append("served_at")
         if save:
-            super().save(update_fields=["kitchen_status", "last_modified"])
+            super().save(update_fields=fields)
         return self.kitchen_status
 
     def __str__(self):
@@ -157,6 +192,9 @@ class OrderItem(SyncableModel):
     gst_rate = models.DecimalField(max_digits=5, decimal_places=2, default=0)
     notes = models.CharField(max_length=200, blank=True)
     is_void = models.BooleanField(default=False)
+    # Per-line complimentary (comp a single dish for an unhappy guest).
+    is_complimentary = models.BooleanField(default=False)
+    comp_reason = models.CharField(max_length=200, blank=True)
     kitchen_status = models.CharField(
         max_length=12, choices=KitchenStatus.choices, default=KitchenStatus.PENDING
     )
@@ -208,6 +246,8 @@ class Payment(SyncableModel):
     order = models.ForeignKey(Order, related_name="payments", on_delete=models.CASCADE)
     mode = models.CharField(max_length=8, choices=Mode.choices)
     amount = models.DecimalField(max_digits=10, decimal_places=2)
+    # Cash tendered by the guest (amount handed over); change = tendered - amount.
+    tendered = models.DecimalField(max_digits=10, decimal_places=2, null=True, blank=True)
     reference = models.CharField(max_length=120, blank=True)
 
     def __str__(self):

@@ -1242,6 +1242,84 @@ paths:
       responses:
         '204':
           description: No response body
+  /api/ops/orders/{id}/assign_table/:
+    post:
+      operationId: ops_orders_assign_table_create
+      description: |-
+        Move an order to a different table (guests shift): free the old table,
+        occupy the new one.
+      parameters:
+      - in: path
+        name: id
+        schema:
+          type: string
+          format: uuid
+        description: A UUID string identifying this order.
+        required: true
+      tags:
+      - ops
+      requestBody:
+        content:
+          type:
+            schema:
+              type: object
+              additionalProperties: {}
+              description: Unspecified request body
+          properties:
+            schema:
+              table:
+                type: string
+      security:
+      - jwtAuth: []
+      responses:
+        '200':
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/Order'
+          description: ''
+  /api/ops/orders/{id}/comp/:
+    post:
+      operationId: ops_orders_comp_create
+      description: |-
+        Complimentary handling (unhappy guest). scope='bill' comps the whole
+        order; scope='item' comps a single line. Manager-PIN gated.
+      parameters:
+      - in: path
+        name: id
+        schema:
+          type: string
+          format: uuid
+        description: A UUID string identifying this order.
+        required: true
+      tags:
+      - ops
+      requestBody:
+        content:
+          type:
+            schema:
+              type: object
+              additionalProperties: {}
+              description: Unspecified request body
+          properties:
+            schema:
+              scope:
+                type: string
+              item:
+                type: string
+              reason:
+                type: string
+              pin:
+                type: string
+      security:
+      - jwtAuth: []
+      responses:
+        '200':
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/Order'
+          description: ''
   /api/ops/orders/{id}/kitchen/:
     post:
       operationId: ops_orders_kitchen_create
@@ -1968,11 +2046,24 @@ components:
           type: string
           format: uuid
           nullable: true
+        customer_phone:
+          type: string
+          writeOnly: true
+        customer_name:
+          type: string
+          writeOnly: true
         placed_by:
           type: integer
           nullable: true
         order_type:
           $ref: '#/components/schemas/OrderTypeEnum'
+        covers:
+          type: integer
+          maximum: 9223372036854775807
+          minimum: 0
+          format: int64
+        delivery_address:
+          type: string
         status:
           $ref: '#/components/schemas/OrderStatusEnum'
         kitchen_status:
@@ -2002,6 +2093,21 @@ components:
           format: decimal
           pattern: ^-?\d{0,8}(?:\.\d{0,2})?$
           readOnly: true
+        is_complimentary:
+          type: boolean
+        comp_reason:
+          type: string
+          maxLength: 200
+        served_at:
+          type: string
+          format: date-time
+          readOnly: true
+          nullable: true
+        paid_at:
+          type: string
+          format: date-time
+          readOnly: true
+          nullable: true
         items:
           type: array
           items:
@@ -2023,7 +2129,9 @@ components:
       - items
       - kitchen_status
       - number
+      - paid_at
       - payments
+      - served_at
       - subtotal
       - tax_total
     OrderItemAddOnRead:
@@ -2099,6 +2207,8 @@ components:
           maxLength: 200
         is_void:
           type: boolean
+        is_complimentary:
+          type: boolean
         kitchen_status:
           $ref: '#/components/schemas/KitchenStatusEnum'
         options:
@@ -2148,11 +2258,13 @@ components:
       enum:
       - dine_in
       - takeaway
+      - delivery
       - qr
       type: string
       description: |-
         * `dine_in` - Dine-in
-        * `takeaway` - Takeaway
+        * `takeaway` - Pick up
+        * `delivery` - Delivery
         * `qr` - QR self-order
     PatchedAddOn:
       type: object
@@ -2274,11 +2386,24 @@ components:
           type: string
           format: uuid
           nullable: true
+        customer_phone:
+          type: string
+          writeOnly: true
+        customer_name:
+          type: string
+          writeOnly: true
         placed_by:
           type: integer
           nullable: true
         order_type:
           $ref: '#/components/schemas/OrderTypeEnum'
+        covers:
+          type: integer
+          maximum: 9223372036854775807
+          minimum: 0
+          format: int64
+        delivery_address:
+          type: string
         status:
           $ref: '#/components/schemas/OrderStatusEnum'
         kitchen_status:
@@ -2308,6 +2433,21 @@ components:
           format: decimal
           pattern: ^-?\d{0,8}(?:\.\d{0,2})?$
           readOnly: true
+        is_complimentary:
+          type: boolean
+        comp_reason:
+          type: string
+          maxLength: 200
+        served_at:
+          type: string
+          format: date-time
+          readOnly: true
+          nullable: true
+        paid_at:
+          type: string
+          format: date-time
+          readOnly: true
+          nullable: true
         items:
           type: array
           items:
@@ -2339,6 +2479,11 @@ components:
           type: string
           format: decimal
           pattern: ^-?\d{0,8}(?:\.\d{0,2})?$
+        tendered:
+          type: string
+          format: decimal
+          pattern: ^-?\d{0,8}(?:\.\d{0,2})?$
+          nullable: true
         reference:
           type: string
           maxLength: 120
@@ -2430,6 +2575,11 @@ components:
           type: string
           format: decimal
           pattern: ^-?\d{0,8}(?:\.\d{0,2})?$
+        tendered:
+          type: string
+          format: decimal
+          pattern: ^-?\d{0,8}(?:\.\d{0,2})?$
+          nullable: true
         reference:
           type: string
           maxLength: 120
@@ -2614,6 +2764,9 @@ components:
         notes:
           type: string
           default: ''
+        is_complimentary:
+          type: boolean
+          default: false
         option_ids:
           type: array
           items:
