@@ -13,7 +13,6 @@ import {
   toggleLineComp,
 } from '@/lib/cart';
 import { assignTable as apiAssignTable, getOrder, verifyPin } from '@/lib/api';
-import { printKOT, printReceipt } from '@/lib/print';
 import { OrderScreen } from './OrderScreen';
 import { TablesScreen } from './TablesScreen';
 import { ItemDialog } from './ItemDialog';
@@ -35,7 +34,13 @@ export function PosApp() {
 
   const [view, setView] = useState<View>('order');
   const [draft, setDraft] = useState<LocalOrder | null>(null);
+  const [flash, setFlash] = useState<string | null>(null);
   const dirty = useRef(false);
+
+  const showFlash = useCallback((msg: string) => {
+    setFlash(msg);
+    window.setTimeout(() => setFlash((f) => (f === msg ? null : f)), 2500);
+  }, []);
 
   // Dialog state
   const [dialogItem, setDialogItem] = useState<MenuItem | null>(null);
@@ -169,14 +174,27 @@ export function PosApp() {
   }
 
   // --- Actions ---
+  // Save: persist the running order and return to the floor (with feedback).
+  async function saveOrder() {
+    if (!draft || !engine || draft.lines.length === 0) return;
+    const open: LocalOrder = { ...draft, status: 'open' };
+    await engine.enqueueOrder(open);
+    dirty.current = false;
+    if (open.tableId) setTableStatus(open.tableId, 'occupied');
+    showFlash('Order saved');
+    setDraft(null);
+    setView('tables');
+    void refreshActiveOrders();
+  }
+
   async function sendToKitchen() {
-    if (!draft || !engine) return;
+    if (!draft || !engine || draft.lines.length === 0) return;
     const open: LocalOrder = { ...draft, status: 'open' };
     await engine.enqueueOrder(open);
     dirty.current = false;
     setDraft(open);
     if (open.tableId) setTableStatus(open.tableId, 'occupied');
-    printKOT(open, tableName(draft.tableId));
+    showFlash('KOT sent to kitchen');
     void refreshActiveOrders();
   }
 
@@ -185,9 +203,12 @@ export function PosApp() {
     const paid: LocalOrder = { ...draft, status: 'paid', payments: splits };
     await engine.enqueueOrder(paid);
     dirty.current = false;
-    printReceipt(paid, tableName(draft.tableId));
     setShowPayment(false);
     if (draft.tableId) setTableStatus(draft.tableId, 'free');
+    // Surface cash change in the confirmation, if any.
+    const cash = splits.find((s) => s.mode === 'cash' && s.tendered);
+    const change = cash?.tendered ? Math.round((cash.tendered - draft.grandTotal) * 100) / 100 : 0;
+    showFlash(change > 0 ? `Paid · return ₹${change.toFixed(2)}` : 'Payment received');
     setDraft(null);
     setView('tables');
     void refreshActiveOrders();
@@ -205,7 +226,7 @@ export function PosApp() {
 
   return (
     <div className="min-h-screen bg-spoto-bg">
-      {notice && <NoticeToast text={notice} />}
+      {(flash || notice) && <NoticeToast text={flash ?? notice!} />}
       {/* Top bar */}
       <header className="flex items-center justify-between border-b border-spoto-line bg-spoto-surface px-4 py-2">
         <div className="flex items-center gap-2">
@@ -249,7 +270,7 @@ export function PosApp() {
           onOpenGuest={() => setShowGuest(true)}
           onOpenCovers={() => setShowCovers(true)}
           onComp={(target) => setComp(target)}
-          onSave={autosave}
+          onSave={saveOrder}
           onKot={sendToKitchen}
           onPay={() => setShowPayment(true)}
           onVoid={() => setShowVoid(true)}
