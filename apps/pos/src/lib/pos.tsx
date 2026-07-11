@@ -9,11 +9,12 @@ import {
   useRef,
   useState,
 } from 'react';
-import type { AddOn, CategoryWithItems, Table } from '@nomnom/types';
+import type { AddOn, CategoryWithItems, Order, Table } from '@nomnom/types';
 import { SyncEngine, createHttpTransport } from '@nomnom/sync-client';
 import { IdbPersistence } from '@nomnom/persistence-idb';
 import {
   API_URL,
+  fetchActiveOrders,
   fetchAddOns,
   fetchMe,
   fetchMenu,
@@ -43,6 +44,11 @@ interface PosContextValue {
   sync: SyncStatus;
   notice: string | null;
   engine: SyncEngine | null;
+  /** Active (unpaid, in-kitchen) orders — drives the Tables screen timers. */
+  activeOrders: Order[];
+  refreshActiveOrders: () => Promise<void>;
+  /** Ticking clock (ms) so elapsed timers re-render each second. */
+  now: number;
   login: (username: string, password: string) => Promise<void>;
   logout: () => void;
   setTableStatus: (tableId: string, status: 'free' | 'occupied') => void;
@@ -64,6 +70,8 @@ export function PosProvider({ children }: { children: React.ReactNode }) {
     syncing: false,
   });
   const [notice, setNotice] = useState<string | null>(null);
+  const [activeOrders, setActiveOrders] = useState<Order[]>([]);
+  const [now, setNow] = useState(() => Date.now());
 
   const persistenceRef = useRef<IdbPersistence | null>(null);
   const engineRef = useRef<SyncEngine | null>(null);
@@ -179,6 +187,27 @@ export function PosProvider({ children }: { children: React.ReactNode }) {
     };
   }, [session]);
 
+  // Refresh active orders (Tables screen timers) + a 1s ticking clock.
+  const refreshActiveOrders = useCallback(async () => {
+    if (!session?.branchId) return;
+    try {
+      setActiveOrders(await fetchActiveOrders(session.token, session.branchId));
+    } catch {
+      /* offline — keep last snapshot */
+    }
+  }, [session]);
+
+  useEffect(() => {
+    if (!session) return;
+    void refreshActiveOrders();
+    const clock = setInterval(() => setNow(Date.now()), 1000);
+    const poll = setInterval(() => void refreshActiveOrders(), 5000);
+    return () => {
+      clearInterval(clock);
+      clearInterval(poll);
+    };
+  }, [session, refreshActiveOrders]);
+
   const login = useCallback(
     async (username: string, password: string) => {
       const token = await apiLogin(username, password);
@@ -222,11 +251,28 @@ export function PosProvider({ children }: { children: React.ReactNode }) {
       sync,
       notice,
       engine: engineRef.current,
+      activeOrders,
+      refreshActiveOrders,
+      now,
       login,
       logout,
       setTableStatus,
     }),
-    [ready, session, menu, tables, addOns, sync, notice, login, logout, setTableStatus],
+    [
+      ready,
+      session,
+      menu,
+      tables,
+      addOns,
+      sync,
+      notice,
+      activeOrders,
+      refreshActiveOrders,
+      now,
+      login,
+      logout,
+      setTableStatus,
+    ],
   );
 
   return <PosContext.Provider value={value}>{children}</PosContext.Provider>;

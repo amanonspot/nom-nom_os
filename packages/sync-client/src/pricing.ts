@@ -41,20 +41,24 @@ export interface OrderTotals {
 export function computeOrderTotals(
   lines: LocalOrderLine[],
   discountTotal = 0,
+  billComplimentary = false,
 ): OrderTotals {
   let subtotal = 0;
   let taxTotal = 0;
   for (const line of lines) {
+    if (line.isComplimentary) continue; // comped line — on the house
     subtotal += lineTotal(line);
     taxTotal += lineTax(line);
   }
   subtotal = round2(subtotal);
   taxTotal = round2(taxTotal);
-  return { subtotal, taxTotal, grandTotal: round2(subtotal + taxTotal - discountTotal) };
+  // Whole bill on the house → grand total 0 (subtotal/tax kept for the record).
+  const grandTotal = billComplimentary ? 0 : round2(subtotal + taxTotal - discountTotal);
+  return { subtotal, taxTotal, grandTotal };
 }
 
 /** Recompute and return an order with fresh totals. */
 export function withTotals(order: LocalOrder): LocalOrder {
-  const totals = computeOrderTotals(order.lines, order.discountTotal);
+  const totals = computeOrderTotals(order.lines, order.discountTotal, order.isComplimentary);
   return { ...order, ...totals, updatedAt: new Date().toISOString() };
 }

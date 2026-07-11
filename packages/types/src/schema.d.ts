@@ -746,6 +746,8 @@ export interface components {
             is_complimentary?: boolean;
             comp_reason?: string;
             /** Format: date-time */
+            readonly created_at: string;
+            /** Format: date-time */
             readonly served_at: string | null;
             /** Format: date-time */
             readonly paid_at: string | null;
@@ -893,6 +895,8 @@ export interface components {
             readonly grand_total?: string;
             is_complimentary?: boolean;
             comp_reason?: string;
+            /** Format: date-time */
+            readonly created_at?: string;
             /** Format: date-time */
             readonly served_at?: string | null;
             /** Format: date-time */

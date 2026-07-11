@@ -123,6 +123,7 @@ class OrderSerializer(serializers.ModelSerializer):
             "grand_total",
             "is_complimentary",
             "comp_reason",
+            "created_at",
             "served_at",
             "paid_at",
             "items",
@@ -135,6 +136,7 @@ class OrderSerializer(serializers.ModelSerializer):
             "tax_total",
             "grand_total",
             "kitchen_status",
+            "created_at",
             "served_at",
             "paid_at",
         ]

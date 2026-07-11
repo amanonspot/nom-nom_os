@@ -12,13 +12,15 @@ export interface LocalOrderLine {
   unitPrice: number;
   gstRate: number;
   notes?: string;
+  /** Per-line complimentary (comp one dish); excluded from the bill. */
+  isComplimentary?: boolean;
   optionIds: string[];
   addOnIds: string[];
   optionLabels: string[];
   addOnLabels: string[];
 }
 
-export type OrderType = 'dine_in' | 'takeaway' | 'qr';
+export type OrderType = 'dine_in' | 'takeaway' | 'delivery' | 'qr';
 
 export interface LocalOrder {
   /** Client UUID — the same id the server persists (no remapping). */
@@ -26,16 +28,29 @@ export interface LocalOrder {
   branchId: string;
   tableId?: string | null;
   customerId?: string | null;
+  /** Guest capture — phone links/creates a Customer server-side. */
+  customerPhone?: string;
+  customerName?: string;
   orderType: OrderType;
+  /** Party size (guests seated). */
+  covers: number;
+  deliveryAddress?: string;
   lines: LocalOrderLine[];
   discountTotal: number;
+  /** Whole-bill complimentary — zeroes the total. */
+  isComplimentary: boolean;
+  compReason?: string;
   /** Recomputed snapshot; see pricing.computeOrderTotals. */
   subtotal: number;
   taxTotal: number;
   grandTotal: number;
   status: 'open' | 'held' | 'billed' | 'paid' | 'void';
+  /** Server-assigned Bill No, present once persisted. */
+  number?: number | null;
+  /** Kitchen roll-up status, present once persisted. */
+  kitchenStatus?: string | null;
   /** Payment splits captured at billing (settled server-side after create). */
-  payments?: { mode: 'cash' | 'card' | 'upi'; amount: number }[];
+  payments?: { mode: 'cash' | 'card' | 'upi'; amount: number; tendered?: number }[];
   syncState: SyncState;
   /** Server id once acknowledged (equals `id` in our model). */
   serverId?: string | null;

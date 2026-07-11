@@ -47,3 +47,17 @@ test('discount reduces grand total', () => {
   const totals = computeOrderTotals([l], 10);
   assert.equal(totals.grandTotal, round2(100 + 5 - 10));
 });
+
+test('complimentary line is excluded; whole-bill comp zeroes the total', () => {
+  const paid = line({ unitPrice: 100, quantity: 1, gstRate: 5 });
+  const comped = line({ id: 'l2', unitPrice: 200, quantity: 1, gstRate: 5, isComplimentary: true });
+  // Comped line dropped from subtotal/tax.
+  const t1 = computeOrderTotals([paid, comped]);
+  assert.equal(t1.subtotal, 100);
+  assert.equal(t1.taxTotal, 5);
+  assert.equal(t1.grandTotal, 105);
+  // Whole-bill comp → grand total 0 (subtotal still recorded).
+  const t2 = computeOrderTotals([paid], 0, true);
+  assert.equal(t2.subtotal, 100);
+  assert.equal(t2.grandTotal, 0);
+});
