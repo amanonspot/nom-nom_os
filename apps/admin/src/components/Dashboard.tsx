@@ -8,6 +8,9 @@ import { useSession } from '@/lib/session';
 import { AppShell, type Tab } from './AppShell';
 import { MenuManager } from './MenuManager';
 import { TableManager } from './TableManager';
+import { UserManager } from './UserManager';
+
+const TITLES: Record<Tab, string> = { menu: 'Menu', tables: 'Tables', access: 'Access' };
 
 export function Dashboard() {
   const { me, logout, authFetch, branchId } = useSession();
@@ -34,18 +37,20 @@ export function Dashboard() {
         <p className="text-xs uppercase tracking-widest text-spoto-purple-ink">
           {me?.restaurant?.name ?? 'Restaurant'} · {me?.branch?.name ?? ''}
         </p>
-        <h1 className="font-heading text-2xl font-bold text-spoto-ink">
-          {tab === 'menu' ? 'Menu' : 'Tables'}
-        </h1>
+        <h1 className="font-heading text-2xl font-bold text-spoto-ink">{TITLES[tab]}</h1>
       </div>
 
-      <div className="mb-8 grid gap-3 sm:grid-cols-3">
-        <StatCard label="Categories" value={stats.categories} icon={ListTree} accent="purple" />
-        <StatCard label="Menu items" value={stats.items} icon={UtensilsCrossed} accent="green" />
-        <StatCard label="Tables" value={stats.tables} icon={LayoutGrid} accent="amber" />
-      </div>
+      {tab !== 'access' && (
+        <div className="mb-8 grid gap-3 sm:grid-cols-3">
+          <StatCard label="Categories" value={stats.categories} icon={ListTree} accent="purple" />
+          <StatCard label="Menu items" value={stats.items} icon={UtensilsCrossed} accent="green" />
+          <StatCard label="Tables" value={stats.tables} icon={LayoutGrid} accent="amber" />
+        </div>
+      )}
 
-      {tab === 'menu' ? <MenuManager onDataChange={loadStats} /> : <TableManager onDataChange={loadStats} />}
+      {tab === 'menu' && <MenuManager onDataChange={loadStats} />}
+      {tab === 'tables' && <TableManager onDataChange={loadStats} />}
+      {tab === 'access' && <UserManager />}
     </AppShell>
   );
 }

@@ -49,7 +49,7 @@ interface PosContextValue {
   refreshActiveOrders: () => Promise<void>;
   /** Ticking clock (ms) so elapsed timers re-render each second. */
   now: number;
-  login: (username: string, password: string) => Promise<void>;
+  login: (username: string, pin: string) => Promise<void>;
   logout: () => void;
   setTableStatus: (tableId: string, status: 'free' | 'occupied') => void;
 }
@@ -209,8 +209,8 @@ export function PosProvider({ children }: { children: React.ReactNode }) {
   }, [session, refreshActiveOrders]);
 
   const login = useCallback(
-    async (username: string, password: string) => {
-      const token = await apiLogin(username, password);
+    async (username: string, pin: string) => {
+      const token = await apiLogin(username, pin);
       const me = await fetchMe(token);
       const branchId = me.branch?.id ?? '';
       const s: Session = { token, branchId, name: me.first_name || me.username };

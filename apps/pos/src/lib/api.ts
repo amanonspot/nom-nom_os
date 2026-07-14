@@ -15,13 +15,17 @@ async function authed<T>(path: string, token: string, init: RequestInit = {}): P
   return res.status === 204 ? (undefined as T) : ((await res.json()) as T);
 }
 
-export async function login(username: string, password: string): Promise<string> {
-  const res = await fetch(`${API_URL}/api/auth/token/`, {
+/** Sign in with username + login PIN, gated to the POS service. */
+export async function login(username: string, pin: string): Promise<string> {
+  const res = await fetch(`${API_URL}/api/auth/pin/`, {
     method: 'POST',
     headers: { 'Content-Type': 'application/json' },
-    body: JSON.stringify({ username, password }),
+    body: JSON.stringify({ username, pin, service: 'pos' }),
   });
-  if (!res.ok) throw new Error('Invalid credentials');
+  if (!res.ok) {
+    const detail = await res.json().catch(() => null);
+    throw new Error(detail?.detail ?? 'Invalid username or PIN');
+  }
   return ((await res.json()) as { access: string }).access;
 }
 

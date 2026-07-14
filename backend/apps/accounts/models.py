@@ -42,8 +42,10 @@ class Role(models.TextChoices):
 class User(AbstractUser):
     """Custom user bound to a branch and carrying an RBAC role.
 
-    ``manager_pin`` authorizes overrides (voids, discounts) at the POS without a
-    full re-login. It is stored hashed via Django's password hashers.
+    Two distinct PINs, both stored hashed via Django's password hashers:
+    ``login_pin`` is the credential staff type (with their username) to *sign
+    in* to a service; ``manager_pin`` authorizes overrides (voids, discounts) at
+    the POS without a full re-login.
     """
 
     restaurant = models.ForeignKey(
@@ -53,7 +55,18 @@ class User(AbstractUser):
         Branch, related_name="users", on_delete=models.SET_NULL, null=True, blank=True
     )
     role = models.CharField(max_length=20, choices=Role.choices, default=Role.WAITER)
+    login_pin = models.CharField(max_length=128, blank=True)
     manager_pin = models.CharField(max_length=128, blank=True)
+
+    def set_login_pin(self, raw_pin: str) -> None:
+        from django.contrib.auth.hashers import make_password
+
+        self.login_pin = make_password(raw_pin)
+
+    def check_login_pin(self, raw_pin: str) -> bool:
+        from django.contrib.auth.hashers import check_password
+
+        return bool(self.login_pin) and check_password(raw_pin, self.login_pin)
 
     def set_manager_pin(self, raw_pin: str) -> None:
         from django.contrib.auth.hashers import make_password
@@ -68,3 +81,9 @@ class User(AbstractUser):
     @property
     def can_authorize_overrides(self) -> bool:
         return self.role in {Role.OWNER, Role.ADMIN, Role.MANAGER}
+
+    @property
+    def services(self) -> list[str]:
+        from .constants import services_for
+
+        return services_for(self.role)

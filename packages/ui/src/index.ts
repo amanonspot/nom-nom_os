@@ -5,3 +5,4 @@ export { Input, Select, Textarea } from './components/Input';
 export { Chip } from './components/Chip';
 export { StatCard } from './components/StatCard';
 export { StatusBadge } from './components/StatusBadge';
+export { LoginPortal, type LoginService } from './components/LoginPortal';

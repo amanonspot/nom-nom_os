@@ -9,7 +9,7 @@ interface SessionValue {
   token: string | null;
   me: Me | null;
   branchId: string;
-  login: (u: string, p: string) => Promise<void>;
+  login: (username: string, pin: string) => Promise<void>;
   logout: () => void;
   authFetch: <T>(path: string, init?: RequestInit) => Promise<T>;
 }
@@ -38,8 +38,8 @@ export function SessionProvider({ children }: { children: React.ReactNode }) {
     })();
   }, []);
 
-  const login = useCallback(async (u: string, p: string) => {
-    const t = await apiLogin(u, p);
+  const login = useCallback(async (username: string, pin: string) => {
+    const t = await apiLogin(username, pin);
     setMe(await fetchMe(t));
     localStorage.setItem(KEY, t);
     setToken(t);

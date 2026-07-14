@@ -1,49 +1,41 @@
 'use client';
 
 import { useState } from 'react';
-import { Button } from '@nomnom/ui';
+import { LoginPortal, type LoginService } from '@nomnom/ui';
 import { useSession } from '@/lib/session';
+
+const SERVICE_URLS: Record<LoginService, string> = {
+  pos: process.env.NEXT_PUBLIC_POS_URL ?? 'http://localhost:9101',
+  kds: process.env.NEXT_PUBLIC_KDS_URL ?? 'http://localhost:9102',
+  admin: process.env.NEXT_PUBLIC_ADMIN_URL ?? 'http://localhost:9100',
+};
 
 export function Login() {
   const { login } = useSession();
-  const [username, setUsername] = useState('manager1');
-  const [password, setPassword] = useState('pass12345');
   const [error, setError] = useState<string | null>(null);
   const [loading, setLoading] = useState(false);
 
-  async function onSubmit(e: React.FormEvent) {
-    e.preventDefault();
+  async function onSubmit(username: string, pin: string) {
     setLoading(true);
     setError(null);
     try {
-      await login(username, password);
-    } catch {
-      setError('Invalid credentials');
+      await login(username, pin);
+    } catch (e) {
+      setError(e instanceof Error ? e.message : 'Invalid username or PIN');
     } finally {
       setLoading(false);
     }
   }
 
   return (
-    <main className="mx-auto flex min-h-screen max-w-sm flex-col justify-center gap-6 px-6">
-      <div className="animate-fade-in">
-        <p className="text-sm uppercase tracking-widest text-spoto-purple-ink">Nom Nom OS</p>
-        <h1 className="font-heading text-3xl font-bold text-spoto-ink">Admin Portal</h1>
-      </div>
-      <form onSubmit={onSubmit} className="flex flex-col gap-4 rounded-2xl border border-spoto-line bg-spoto-surface p-6">
-        <label className="flex flex-col gap-1 text-sm text-spoto-muted">
-          Username
-          <input value={username} onChange={(e) => setUsername(e.target.value)}
-            className="rounded-lg border border-spoto-line bg-spoto-bg px-3 py-2 text-spoto-ink outline-none focus:border-spoto-purple" />
-        </label>
-        <label className="flex flex-col gap-1 text-sm text-spoto-muted">
-          Password
-          <input type="password" value={password} onChange={(e) => setPassword(e.target.value)}
-            className="rounded-lg border border-spoto-line bg-spoto-bg px-3 py-2 text-spoto-ink outline-none focus:border-spoto-purple" />
-        </label>
-        {error && <p className="text-sm text-danger">{error}</p>}
-        <Button type="submit" disabled={loading}>{loading ? 'Signing in…' : 'Sign in'}</Button>
-      </form>
+    <main>
+      <LoginPortal
+        service="admin"
+        urls={SERVICE_URLS}
+        onSubmit={onSubmit}
+        error={error}
+        loading={loading}
+      />
     </main>
   );
 }

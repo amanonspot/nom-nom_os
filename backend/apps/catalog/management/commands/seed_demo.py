@@ -38,8 +38,24 @@ class Command(BaseCommand):
         user.branch = b
         user.role = Role.MANAGER
         user.set_password("pass12345")
-        user.set_manager_pin("4321")
+        user.set_manager_pin("4321")  # override authorizer (voids/comps)
+        user.set_login_pin("1111")  # signs in to all three services
         user.save()
+
+        # Service-scoped demo logins (username + login PIN).
+        for uname, role, pin in [
+            ("pos1", Role.CASHIER, "3333"),
+            ("kds1", Role.KITCHEN, "2222"),
+        ]:
+            staff, _ = User.objects.get_or_create(
+                username=uname, defaults={"role": role}
+            )
+            staff.restaurant = r
+            staff.branch = b
+            staff.role = role
+            staff.set_unusable_password()
+            staff.set_login_pin(pin)
+            staff.save()
 
         # Add-ons
         cheese = AddOn.objects.create(branch=b, name="Extra Cheese", price=Decimal("30"))
@@ -88,7 +104,8 @@ class Command(BaseCommand):
 
         self.stdout.write(
             self.style.SUCCESS(
-                f"Seeded restaurant={r.id} branch={b.id} "
-                f"(login manager1/pass12345, PIN 4321, addon cheese={cheese.id})"
+                f"Seeded restaurant={r.id} branch={b.id}. "
+                f"PIN logins — manager1/1111 (all), pos1/3333 (POS), kds1/2222 (KDS). "
+                f"Manager override PIN 4321. addon cheese={cheese.id}"
             )
         )

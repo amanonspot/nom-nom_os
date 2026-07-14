@@ -1,14 +1,15 @@
 'use client';
 
-import { LayoutGrid, LogOut, UtensilsCrossed, type LucideIcon } from 'lucide-react';
+import { KeyRound, LayoutGrid, LogOut, UtensilsCrossed, type LucideIcon } from 'lucide-react';
 import { cn } from '@nomnom/ui';
 import type { Me } from '@nomnom/types';
 
-export type Tab = 'menu' | 'tables';
+export type Tab = 'menu' | 'tables' | 'access';
 
 const NAV: { key: Tab; label: string; icon: LucideIcon }[] = [
   { key: 'menu', label: 'Menu', icon: UtensilsCrossed },
   { key: 'tables', label: 'Tables', icon: LayoutGrid },
+  { key: 'access', label: 'Access', icon: KeyRound },
 ];
 
 /*

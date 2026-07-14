@@ -19,13 +19,17 @@ function authed<T>(path: string, token: string, init: RequestInit = {}): Promise
   });
 }
 
-export async function login(username: string, password: string): Promise<string> {
-  const res = await fetch(`${API_URL}/api/auth/token/`, {
+/** Sign in with username + login PIN, gated to the KDS service. */
+export async function login(username: string, pin: string): Promise<string> {
+  const res = await fetch(`${API_URL}/api/auth/pin/`, {
     method: 'POST',
     headers: { 'Content-Type': 'application/json' },
-    body: JSON.stringify({ username, password }),
+    body: JSON.stringify({ username, pin, service: 'kds' }),
   });
-  if (!res.ok) throw new Error('Invalid credentials');
+  if (!res.ok) {
+    const detail = await res.json().catch(() => null);
+    throw new Error(detail?.detail ?? 'Invalid username or PIN');
+  }
   return ((await res.json()) as { access: string }).access;
 }
 

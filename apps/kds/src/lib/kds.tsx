@@ -30,7 +30,7 @@ interface KdsValue {
   session: Session | null;
   connected: boolean;
   orders: Order[];
-  login: (u: string, p: string) => Promise<void>;
+  login: (username: string, pin: string) => Promise<void>;
   logout: () => void;
   bumpOrder: (id: string, status: KitchenStatus) => Promise<void>;
   bumpItem: (id: string, status: KitchenStatus) => Promise<void>;
@@ -112,8 +112,8 @@ export function KdsProvider({ children }: { children: React.ReactNode }) {
   }, []);
 
   const login = useCallback(
-    async (u: string, p: string) => {
-      const token = await apiLogin(u, p);
+    async (username: string, pin: string) => {
+      const token = await apiLogin(username, pin);
       const me: Me = await fetchMe(token);
       const s: Session = { token, branchId: me.branch?.id ?? '' };
       localStorage.setItem(KEY, JSON.stringify(s));

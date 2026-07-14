@@ -39,7 +39,10 @@ pnpm install
 pnpm dev
 ```
 
-Demo login: `manager1` / `pass12345` (manager PIN `4321`).
+Sign in with **username + PIN** (a container-style login shared by all three
+apps; the role decides which apps a login can open, and admins mint logins from
+**Admin → Access**). Demo PINs: `manager1`/`1111` (all apps), `pos1`/`3333`
+(POS), `kds1`/`2222` (KDS). Manager override PIN (voids/comps): `4321`.
 
 ## Realtime & sync (Phase 2)
 
