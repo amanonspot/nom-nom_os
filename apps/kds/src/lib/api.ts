@@ -1,6 +1,6 @@
 import type { Me, Order } from '@nomnom/types';
 
-export const API_URL = process.env.NEXT_PUBLIC_API_URL ?? 'http://localhost:8000';
+export const API_URL = process.env.NEXT_PUBLIC_API_URL ?? 'http://localhost:9000';
 
 export type KitchenStatus = 'pending' | 'cooking' | 'ready' | 'served';
 export const ACTIVE_STATUSES: KitchenStatus[] = ['pending', 'cooking', 'ready'];

@@ -5,19 +5,19 @@
       "name": "admin",
       "runtimeExecutable": "pnpm",
       "runtimeArgs": ["--filter", "@nomnom/admin", "dev"],
-      "port": 3100
+      "port": 9100
     },
     {
       "name": "pos",
       "runtimeExecutable": "pnpm",
       "runtimeArgs": ["--filter", "@nomnom/pos", "dev"],
-      "port": 3101
+      "port": 9101
     },
     {
       "name": "kds",
       "runtimeExecutable": "pnpm",
       "runtimeArgs": ["--filter", "@nomnom/kds", "dev"],
-      "port": 3102
+      "port": 9102
     }
   ]
 }

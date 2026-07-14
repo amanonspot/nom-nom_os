@@ -28,13 +28,13 @@ See the phased build plan for milestone scope.
 # 1. Infra
 docker compose -f backend/docker-compose.yml up -d
 
-# 2. Backend (Daphne ASGI serves REST + WebSockets)
+# 2. Backend (Daphne ASGI serves REST + WebSockets) — :9000
 cd backend && python3 -m venv .venv && source .venv/bin/activate
 pip install -r requirements.txt
 python manage.py migrate && python manage.py seed_demo   # demo tenant
-python manage.py runserver
+python manage.py runserver 127.0.0.1:9000
 
-# 3. Frontends — POS :3101, Admin :3100, KDS :3102
+# 3. Frontends — POS :9101, Admin :9100, KDS :9102
 pnpm install
 pnpm dev
 ```

@@ -1,6 +1,6 @@
 import type { AddOn, CategoryWithItems, Customer, Me, Order, Table } from '@nomnom/types';
 
-export const API_URL = process.env.NEXT_PUBLIC_API_URL ?? 'http://localhost:8000';
+export const API_URL = process.env.NEXT_PUBLIC_API_URL ?? 'http://localhost:9000';
 
 async function authed<T>(path: string, token: string, init: RequestInit = {}): Promise<T> {
   const res = await fetch(`${API_URL}${path}`, {

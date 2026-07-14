@@ -1,6 +1,6 @@
 import type { Me } from '@nomnom/types';
 
-export const API_URL = process.env.NEXT_PUBLIC_API_URL ?? 'http://localhost:8000';
+export const API_URL = process.env.NEXT_PUBLIC_API_URL ?? 'http://localhost:9000';
 
 export async function login(username: string, password: string): Promise<string> {
   const res = await fetch(`${API_URL}/api/auth/token/`, {
