@@ -4,6 +4,222 @@ info:
   version: 0.1.0
   description: Offline-first Restaurant OS — sync, catalog, operations, licensing.
 paths:
+  /api/accounts/users/:
+    get:
+      operationId: accounts_users_list
+      description: |-
+        Staff-login management for the Admin "Access" screen.
+
+        Scoped to the caller's restaurant. Create/reset auto-generate a 4-digit PIN
+        when none is supplied and return it **once** in plaintext so the admin can
+        hand it out; it is stored only as a hash thereafter.
+      tags:
+      - accounts
+      security:
+      - jwtAuth: []
+      responses:
+        '200':
+          content:
+            application/json:
+              schema:
+                type: array
+                items:
+                  $ref: '#/components/schemas/UserAdmin'
+          description: ''
+    post:
+      operationId: accounts_users_create
+      description: |-
+        Staff-login management for the Admin "Access" screen.
+
+        Scoped to the caller's restaurant. Create/reset auto-generate a 4-digit PIN
+        when none is supplied and return it **once** in plaintext so the admin can
+        hand it out; it is stored only as a hash thereafter.
+      tags:
+      - accounts
+      requestBody:
+        content:
+          application/json:
+            schema:
+              $ref: '#/components/schemas/UserAdmin'
+          application/x-www-form-urlencoded:
+            schema:
+              $ref: '#/components/schemas/UserAdmin'
+          multipart/form-data:
+            schema:
+              $ref: '#/components/schemas/UserAdmin'
+        required: true
+      security:
+      - jwtAuth: []
+      responses:
+        '201':
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/UserAdmin'
+          description: ''
+  /api/accounts/users/{id}/:
+    get:
+      operationId: accounts_users_retrieve
+      description: |-
+        Staff-login management for the Admin "Access" screen.
+
+        Scoped to the caller's restaurant. Create/reset auto-generate a 4-digit PIN
+        when none is supplied and return it **once** in plaintext so the admin can
+        hand it out; it is stored only as a hash thereafter.
+      parameters:
+      - in: path
+        name: id
+        schema:
+          type: string
+        required: true
+      tags:
+      - accounts
+      security:
+      - jwtAuth: []
+      responses:
+        '200':
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/UserAdmin'
+          description: ''
+    patch:
+      operationId: accounts_users_partial_update
+      description: |-
+        Staff-login management for the Admin "Access" screen.
+
+        Scoped to the caller's restaurant. Create/reset auto-generate a 4-digit PIN
+        when none is supplied and return it **once** in plaintext so the admin can
+        hand it out; it is stored only as a hash thereafter.
+      parameters:
+      - in: path
+        name: id
+        schema:
+          type: string
+        required: true
+      tags:
+      - accounts
+      requestBody:
+        content:
+          application/json:
+            schema:
+              $ref: '#/components/schemas/PatchedUserAdmin'
+          application/x-www-form-urlencoded:
+            schema:
+              $ref: '#/components/schemas/PatchedUserAdmin'
+          multipart/form-data:
+            schema:
+              $ref: '#/components/schemas/PatchedUserAdmin'
+      security:
+      - jwtAuth: []
+      responses:
+        '200':
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/UserAdmin'
+          description: ''
+    delete:
+      operationId: accounts_users_destroy
+      description: |-
+        Staff-login management for the Admin "Access" screen.
+
+        Scoped to the caller's restaurant. Create/reset auto-generate a 4-digit PIN
+        when none is supplied and return it **once** in plaintext so the admin can
+        hand it out; it is stored only as a hash thereafter.
+      parameters:
+      - in: path
+        name: id
+        schema:
+          type: string
+        required: true
+      tags:
+      - accounts
+      security:
+      - jwtAuth: []
+      responses:
+        '204':
+          description: No response body
+  /api/accounts/users/{id}/reset_pin/:
+    post:
+      operationId: accounts_users_reset_pin_create
+      description: Regenerate (or set) this user's login PIN; returns it once.
+      parameters:
+      - in: path
+        name: id
+        schema:
+          type: string
+        required: true
+      tags:
+      - accounts
+      requestBody:
+        content:
+          application/json:
+            schema:
+              $ref: '#/components/schemas/UserAdmin'
+          application/x-www-form-urlencoded:
+            schema:
+              $ref: '#/components/schemas/UserAdmin'
+          multipart/form-data:
+            schema:
+              $ref: '#/components/schemas/UserAdmin'
+        required: true
+      security:
+      - jwtAuth: []
+      responses:
+        '200':
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/UserAdmin'
+          description: ''
+  /api/auth/pin/:
+    post:
+      operationId: pin_token
+      description: |-
+        Sign in with username + login PIN, gated by service.
+
+        ``{username, pin, service}`` → verify the PIN and that the user's role may
+        access ``service`` (see ``SERVICE_ROLES``), then mint a JWT pair. Wrong
+        credentials → 401; valid credentials but disallowed service → 403.
+      tags:
+      - auth
+      requestBody:
+        content:
+          type:
+            schema:
+              type: object
+              additionalProperties: {}
+              description: Unspecified request body
+          properties:
+            schema:
+              username:
+                type: string
+              pin:
+                type: string
+              service:
+                type: string
+                enum:
+                - pos
+                - kds
+                - admin
+          required:
+            schema:
+              type: object
+              additionalProperties: {}
+              description: Unspecified request body
+      security:
+      - jwtAuth: []
+      - {}
+      responses:
+        type:
+          content:
+            application/json:
+              schema:
+                type: object
+                additionalProperties: {}
+                description: Unspecified response body
+          description: ''
   /api/auth/token/:
     post:
       operationId: auth_token_create
@@ -1787,6 +2003,36 @@ paths:
                 additionalProperties: {}
                 description: Unspecified response body
           description: ''
+  /api/verify-pin/:
+    post:
+      operationId: verify_pin
+      description: |-
+        Validate a manager PIN for overrides (comp, discounts). Returns
+        {valid: bool} — the caller applies the action locally on success.
+      tags:
+      - verify-pin
+      requestBody:
+        content:
+          type:
+            schema:
+              type: object
+              additionalProperties: {}
+              description: Unspecified request body
+          properties:
+            schema:
+              pin:
+                type: string
+      security:
+      - jwtAuth: []
+      responses:
+        type:
+          content:
+            application/json:
+              schema:
+                type: object
+                additionalProperties: {}
+                description: Unspecified response body
+          description: ''
 components:
   schemas:
     AddOn:
@@ -1958,11 +2204,17 @@ components:
         can_authorize_overrides:
           type: boolean
           readOnly: true
+        services:
+          type: array
+          items:
+            type: string
+          readOnly: true
       required:
       - branch
       - can_authorize_overrides
       - id
       - restaurant
+      - services
       - username
     MenuItem:
       type: object
@@ -2042,6 +2294,9 @@ components:
           type: string
           format: uuid
           nullable: true
+        table_name:
+          type: string
+          readOnly: true
         customer:
           type: string
           format: uuid
@@ -2138,6 +2393,7 @@ components:
       - payments
       - served_at
       - subtotal
+      - table_name
       - tax_total
     OrderItemAddOnRead:
       type: object
@@ -2387,6 +2643,9 @@ components:
           type: string
           format: uuid
           nullable: true
+        table_name:
+          type: string
+          readOnly: true
         customer:
           type: string
           format: uuid
@@ -2519,6 +2778,44 @@ components:
           maxLength: 80
         status:
           $ref: '#/components/schemas/TableStatusEnum'
+    PatchedUserAdmin:
+      type: object
+      description: |-
+        Staff row for the Admin "Access" screen. Read exposes derived services and
+        whether a login PIN is set; write accepts username/role/branch/is_active and
+        an optional plaintext ``pin`` (write-only). The PIN hash is never returned.
+      properties:
+        id:
+          type: integer
+          readOnly: true
+        username:
+          type: string
+          description: Required. 150 characters or fewer. Letters, digits and @/./+/-/_
+            only.
+          pattern: ^[\w.@+-]+$
+          maxLength: 150
+        role:
+          $ref: '#/components/schemas/RoleEnum'
+        services:
+          type: array
+          items:
+            type: string
+          readOnly: true
+        branch:
+          allOf:
+          - $ref: '#/components/schemas/Branch'
+          readOnly: true
+        is_active:
+          type: boolean
+          title: Active
+          description: Designates whether this user should be treated as active. Unselect
+            this instead of deleting accounts.
+        has_pin:
+          type: boolean
+          readOnly: true
+        pin:
+          type: string
+          writeOnly: true
     PatchedVariationGroup:
       type: object
       properties:
@@ -2699,6 +2996,50 @@ components:
       required:
       - access
       - refresh
+    UserAdmin:
+      type: object
+      description: |-
+        Staff row for the Admin "Access" screen. Read exposes derived services and
+        whether a login PIN is set; write accepts username/role/branch/is_active and
+        an optional plaintext ``pin`` (write-only). The PIN hash is never returned.
+      properties:
+        id:
+          type: integer
+          readOnly: true
+        username:
+          type: string
+          description: Required. 150 characters or fewer. Letters, digits and @/./+/-/_
+            only.
+          pattern: ^[\w.@+-]+$
+          maxLength: 150
+        role:
+          $ref: '#/components/schemas/RoleEnum'
+        services:
+          type: array
+          items:
+            type: string
+          readOnly: true
+        branch:
+          allOf:
+          - $ref: '#/components/schemas/Branch'
+          readOnly: true
+        is_active:
+          type: boolean
+          title: Active
+          description: Designates whether this user should be treated as active. Unselect
+            this instead of deleting accounts.
+        has_pin:
+          type: boolean
+          readOnly: true
+        pin:
+          type: string
+          writeOnly: true
+      required:
+      - branch
+      - has_pin
+      - id
+      - services
+      - username
     VariationGroup:
       type: object
       properties:

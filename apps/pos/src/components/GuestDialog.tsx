@@ -23,6 +23,10 @@ export function GuestDialog({
   const [name, setName] = useState(initialName);
   const [found, setFound] = useState<string | null>(null);
 
+  // Phone is optional, but if present it must be 7–15 digits (numeric only).
+  const phoneValid = phone.length === 0 || (phone.length >= 7 && phone.length <= 15);
+  const onPhoneChange = (v: string) => setPhone(v.replace(/\D/g, '').slice(0, 15));
+
   // Prefill the name from history when a known phone is entered.
   async function onPhoneBlur() {
     const p = phone.trim();
@@ -47,15 +51,16 @@ export function GuestDialog({
         <label className="mb-3 flex flex-col gap-1 text-sm text-spoto-muted">
           Phone
           <Input
-            inputMode="tel"
+            inputMode="numeric"
             value={phone}
-            onChange={(e) => setPhone(e.target.value)}
+            onChange={(e) => onPhoneChange(e.target.value)}
             onBlur={onPhoneBlur}
-            placeholder="Phone number"
+            placeholder="Digits only (7–15)"
             className="min-h-11 py-1"
           />
         </label>
-        {found && <p className="mb-2 text-xs text-success">{found}</p>}
+        {!phoneValid && <p className="mb-2 text-xs text-danger">Enter 7–15 digits.</p>}
+        {found && phoneValid && <p className="mb-2 text-xs text-success">{found}</p>}
         <label className="mb-4 flex flex-col gap-1 text-sm text-spoto-muted">
           Name
           <Input
@@ -69,7 +74,11 @@ export function GuestDialog({
           <Button variant="ghost" className="flex-1" onClick={onClose}>
             Cancel
           </Button>
-          <Button className="flex-1" onClick={() => onSave(phone.trim(), name.trim())}>
+          <Button
+            className="flex-1"
+            disabled={!phoneValid}
+            onClick={() => onSave(phone.trim(), name.trim())}
+          >
             Save
           </Button>
         </div>

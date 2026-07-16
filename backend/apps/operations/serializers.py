@@ -1,6 +1,7 @@
 from decimal import Decimal
 
 from django.db import transaction
+from drf_spectacular.utils import extend_schema_field
 from rest_framework import serializers
 
 from apps.catalog.models import AddOn, MenuItem, VariationOption
@@ -94,9 +95,11 @@ class OrderSerializer(serializers.ModelSerializer):
     # Honor the client-generated UUID so the same id round-trips (offline-first)
     # and re-sending a create is idempotent rather than a duplicate-PK error.
     id = serializers.UUIDField(required=False)
-    items = OrderItemReadSerializer(many=True, read_only=True)
+    items = serializers.SerializerMethodField()
     items_write = _OrderItemWriteSerializer(many=True, write_only=True, required=False)
     payments = PaymentSerializer(many=True, read_only=True)
+    # Convenience for KDS / the POS floor: the table's name without a 2nd fetch.
+    table_name = serializers.CharField(source="table.name", read_only=True, default=None)
     # Guest capture: phone (+ optional name) → get_or_create Customer, link.
     customer_phone = serializers.CharField(write_only=True, required=False, allow_blank=True)
     customer_name = serializers.CharField(write_only=True, required=False, allow_blank=True)
@@ -107,6 +110,7 @@ class OrderSerializer(serializers.ModelSerializer):
             "id",
             "branch",
             "table",
+            "table_name",
             "customer",
             "customer_phone",
             "customer_name",
@@ -141,6 +145,13 @@ class OrderSerializer(serializers.ModelSerializer):
             "paid_at",
         ]
 
+    @extend_schema_field(OrderItemReadSerializer(many=True))
+    def get_items(self, obj):
+        """Only live lines — soft-deleted (cancelled) items never surface to the
+        POS reopen view or the KDS ticket."""
+        lines = [i for i in obj.items.all() if not i.is_deleted]
+        return OrderItemReadSerializer(lines, many=True).data
+
     def _resolve_customer(self, validated_data, branch):
         """Pop guest phone/name → get_or_create a Customer and set it on the order."""
         phone = validated_data.pop("customer_phone", "").strip()
@@ -155,34 +166,75 @@ class OrderSerializer(serializers.ModelSerializer):
             customer.save()
         validated_data["customer"] = customer
 
+    def _create_line(self, order, line):
+        """Create one OrderItem (+ options/add-ons), honoring the client's line
+        UUID as the PK so item identity is stable across offline edits."""
+        item: MenuItem = line["menu_item"]
+        options = line.get("option_ids", [])
+        add_ons = line.get("add_on_ids", [])
+        unit = item.base_price + sum((o.price_delta for o in options), Decimal("0"))
+        unit += sum((a.price for a in add_ons), Decimal("0"))
+        oi = OrderItem.objects.create(
+            id=line.get("id") or None,
+            order=order,
+            menu_item=item,
+            name_snapshot=item.name,
+            quantity=line.get("quantity", 1),
+            unit_price=unit,
+            gst_rate=item.gst_rate,
+            notes=line.get("notes", ""),
+            is_complimentary=line.get("is_complimentary", False),
+        )
+        for opt in options:
+            OrderItemOption.objects.create(
+                order_item=oi,
+                option=opt,
+                name_snapshot=opt.name,
+                price_delta=opt.price_delta,
+            )
+        for add in add_ons:
+            OrderItemAddOn.objects.create(
+                order_item=oi, add_on=add, name_snapshot=add.name, price=add.price
+            )
+        return oi
+
     def _build_lines(self, order, items_data):
         for line in items_data:
-            item: MenuItem = line["menu_item"]
-            options = line.get("option_ids", [])
-            add_ons = line.get("add_on_ids", [])
-            unit = item.base_price + sum((o.price_delta for o in options), Decimal("0"))
-            unit += sum((a.price for a in add_ons), Decimal("0"))
-            oi = OrderItem.objects.create(
-                order=order,
-                menu_item=item,
-                name_snapshot=item.name,
-                quantity=line.get("quantity", 1),
-                unit_price=unit,
-                gst_rate=item.gst_rate,
-                notes=line.get("notes", ""),
-                is_complimentary=line.get("is_complimentary", False),
-            )
-            for opt in options:
-                OrderItemOption.objects.create(
-                    order_item=oi,
-                    option=opt,
-                    name_snapshot=opt.name,
-                    price_delta=opt.price_delta,
+            self._create_line(order, line)
+
+    def _reconcile_lines(self, order, items_data):
+        """Merge the incoming lines into the order's existing ones by client id,
+        so cooking progress survives edits:
+          - matched id → update quantity/notes/comp only (keep kitchen_status)
+          - new id     → create (starts pending → new KDS work)
+          - missing    → soft-delete (drops off the KDS ticket)
+        """
+        existing = {str(oi.id): oi for oi in order.items.alive()}
+        seen: set[str] = set()
+        for line in items_data:
+            lid = str(line.get("id") or "")
+            current = existing.get(lid)
+            if current is not None:
+                current.quantity = line.get("quantity", current.quantity)
+                current.notes = line.get("notes", current.notes)
+                current.is_complimentary = line.get(
+                    "is_complimentary", current.is_complimentary
                 )
-            for add in add_ons:
-                OrderItemAddOn.objects.create(
-                    order_item=oi, add_on=add, name_snapshot=add.name, price=add.price
+                current.save(
+                    update_fields=[
+                        "quantity",
+                        "notes",
+                        "is_complimentary",
+                        "last_modified",
+                    ]
                 )
+                seen.add(lid)
+            else:
+                created = self._create_line(order, line)
+                seen.add(str(created.id))
+        for lid, oi in existing.items():
+            if lid not in seen:
+                oi.soft_delete()
 
     @transaction.atomic
     def create(self, validated_data):
@@ -215,7 +267,9 @@ class OrderSerializer(serializers.ModelSerializer):
         instance.assign_number()
         instance.save()
         if items_data is not None:
-            instance.items.all().delete()  # replace lines wholesale
-            self._build_lines(instance, items_data)
+            # Reconcile per line (by client id) so cooking progress is preserved
+            # and only genuinely-new lines re-enter the kitchen as pending.
+            self._reconcile_lines(instance, items_data)
         instance.recompute_totals()
+        instance.recompute_kitchen_status()
         return instance

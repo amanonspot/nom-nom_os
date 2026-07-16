@@ -200,6 +200,68 @@ class OrderFlowTests(APITestCase):
         )
         self.assertEqual(Decimal(r_bill.json()["grand_total"]), Decimal("0.00"))
 
+    # --- Line reconcile: edits preserve cooking progress + item identity -----
+    def test_edit_preserves_kitchen_status_and_reconciles_lines(self):
+        import uuid
+
+        from apps.operations.models import OrderItem
+
+        keep_id, drop_id = str(uuid.uuid4()), str(uuid.uuid4())
+        payload = {
+            "branch": str(self.branch.id),
+            "order_type": "takeaway",
+            "items_write": [
+                {"id": keep_id, "menu_item": str(self.item.id), "quantity": 1},
+                {"id": drop_id, "menu_item": str(self.item.id), "quantity": 1},
+            ],
+        }
+        order = self.client.post("/api/ops/orders/", payload, format="json").json()
+        oid = order["id"]
+        # Server honored the client line ids as PKs.
+        self.assertEqual({i["id"] for i in order["items"]}, {keep_id, drop_id})
+        # Kitchen starts cooking one line.
+        self.client.post(f"/api/ops/order-items/{keep_id}/kitchen/", {"status": "cooking"}, format="json")
+        # Re-save the order: keep the cooking line, drop the other, add a new one.
+        new_id = str(uuid.uuid4())
+        edit = {
+            "branch": str(self.branch.id),
+            "order_type": "takeaway",
+            "items_write": [
+                {"id": keep_id, "menu_item": str(self.item.id), "quantity": 3},
+                {"id": new_id, "menu_item": str(self.item.id), "quantity": 1},
+            ],
+        }
+        res = self.client.post("/api/ops/orders/", {"id": oid, **edit}, format="json")
+        self.assertIn(res.status_code, (200, 201), res.content)
+        items = {i["id"]: i for i in res.json()["items"]}
+        # Kept line keeps its cooking status + new quantity; new line pending; dropped line gone.
+        self.assertEqual(items[keep_id]["kitchen_status"], "cooking")
+        self.assertEqual(items[keep_id]["quantity"], 3)
+        self.assertEqual(items[new_id]["kitchen_status"], "pending")
+        self.assertNotIn(drop_id, items)
+        # Dropped line is soft-deleted, not hard-deleted.
+        self.assertTrue(OrderItem.objects.get(id=drop_id).is_deleted)
+        # Order rolls up to the least-advanced active item (new line = pending).
+        self.assertEqual(res.json()["kitchen_status"], "pending")
+
+    def test_table_name_on_read(self):
+        order = self._create_order().json()
+        self.assertEqual(order["table_name"], self.table.name)
+        res = self.client.get(f"/api/ops/orders/{order['id']}/")
+        self.assertEqual(res.json()["table_name"], "T1")
+
+    def test_discount_lowers_grand_total(self):
+        payload = {
+            "branch": str(self.branch.id),
+            "order_type": "takeaway",
+            "discount_total": "50.00",
+            "items_write": [{"menu_item": str(self.item.id), "quantity": 1}],  # 180 + 5% = 189
+        }
+        res = self.client.post("/api/ops/orders/", payload, format="json")
+        self.assertEqual(res.status_code, 201, res.content)
+        # 189 - 50 = 139
+        self.assertEqual(Decimal(res.json()["grand_total"]), Decimal("139.00"))
+
     def test_settle_records_tendered_and_paid_at(self):
         order = self._create_order().json()
         oid, total = order["id"], order["grand_total"]

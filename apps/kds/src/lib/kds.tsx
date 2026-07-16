@@ -46,14 +46,59 @@ export function KdsProvider({ children }: { children: React.ReactNode }) {
   const [orderMap, setOrderMap] = useState<Record<string, Order>>({});
   const wsRef = useRef<WebSocket | null>(null);
   const pollRef = useRef<ReturnType<typeof setInterval> | null>(null);
+  const audioRef = useRef<AudioContext | null>(null);
+  // Order ids we've already seen, so a new-order chime rings exactly once.
+  const seenRef = useRef<Set<string>>(new Set());
+
+  // Lazily create/resume the AudioContext — must follow a user gesture (login
+  // click or first interaction) to satisfy browser autoplay policy.
+  const ensureAudio = useCallback(() => {
+    try {
+      if (!audioRef.current) {
+        const Ctor =
+          window.AudioContext ||
+          (window as unknown as { webkitAudioContext: typeof AudioContext }).webkitAudioContext;
+        if (Ctor) audioRef.current = new Ctor();
+      }
+      void audioRef.current?.resume();
+    } catch {
+      /* audio unavailable — silent */
+    }
+  }, []);
+
+  const playChime = useCallback(() => {
+    const ctx = audioRef.current;
+    if (!ctx) return;
+    try {
+      // Two short rising tones — a friendly "new order" ping.
+      [880, 1175].forEach((freq, i) => {
+        const osc = ctx.createOscillator();
+        const gain = ctx.createGain();
+        osc.type = 'sine';
+        osc.frequency.value = freq;
+        const t = ctx.currentTime + i * 0.16;
+        gain.gain.setValueAtTime(0.0001, t);
+        gain.gain.exponentialRampToValueAtTime(0.3, t + 0.02);
+        gain.gain.exponentialRampToValueAtTime(0.0001, t + 0.15);
+        osc.connect(gain).connect(ctx.destination);
+        osc.start(t);
+        osc.stop(t + 0.16);
+      });
+    } catch {
+      /* ignore */
+    }
+  }, []);
 
   const upsert = useCallback((order: Order) => {
+    if (order.id) seenRef.current.add(order.id);
     setOrderMap((m) => ({ ...m, [order.id!]: order }));
   }, []);
 
   const loadActive = useCallback(async (s: Session) => {
     try {
       const active = await fetchActiveOrders(s.token, s.branchId);
+      // Seed "seen" so existing tickets don't chime on (re)connect.
+      active.forEach((o) => o.id && seenRef.current.add(o.id));
       setOrderMap(Object.fromEntries(active.map((o) => [o.id!, o])));
     } catch {
       /* offline / poll will retry */
@@ -76,7 +121,12 @@ export function KdsProvider({ children }: { children: React.ReactNode }) {
       ws.onmessage = (ev) => {
         try {
           const msg = JSON.parse(ev.data) as { event: string; order: Order };
-          if (msg.order) upsert(msg.order);
+          if (!msg.order) return;
+          // Chime once for a genuinely new order (not for kitchen updates).
+          if (msg.event === 'order.new' && msg.order.id && !seenRef.current.has(msg.order.id)) {
+            playChime();
+          }
+          upsert(msg.order);
         } catch {
           /* ignore malformed */
         }
@@ -90,7 +140,7 @@ export function KdsProvider({ children }: { children: React.ReactNode }) {
       ws.onclose = startPolling;
       ws.onerror = () => ws.close();
     },
-    [upsert, loadActive],
+    [upsert, loadActive, playChime],
   );
 
   useEffect(() => {
@@ -104,7 +154,12 @@ export function KdsProvider({ children }: { children: React.ReactNode }) {
       }
       setReady(true);
     })();
+    // Restored sessions: unlock audio on the first user interaction so the
+    // new-order chime can play (autoplay policy needs a gesture).
+    const unlock = () => ensureAudio();
+    window.addEventListener('pointerdown', unlock, { once: true });
     return () => {
+      window.removeEventListener('pointerdown', unlock);
       wsRef.current?.close();
       if (pollRef.current) clearInterval(pollRef.current);
     };
@@ -113,6 +168,7 @@ export function KdsProvider({ children }: { children: React.ReactNode }) {
 
   const login = useCallback(
     async (username: string, pin: string) => {
+      ensureAudio(); // unlock the chime while we're inside the login click
       const token = await apiLogin(username, pin);
       const me: Me = await fetchMe(token);
       const s: Session = { token, branchId: me.branch?.id ?? '' };
@@ -121,7 +177,7 @@ export function KdsProvider({ children }: { children: React.ReactNode }) {
       await loadActive(s);
       connect(s);
     },
-    [loadActive, connect],
+    [loadActive, connect, ensureAudio],
   );
 
   const logout = useCallback(() => {

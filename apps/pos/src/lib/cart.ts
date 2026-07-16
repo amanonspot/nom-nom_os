@@ -158,3 +158,8 @@ export function toggleLineComp(order: LocalOrder, lineId: string, reason = ''): 
 export function setBillComp(order: LocalOrder, on: boolean, reason = ''): LocalOrder {
   return withTotals({ ...order, isComplimentary: on, compReason: on ? reason : '' });
 }
+
+/** Apply (or clear, with 0) a flat rupee discount; pricing subtracts it. */
+export function setDiscount(order: LocalOrder, amount: number): LocalOrder {
+  return withTotals({ ...order, discountTotal: Math.max(0, Math.round(amount * 100) / 100) });
+}

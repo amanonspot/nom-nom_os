@@ -4,6 +4,113 @@
  */
 
 export interface paths {
+    "/api/accounts/users/": {
+        parameters: {
+            query?: never;
+            header?: never;
+            path?: never;
+            cookie?: never;
+        };
+        /**
+         * @description Staff-login management for the Admin "Access" screen.
+         *
+         *     Scoped to the caller's restaurant. Create/reset auto-generate a 4-digit PIN
+         *     when none is supplied and return it **once** in plaintext so the admin can
+         *     hand it out; it is stored only as a hash thereafter.
+         */
+        get: operations["accounts_users_list"];
+        put?: never;
+        /**
+         * @description Staff-login management for the Admin "Access" screen.
+         *
+         *     Scoped to the caller's restaurant. Create/reset auto-generate a 4-digit PIN
+         *     when none is supplied and return it **once** in plaintext so the admin can
+         *     hand it out; it is stored only as a hash thereafter.
+         */
+        post: operations["accounts_users_create"];
+        delete?: never;
+        options?: never;
+        head?: never;
+        patch?: never;
+        trace?: never;
+    };
+    "/api/accounts/users/{id}/": {
+        parameters: {
+            query?: never;
+            header?: never;
+            path?: never;
+            cookie?: never;
+        };
+        /**
+         * @description Staff-login management for the Admin "Access" screen.
+         *
+         *     Scoped to the caller's restaurant. Create/reset auto-generate a 4-digit PIN
+         *     when none is supplied and return it **once** in plaintext so the admin can
+         *     hand it out; it is stored only as a hash thereafter.
+         */
+        get: operations["accounts_users_retrieve"];
+        put?: never;
+        post?: never;
+        /**
+         * @description Staff-login management for the Admin "Access" screen.
+         *
+         *     Scoped to the caller's restaurant. Create/reset auto-generate a 4-digit PIN
+         *     when none is supplied and return it **once** in plaintext so the admin can
+         *     hand it out; it is stored only as a hash thereafter.
+         */
+        delete: operations["accounts_users_destroy"];
+        options?: never;
+        head?: never;
+        /**
+         * @description Staff-login management for the Admin "Access" screen.
+         *
+         *     Scoped to the caller's restaurant. Create/reset auto-generate a 4-digit PIN
+         *     when none is supplied and return it **once** in plaintext so the admin can
+         *     hand it out; it is stored only as a hash thereafter.
+         */
+        patch: operations["accounts_users_partial_update"];
+        trace?: never;
+    };
+    "/api/accounts/users/{id}/reset_pin/": {
+        parameters: {
+            query?: never;
+            header?: never;
+            path?: never;
+            cookie?: never;
+        };
+        get?: never;
+        put?: never;
+        /** @description Regenerate (or set) this user's login PIN; returns it once. */
+        post: operations["accounts_users_reset_pin_create"];
+        delete?: never;
+        options?: never;
+        head?: never;
+        patch?: never;
+        trace?: never;
+    };
+    "/api/auth/pin/": {
+        parameters: {
+            query?: never;
+            header?: never;
+            path?: never;
+            cookie?: never;
+        };
+        get?: never;
+        put?: never;
+        /**
+         * @description Sign in with username + login PIN, gated by service.
+         *
+         *     ``{username, pin, service}`` → verify the PIN and that the user's role may
+         *     access ``service`` (see ``SERVICE_ROLES``), then mint a JWT pair. Wrong
+         *     credentials → 401; valid credentials but disallowed service → 403.
+         */
+        post: operations["pin_token"];
+        delete?: never;
+        options?: never;
+        head?: never;
+        patch?: never;
+        trace?: never;
+    };
     "/api/auth/token/": {
         parameters: {
             query?: never;
@@ -607,6 +714,26 @@ export interface paths {
         patch?: never;
         trace?: never;
     };
+    "/api/verify-pin/": {
+        parameters: {
+            query?: never;
+            header?: never;
+            path?: never;
+            cookie?: never;
+        };
+        get?: never;
+        put?: never;
+        /**
+         * @description Validate a manager PIN for overrides (comp, discounts). Returns
+         *     {valid: bool} — the caller applies the action locally on success.
+         */
+        post: operations["verify_pin"];
+        delete?: never;
+        options?: never;
+        head?: never;
+        patch?: never;
+        trace?: never;
+    };
 }
 export type webhooks = Record<string, never>;
 export interface components {
@@ -683,6 +810,7 @@ export interface components {
             readonly restaurant: components["schemas"]["Restaurant"];
             readonly branch: components["schemas"]["Branch"];
             readonly can_authorize_overrides: boolean;
+            readonly services: string[];
         };
         MenuItem: {
             /** Format: uuid */
@@ -723,6 +851,7 @@ export interface components {
             branch: string;
             /** Format: uuid */
             table?: string | null;
+            readonly table_name: string;
             /** Format: uuid */
             customer?: string | null;
             customer_phone?: string;
@@ -873,6 +1002,7 @@ export interface components {
             branch?: string;
             /** Format: uuid */
             table?: string | null;
+            readonly table_name?: string;
             /** Format: uuid */
             customer?: string | null;
             customer_phone?: string;
@@ -927,6 +1057,26 @@ export interface components {
             seats?: number;
             area?: string;
             status?: components["schemas"]["TableStatusEnum"];
+        };
+        /**
+         * @description Staff row for the Admin "Access" screen. Read exposes derived services and
+         *     whether a login PIN is set; write accepts username/role/branch/is_active and
+         *     an optional plaintext ``pin`` (write-only). The PIN hash is never returned.
+         */
+        PatchedUserAdmin: {
+            readonly id?: number;
+            /** @description Required. 150 characters or fewer. Letters, digits and @/./+/-/_ only. */
+            username?: string;
+            role?: components["schemas"]["RoleEnum"];
+            readonly services?: string[];
+            readonly branch?: components["schemas"]["Branch"];
+            /**
+             * Active
+             * @description Designates whether this user should be treated as active. Unselect this instead of deleting accounts.
+             */
+            is_active?: boolean;
+            readonly has_pin?: boolean;
+            pin?: string;
         };
         PatchedVariationGroup: {
             /** Format: uuid */
@@ -1008,6 +1158,26 @@ export interface components {
             readonly access: string;
             refresh: string;
         };
+        /**
+         * @description Staff row for the Admin "Access" screen. Read exposes derived services and
+         *     whether a login PIN is set; write accepts username/role/branch/is_active and
+         *     an optional plaintext ``pin`` (write-only). The PIN hash is never returned.
+         */
+        UserAdmin: {
+            readonly id: number;
+            /** @description Required. 150 characters or fewer. Letters, digits and @/./+/-/_ only. */
+            username: string;
+            role?: components["schemas"]["RoleEnum"];
+            readonly services: string[];
+            readonly branch: components["schemas"]["Branch"];
+            /**
+             * Active
+             * @description Designates whether this user should be treated as active. Unselect this instead of deleting accounts.
+             */
+            is_active?: boolean;
+            readonly has_pin: boolean;
+            pin?: string;
+        };
         VariationGroup: {
             /** Format: uuid */
             readonly id: string;
@@ -1054,6 +1224,176 @@ export interface components {
 }
 export type $defs = Record<string, never>;
 export interface operations {
+    accounts_users_list: {
+        parameters: {
+            query?: never;
+            header?: never;
+            path?: never;
+            cookie?: never;
+        };
+        requestBody?: never;
+        responses: {
+            200: {
+                headers: {
+                    [name: string]: unknown;
+                };
+                content: {
+                    "application/json": components["schemas"]["UserAdmin"][];
+                };
+            };
+        };
+    };
+    accounts_users_create: {
+        parameters: {
+            query?: never;
+            header?: never;
+            path?: never;
+            cookie?: never;
+        };
+        requestBody: {
+            content: {
+                "application/json": components["schemas"]["UserAdmin"];
+                "application/x-www-form-urlencoded": components["schemas"]["UserAdmin"];
+                "multipart/form-data": components["schemas"]["UserAdmin"];
+            };
+        };
+        responses: {
+            201: {
+                headers: {
+                    [name: string]: unknown;
+                };
+                content: {
+                    "application/json": components["schemas"]["UserAdmin"];
+                };
+            };
+        };
+    };
+    accounts_users_retrieve: {
+        parameters: {
+            query?: never;
+            header?: never;
+            path: {
+                id: string;
+            };
+            cookie?: never;
+        };
+        requestBody?: never;
+        responses: {
+            200: {
+                headers: {
+                    [name: string]: unknown;
+                };
+                content: {
+                    "application/json": components["schemas"]["UserAdmin"];
+                };
+            };
+        };
+    };
+    accounts_users_destroy: {
+        parameters: {
+            query?: never;
+            header?: never;
+            path: {
+                id: string;
+            };
+            cookie?: never;
+        };
+        requestBody?: never;
+        responses: {
+            /** @description No response body */
+            204: {
+                headers: {
+                    [name: string]: unknown;
+                };
+                content?: never;
+            };
+        };
+    };
+    accounts_users_partial_update: {
+        parameters: {
+            query?: never;
+            header?: never;
+            path: {
+                id: string;
+            };
+            cookie?: never;
+        };
+        requestBody?: {
+            content: {
+                "application/json": components["schemas"]["PatchedUserAdmin"];
+                "application/x-www-form-urlencoded": components["schemas"]["PatchedUserAdmin"];
+                "multipart/form-data": components["schemas"]["PatchedUserAdmin"];
+            };
+        };
+        responses: {
+            200: {
+                headers: {
+                    [name: string]: unknown;
+                };
+                content: {
+                    "application/json": components["schemas"]["UserAdmin"];
+                };
+            };
+        };
+    };
+    accounts_users_reset_pin_create: {
+        parameters: {
+            query?: never;
+            header?: never;
+            path: {
+                id: string;
+            };
+            cookie?: never;
+        };
+        requestBody: {
+            content: {
+                "application/json": components["schemas"]["UserAdmin"];
+                "application/x-www-form-urlencoded": components["schemas"]["UserAdmin"];
+                "multipart/form-data": components["schemas"]["UserAdmin"];
+            };
+        };
+        responses: {
+            200: {
+                headers: {
+                    [name: string]: unknown;
+                };
+                content: {
+                    "application/json": components["schemas"]["UserAdmin"];
+                };
+            };
+        };
+    };
+    pin_token: {
+        parameters: {
+            query?: never;
+            header?: never;
+            path?: never;
+            cookie?: never;
+        };
+        requestBody?: {
+            content: {
+                type: {
+                    [key: string]: unknown;
+                };
+                properties: unknown;
+                required: {
+                    [key: string]: unknown;
+                };
+            };
+        };
+        responses: {
+            type: {
+                headers: {
+                    [name: string]: unknown;
+                };
+                content: {
+                    "application/json": {
+                        [key: string]: unknown;
+                    };
+                };
+            };
+        };
+    };
     auth_token_create: {
         parameters: {
             query?: never;
@@ -2691,6 +3031,34 @@ export interface operations {
         };
     };
     sync_push: {
+        parameters: {
+            query?: never;
+            header?: never;
+            path?: never;
+            cookie?: never;
+        };
+        requestBody?: {
+            content: {
+                type: {
+                    [key: string]: unknown;
+                };
+                properties: unknown;
+            };
+        };
+        responses: {
+            type: {
+                headers: {
+                    [name: string]: unknown;
+                };
+                content: {
+                    "application/json": {
+                        [key: string]: unknown;
+                    };
+                };
+            };
+        };
+    };
+    verify_pin: {
         parameters: {
             query?: never;
             header?: never;

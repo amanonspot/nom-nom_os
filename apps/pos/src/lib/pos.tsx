@@ -14,6 +14,7 @@ import { SyncEngine, createHttpTransport } from '@nomnom/sync-client';
 import { IdbPersistence } from '@nomnom/persistence-idb';
 import {
   API_URL,
+  createTable as apiCreateTable,
   fetchActiveOrders,
   fetchAddOns,
   fetchMe,
@@ -52,6 +53,8 @@ interface PosContextValue {
   login: (username: string, pin: string) => Promise<void>;
   logout: () => void;
   setTableStatus: (tableId: string, status: 'free' | 'occupied') => void;
+  /** Instant table: create a floor table and make it immediately assignable. */
+  createTable: (name: string) => Promise<Table | undefined>;
 }
 
 const PosContext = createContext<PosContextValue | null>(null);
@@ -76,6 +79,9 @@ export function PosProvider({ children }: { children: React.ReactNode }) {
   const persistenceRef = useRef<IdbPersistence | null>(null);
   const engineRef = useRef<SyncEngine | null>(null);
   const tokenRef = useRef<string | null>(null);
+  // Latest refreshActiveOrders, so the WS handler can call it without becoming a
+  // dependency (which would reconnect the socket on every change).
+  const refreshRef = useRef<(() => void) | null>(null);
 
   // Create persistence + engine once, in the browser.
   if (!persistenceRef.current && typeof window !== 'undefined') {
@@ -169,6 +175,11 @@ export function PosProvider({ children }: { children: React.ReactNode }) {
             setNotice(`${label} is ready`);
             window.setTimeout(() => setNotice(null), 5000);
           }
+          // Any order/kitchen change → refresh the floor so per-table item
+          // statuses stay live (item-status sync back to the Tables screen).
+          if (msg.event === 'order.kitchen' || msg.event === 'order.new') {
+            refreshRef.current?.();
+          }
         } catch {
           /* ignore */
         }
@@ -196,6 +207,7 @@ export function PosProvider({ children }: { children: React.ReactNode }) {
       /* offline — keep last snapshot */
     }
   }, [session]);
+  refreshRef.current = refreshActiveOrders;
 
   useEffect(() => {
     if (!session) return;
@@ -241,6 +253,21 @@ export function PosProvider({ children }: { children: React.ReactNode }) {
     [session],
   );
 
+  const createTable = useCallback(
+    async (name: string): Promise<Table | undefined> => {
+      if (!session || !name.trim()) return undefined;
+      const t = await apiCreateTable(session.token, session.branchId, name.trim());
+      setTables((prev) => {
+        if (prev.some((x) => x.id === t.id)) return prev;
+        const next = [...prev, t];
+        void persistenceRef.current?.saveTables(session.branchId, next);
+        return next;
+      });
+      return t;
+    },
+    [session],
+  );
+
   const value = useMemo<PosContextValue>(
     () => ({
       ready,
@@ -257,6 +284,7 @@ export function PosProvider({ children }: { children: React.ReactNode }) {
       login,
       logout,
       setTableStatus,
+      createTable,
     }),
     [
       ready,
@@ -272,6 +300,7 @@ export function PosProvider({ children }: { children: React.ReactNode }) {
       login,
       logout,
       setTableStatus,
+      createTable,
     ],
   );
 

@@ -25,6 +25,7 @@ export function OrderScreen({
   onOpenGuest,
   onOpenCovers,
   onComp,
+  onDiscount,
   onSave,
   onKot,
   onPay,
@@ -40,6 +41,7 @@ export function OrderScreen({
   onOpenGuest: () => void;
   onOpenCovers: () => void;
   onComp: (t: CompTarget) => void;
+  onDiscount: () => void;
   onSave: () => void;
   onKot: () => void;
   onPay: () => void;
@@ -196,8 +198,21 @@ export function OrderScreen({
           <dl className="mb-3 space-y-1 text-sm">
             <Row label="Subtotal" value={draft.subtotal} />
             <Row label="GST" value={draft.taxTotal} />
+            {draft.discountTotal > 0 && (
+              <div className="flex justify-between text-spoto-purple-ink">
+                <dt>Discount</dt>
+                <dd>−₹{draft.discountTotal.toFixed(2)}</dd>
+              </div>
+            )}
             <Row label="Total" value={draft.grandTotal} bold />
           </dl>
+          <button
+            onClick={onDiscount}
+            disabled={empty}
+            className="mb-2 text-xs font-medium text-spoto-purple-ink disabled:opacity-40"
+          >
+            {draft.discountTotal > 0 ? 'Edit discount' : '+ Custom discount'}
+          </button>
           <div className="grid grid-cols-3 gap-2">
             <Button variant="outline" disabled={empty} onClick={onSave}>
               Save
@@ -206,7 +221,7 @@ export function OrderScreen({
               KOT
             </Button>
             <Button variant="cta" disabled={empty} onClick={onPay}>
-              Bill &amp; Pay
+              Pay &amp; Settle
             </Button>
           </div>
           <button onClick={onVoid} className="mt-2 w-full text-center text-xs text-danger">

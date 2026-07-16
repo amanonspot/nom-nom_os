@@ -44,6 +44,13 @@ export const fetchMenu = (token: string, branch: string) =>
 export const fetchTables = (token: string, branch: string) =>
   authed<Table[]>(`/api/ops/tables/?branch=${branch}`, token);
 
+/** Instant table: create a table on the floor, immediately assignable. */
+export const createTable = (token: string, branch: string, name: string, seats = 4) =>
+  authed<Table>(`/api/ops/tables/`, token, {
+    method: 'POST',
+    body: JSON.stringify({ branch, name, seats, area: '' }),
+  });
+
 export const fetchAddOns = (token: string, branch: string) =>
   authed<AddOn[]>(`/api/catalog/addons/?branch=${branch}`, token);
 

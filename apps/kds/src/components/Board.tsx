@@ -79,21 +79,48 @@ export function Board() {
   );
 }
 
+/** Human label + tone for the order type, so kitchen staff see table vs takeaway. */
+function orderTypeLabel(order: Order): string {
+  switch (order.order_type) {
+    case 'dine_in':
+      return order.table_name ? `Dine-in · ${order.table_name}` : 'Dine-in';
+    case 'takeaway':
+      return 'Pickup';
+    case 'delivery':
+      return 'Delivery';
+    case 'qr':
+      return 'QR';
+    default:
+      return 'Order';
+  }
+}
+
 function Ticket({ order }: { order: Order }) {
   const { bumpOrder, bumpItem } = useKds();
   const ks = (order.kitchen_status ?? 'pending') as KitchenStatus;
   const next = NEXT[ks];
+  const isTakeaway = order.order_type === 'takeaway' || order.order_type === 'delivery';
 
   return (
     <Card className="p-3">
-      <div className="mb-2 flex items-center justify-between">
+      <div className="mb-1 flex items-center justify-between">
         <span className="font-heading font-bold text-spoto-ink">
-          {order.table ? 'Table' : order.order_type === 'takeaway' ? 'Takeaway' : 'Order'}{' '}
-          {order.number ?? `#${(order.id ?? '').slice(0, 6)}`}
+          #{order.number ?? (order.id ?? '').slice(0, 6)}
         </span>
         <StatusBadge tone={ks === 'ready' ? 'success' : ks === 'cooking' ? 'warning' : 'occupied'}>
           {ks}
         </StatusBadge>
+      </div>
+      <div className="mb-2">
+        <span
+          className={`inline-block rounded-full px-2 py-0.5 text-[11px] font-heading font-bold uppercase tracking-wide ${
+            isTakeaway
+              ? 'bg-warning/15 text-warning'
+              : 'bg-spoto-purple/15 text-spoto-purple-ink'
+          }`}
+        >
+          {orderTypeLabel(order)}
+        </span>
       </div>
 
       <ul className="mb-3 flex flex-col gap-2">

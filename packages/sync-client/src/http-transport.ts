@@ -23,6 +23,9 @@ function orderToPayload(order: LocalOrder) {
     ...(order.customerPhone ? { customer_phone: order.customerPhone } : {}),
     ...(order.customerName ? { customer_name: order.customerName } : {}),
     items_write: order.lines.map((l) => ({
+      // Send the client line UUID so the server keeps item identity stable and
+      // reconciles edits (preserving each line's kitchen status).
+      id: l.id,
       menu_item: l.menuItemId,
       quantity: l.quantity,
       notes: l.notes ?? '',

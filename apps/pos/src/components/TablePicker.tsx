@@ -1,7 +1,9 @@
 'use client';
 
-import { StatusBadge } from '@nomnom/ui';
+import { useState } from 'react';
+import { Button, StatusBadge } from '@nomnom/ui';
 import type { Table } from '@nomnom/types';
+import { usePos } from '@/lib/pos';
 
 /** Assign or change the table for the current order. */
 export function TablePicker({
@@ -15,6 +17,24 @@ export function TablePicker({
   onPick: (table: Table) => void;
   onClose: () => void;
 }) {
+  const { createTable } = usePos();
+  const [newTable, setNewTable] = useState('');
+  const [adding, setAdding] = useState(false);
+
+  async function addAndPick(e: React.FormEvent) {
+    e.preventDefault();
+    const name = newTable.trim();
+    if (!name || adding) return;
+    setAdding(true);
+    try {
+      const t = await createTable(name);
+      setNewTable('');
+      if (t) onPick(t); // instant table → assign it straight away
+    } finally {
+      setAdding(false);
+    }
+  }
+
   return (
     <div className="fixed inset-0 z-50 flex items-center justify-center bg-black/40 p-4">
       <div className="w-full max-w-lg rounded-2xl bg-spoto-surface p-5">
@@ -43,6 +63,19 @@ export function TablePicker({
             );
           })}
         </div>
+
+        {/* Instant table: create + assign in one step. */}
+        <form onSubmit={addAndPick} className="mt-4 flex items-center gap-2 border-t border-spoto-line pt-4">
+          <input
+            value={newTable}
+            onChange={(e) => setNewTable(e.target.value)}
+            placeholder="New table no."
+            className="min-h-10 flex-1 rounded-lg border border-spoto-line bg-spoto-bg px-3 py-1.5 text-sm text-spoto-ink outline-none focus:border-spoto-purple"
+          />
+          <Button type="submit" variant="secondary" disabled={!newTable.trim() || adding}>
+            + Add & assign
+          </Button>
+        </form>
       </div>
     </div>
   );

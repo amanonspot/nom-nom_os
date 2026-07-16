@@ -10,6 +10,7 @@ import {
   quickLine,
   serverOrderToLocal,
   setBillComp,
+  setDiscount,
   toggleLineComp,
 } from '@/lib/cart';
 import { assignTable as apiAssignTable, getOrder, verifyPin } from '@/lib/api';
@@ -22,6 +23,7 @@ import { TablePicker } from './TablePicker';
 import { GuestDialog } from './GuestDialog';
 import { CoversDialog } from './CoversDialog';
 import { CompDialog, type CompTarget } from './CompDialog';
+import { DiscountDialog } from './DiscountDialog';
 import { NoticeToast } from './NoticeToast';
 
 type View = 'order' | 'tables';
@@ -50,6 +52,7 @@ export function PosApp() {
   const [showGuest, setShowGuest] = useState(false);
   const [showCovers, setShowCovers] = useState(false);
   const [comp, setComp] = useState<CompTarget | null>(null);
+  const [showDiscount, setShowDiscount] = useState(false);
 
   const mutate = useCallback((next: LocalOrder) => {
     dirty.current = true;
@@ -173,6 +176,22 @@ export function PosApp() {
     return true;
   }
 
+  // --- Custom discount (PIN-gated) ---
+  async function applyDiscount(amount: number, pin: string): Promise<boolean> {
+    if (!draft) return false;
+    const ok = await verifyPin(token, pin).catch(() => false);
+    if (!ok) return false; // wrong PIN — dialog stays open
+    mutate(setDiscount(draft, amount));
+    setShowDiscount(false);
+    return true;
+  }
+
+  function removeDiscount() {
+    if (!draft) return;
+    mutate(setDiscount(draft, 0));
+    setShowDiscount(false);
+  }
+
   // --- Actions ---
   // Save: persist the running order and return to the floor (with feedback).
   async function saveOrder() {
@@ -270,6 +289,7 @@ export function PosApp() {
           onOpenGuest={() => setShowGuest(true)}
           onOpenCovers={() => setShowCovers(true)}
           onComp={(target) => setComp(target)}
+          onDiscount={() => setShowDiscount(true)}
           onSave={saveOrder}
           onKot={sendToKitchen}
           onPay={() => setShowPayment(true)}
@@ -318,6 +338,15 @@ export function PosApp() {
       )}
       {comp && (
         <CompDialog target={comp} onConfirm={applyComp} onClose={() => setComp(null)} />
+      )}
+      {showDiscount && draft && (
+        <DiscountDialog
+          base={draft.subtotal + draft.taxTotal}
+          current={draft.discountTotal}
+          onConfirm={applyDiscount}
+          onRemove={removeDiscount}
+          onClose={() => setShowDiscount(false)}
+        />
       )}
     </div>
   );
